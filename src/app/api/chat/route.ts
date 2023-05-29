@@ -1,17 +1,41 @@
 import { ChatOpenAI } from "langchain/chat_models";
-import { HumanChatMessage, SystemChatMessage } from "langchain/schema";
+import { HumanChatMessage, SystemChatMessage, BaseChatMessage } from "langchain/schema";
 import { CallbackManager } from "langchain/callbacks";
 import { Redis } from '@upstash/redis';
+import { NextResponse } from "next/server";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-// const REDIS_URL = process.env.REDIS_URL;
-// const REDIS_TOKEN = process.env.REDIS_TOKEN;
 const redis = Redis.fromEnv();
 
 export const revalidate = 0; // disable cache 
 
+async function cached (
+  func: (m: BaseChatMessage[]) => Promise<any>,
+  messages: BaseChatMessage[]
+) {
+  let cached_response = await redis.get(JSON.stringify(messages));
+  if (cached_response)
+  {
+    console.log("cache hit");
+    console.log(cached_response);
+    return new NextResponse(JSON.stringify(cached_response));
+  }
+
+  const response = await func(messages);
+
+  await redis.incr("counter");
+  await redis.set(JSON.stringify(messages), response);
+}
+
+type ChatRequest = BaseChatMessage[];
+
 export async function GET (request: Request) {
+  const { searchParams } = new URL(request.url);
+
+  let chat_req = searchParams.get("chat");
+  console.log(chat_req);
+
   let s = "";
+
   const chat = new ChatOpenAI({
     temperature: 0,
     streaming: true,
@@ -24,18 +48,22 @@ export async function GET (request: Request) {
     }),
   });
 
-  const response = await chat.call([
+  if (chat_req != null)
+  {
+    let messages = JSON.parse(chat_req);
+    console.log(messages);
+    return await cached(chat.call, messages);
+  }
+
+
+  let messages = [
     new SystemChatMessage("Hello! I'm a chatbot."),
     new HumanChatMessage(
-      "Write me a song about sparkling water.."
+      "Write me a Haiku about sparkling water.."
     ),
-  ]);
+  ];
 
-  // console.log(response);
-  // console.log(chat);
+  const response = await cached(chat.call, messages);
 
-  await redis.incr("counter");
-  await redis.set('foo', response);
-
-  return;
+  return new NextResponse(JSON.stringify(response));
 }

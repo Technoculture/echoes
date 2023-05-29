@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.14.2",
+    "@clerk/nextjs": "^4.19.0",
+    "@clerk/themes": "^1.7.4",
     "@dqbd/tiktoken": "^1.0.3",
+    "@t3-oss/env-core": "^0.3.1",
+    "@t3-oss/env-nextjs": "^0.3.1",
     "@types/node": "18.15.11",
     "@types/react": "18.0.33",
     "@types/react-dom": "18.0.11",
@@ -18,10 +21,12 @@
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "langchain": "^0.0.49",
-    "next": "13.2.4",
+    "next": "^13.4.4",
     "react": "18.2.0",
+    "react-div-100vh": "^0.7.0",
     "react-dom": "18.2.0",
-    "typescript": "5.0.3"
+    "typescript": "5.0.3",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
