@@ -27,7 +27,7 @@ export default function Header() {
       </SignedIn>
       <SignedOut>
         {/* Signed out users get sign in button */}
-        <SignInButton className="text-gray-300" />
+        <SignInButton />
       </SignedOut>
     </header>
   );
