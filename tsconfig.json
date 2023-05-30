@@ -26,9 +26,7 @@
       }
     ],
     "paths": {
-      "@ragents/*": [
-        "./src/app/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
