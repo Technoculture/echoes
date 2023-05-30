@@ -1,45 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-
 import { Copy, Check } from 'iconoir-react';
-
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/tooltip"
+import useClipboard from '@/lib/useClipboard';
 
 interface CopyToClipboardProps {
   content: string;
 }
 
 const CopyToClipboard = (props: CopyToClipboardProps) => {
-  const [copied, setCopied] = useState<boolean>(false);
-
-  const copyToClipboard = (copyText: string) => {
-    // NOTE: `navigator.clipboard` is supported in secure contexts only
-    // Won't work in localhost
-    // https://stackoverflow.com/questions/71873824/copy-text-to-clipboard-cannot-read-properties-of-undefined-reading-writetext
-    navigator.clipboard.writeText(copyText.trim()).then(() => {
-      setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    }).catch((err) => {
-      console.error(err);
-    });
-  };
+  const { copied, copyToClipboard } = useClipboard();
 
   return (
     <TooltipProvider>
       <Tooltip>
 
-        <TooltipTrigger>
-          <button onClick={() => copyToClipboard(props.content)} className="bg-blue-900 group-hover:bg-blue-800 text-blue-400 group-hover:text-blue-50 flex-none p-1 w-fit h-fit">
+        <TooltipTrigger onClick={() => copyToClipboard(props.content)} className="bg-blue-900 group-hover:bg-blue-800 text-blue-400 group-hover:text-blue-50 flex-none p-1 w-fit h-fit">
             {copied ? <Check className="hover:text-green-200" height={14} width={14} /> : <Copy className="hover:text-green-200" height={14} width={14} />}
-          </button>
         </TooltipTrigger>
 
         <TooltipContent
