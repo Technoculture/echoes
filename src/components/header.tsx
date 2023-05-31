@@ -19,7 +19,7 @@ export default function Header() {
     <header className='flex justify-between p-5'>
       <Link href="/" className='gap-2 flex items-center cursor-pointer h-[32px]'>
         <Image src={logo} alt="logo" className='w-6 h-6 border-gray-700 border-2' />
-        <h1 className="text-gray-200 align-middle">Ragents</h1>
+        <h1 className="text-gray-200 align-middle">Rage</h1>
       </Link>
       <SignedIn>
         {/* Mount the UserButton component */}

@@ -10,7 +10,7 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Ragents',
+  title: 'Rage',
   description: 'Research Agents',
   viewport: 'width=device-width, initial-scale=1.0'
 };
@@ -31,7 +31,7 @@ export default function RootLayout({ children }:
         className={`${inter.className} h-full scroll-smooth antialiased`}// TODO: NEEDED? 
       >
         <head>
-          <title>Ragents</title>
+          <title>Rage</title>
         </head>
         <body className="bg-linear-50">
           <div className='flex flex-col'>
