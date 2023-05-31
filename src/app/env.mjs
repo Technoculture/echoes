@@ -1,8 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-//console.log(process.env);
-
 export const env = createEnv({
   clientPrefix: "NEXT_PUBLIC_",
   server: {
@@ -10,6 +8,8 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string().min(10),
     UPSTASH_REDIS_REST_URL: z.string().url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+    DATABASE_URL: z.string().url(),
+    DATABASE_AUTH_TOKEN: z.string().min(1),
   },
 
   client: {
@@ -36,7 +36,10 @@ export const env = createEnv({
 
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
-  },
 
+    // Turso
+    DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_AUTH_TOKEN: process.env.DATABASE_AUTH_TOKEN,
+  },
 });
 

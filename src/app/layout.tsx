@@ -3,7 +3,7 @@ import React from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from '@clerk/themes';
 import Header from "@/components/header";
-import Div100vh from 'react-div-100vh';
+// import Div100vh from 'react-div-100vh';
 
 import { Inter } from 'next/font/google';
 
@@ -14,8 +14,6 @@ export const metadata = {
   description: 'Research Agents',
   viewport: 'width=device-width, initial-scale=1.0'
 };
-
-const isPublicPage = () => { return false; }
 
 export default function RootLayout({ children }:
   { children: React.ReactNode; }) {
@@ -35,8 +33,8 @@ export default function RootLayout({ children }:
         <head>
           <title>Ragents</title>
         </head>
-        <body className="bg-gray-900">
-          <div className='bg-gray-900 flex flex-col'>
+        <body className="bg-linear-50">
+          <div className='flex flex-col'>
             <Header />
             {children}
           </div>)
