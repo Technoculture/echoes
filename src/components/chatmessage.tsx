@@ -12,8 +12,8 @@ interface ChatMessageProps {
 
 const ChatMessage = (props: ChatMessageProps) => {
   return (
-    <div className={"flex flex-col p-4 gap-1 text-xs group ml-2 mr-2 hover:bg-linear-400 bg-linear-200"}>
-      <div className="grow flex flex-row justify-between">
+    <div className={"flex-col p-4 gap-1 text-sm group ml-2 mr-2 hover:bg-linear-400 bg-linear-200"}>
+      <div className="grow flex justify-between">
         <p className={
           props.chat.role === "user" || props.chat.role === "tester" ? "text-gray-600 group-hover:text-gray-400 select-none" :
             "text-green-300 group-hover:text-green-200 select-none"}>{props.chat.role}</p>

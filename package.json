@@ -38,6 +38,7 @@
     "react-dom": "18.2.0",
     "react-markdown": "^8.0.7",
     "react-syntax-highlighter": "^15.5.0",
+    "react-textarea-autosize": "^8.4.1",
     "remark-gfm": "^3.0.1",
     "sqlite": "^4.2.1",
     "tailwind-merge": "^1.12.0",

@@ -3,7 +3,6 @@ import React from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from '@clerk/themes';
 import Header from "@/components/header";
-// import Div100vh from 'react-div-100vh';
 
 import { Inter } from 'next/font/google';
 
@@ -34,7 +33,7 @@ export default function RootLayout({ children }:
           <title>Rage</title>
         </head>
         <body className="bg-linear-50">
-          <div className='flex flex-col'>
+          <div className='flex-col flex-grow'>
             <Header />
             {children}
           </div>)

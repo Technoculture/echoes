@@ -9,7 +9,7 @@ export default function Chat(props: ChatProps) {
   const { chat } = props;
 
   return (
-    <div className='grow flex flex-col'>
+    <div className='flex-col flex-grow '>
       {
         chat.log.map((entry: ChatEntry, index: number) => {
           if (entry.role !== "system") {

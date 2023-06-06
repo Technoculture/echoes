@@ -1,4 +1,5 @@
 import Chat from '@/components/chat';
+import InputBar from "@/components/inputBar";
 import { ChatEntry, ChatLog } from '@/types/types';
 import { db } from '@/db/db';
 
@@ -11,8 +12,9 @@ export default function Page() {
     const chat: ChatLog = { "log": [chatEntry] };
 
   return (
-    <div className='grow flex flex-col'>
-    <Chat chat={chat} />
+    <div className='flex-col flex-grow h-full justify-between'>
+      <Chat chat={chat} />
+      <InputBar />
     </div>
   );
 }
