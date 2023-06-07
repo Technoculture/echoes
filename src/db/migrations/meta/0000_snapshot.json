@@ -1,11 +1,11 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "0c25e73c-fe49-422e-b28f-35a1ce0d1123",
+  "id": "c69b4545-e282-4c8e-923c-ae37b2587eb8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "message": {
-      "name": "message",
+    "chats": {
+      "name": "chats",
       "columns": {
         "id": {
           "name": "id",
@@ -14,24 +14,11 @@
           "notNull": true,
           "autoincrement": false
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
+        "messages": {
+          "name": "messages",
+          "type": "blob",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "message": {
-          "name": "message",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "author_id": {
           "name": "author_id",
@@ -59,9 +46,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "message_author_id_users_id_fk": {
-          "name": "message_author_id_users_id_fk",
-          "tableFrom": "message",
+        "chats_author_id_users_id_fk": {
+          "name": "chats_author_id_users_id_fk",
+          "tableFrom": "chats",
           "tableTo": "users",
           "columnsFrom": [
             "author_id"

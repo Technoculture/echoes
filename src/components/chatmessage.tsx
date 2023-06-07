@@ -21,7 +21,7 @@ const ChatMessage = (props: ChatMessageProps) => {
       </div>
 
       <ReactMarkdown
-        className="text-gray-200 text-sm group-hover:text-gray-100 overflow-x-scroll"
+        className="text-gray-200 text-sm group-hover:text-gray-100"
         children={props.chat.content}
         remarkPlugins={[remarkGfm]}
        // components={{

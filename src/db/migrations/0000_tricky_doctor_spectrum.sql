@@ -1,8 +1,6 @@
-CREATE TABLE `message` (
+CREATE TABLE `chats` (
 	`id` integer PRIMARY KEY NOT NULL,
-	`user_id` integer,
-	`message` text NOT NULL,
-	`role` text NOT NULL,
+	`messages` blob,
 	`author_id` integer NOT NULL,
 	`created_at` integer DEFAULT (strftime('%s', 'now')),
 	`updated_at` integer DEFAULT (strftime('%s', 'now')),
