@@ -1,6 +1,3 @@
-import { buttonVariants } from "@/components/button";
-import Link from "next/link";
-
 export default function Home() {
   return (
     <div className="p-2 ml-2 mr-2">
@@ -10,7 +7,6 @@ export default function Home() {
         - Upload files, oragnize and share data folders (s3).
         - Research Notebooks
       </p>
-      <Link href="/chat" className={buttonVariants({ variant: "secondary" })}>Chat</Link>
     </div>
   );
 }

@@ -1,26 +1,26 @@
 'use client';
 
 import TextareaAutosize from 'react-textarea-autosize';
-// import { useRef } from 'react';
+import { useRef } from 'react';
 
 const InputBar = () => {
-  // const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className='flex gap-2 bg-gray-900 p-2'>
+    <div className='flex gap-2 bg-linear-300 p-2 pt-2'>
       <TextareaAutosize
-        // ref={ inputRef }
+        ref={ inputRef }
         maxRows={ 10 }
         placeholder='Type your message here...'
         autoFocus
-        //onKeyPress={ (e) => {
-        //  if (e.key === 'Enter' && e.shiftKey)
-        //  {
-        //    console.log("clicked");
-        //    e.preventDefault();
-        //  }
-        //} }
-        className='flex-none resize-none grow bg-gray-900 border rounded border-gray-800 text-gray-200 p-2 text-sm' />
+        onKeyPress={ (e) => {
+          if (e.key === 'Enter' && e.shiftKey)
+          {
+            console.log("clicked");
+            e.preventDefault();
+          }
+        } }
+        className='flex-none resize-none grow bg-linear-200 border border-linear-50 text-gray-200 p-2 text-sm' />
       <button
         onClick={ () => console.log("click") }
         className='p-2 text-green-400  hover:text-green-100 flex justify-end'

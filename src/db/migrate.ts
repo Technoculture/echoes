@@ -10,4 +10,5 @@ migrate(db, { migrationsFolder: "./src/db/migrations" })
   .catch((err) => {
     console.error("Migrations failed!", err);
     process.exit(1);
-  });
+  }
+);

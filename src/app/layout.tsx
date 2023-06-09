@@ -34,7 +34,6 @@ export default function RootLayout({ children }:
         </head>
         <body className="bg-linear-50">
           <div className='flex-col flex-grow'>
-            <Header />
             {children}
           </div>)
         </body>
