@@ -24,8 +24,9 @@ export default function Chat(props: ChatProps) {
 
   const send = (message: string) => {
     let newMessage: ChatEntry = { "role": "user", "content": message };
-    props.pushNewChat({ "log": messages });
-    setMessages([...messages, newMessage]);
+    let newMessages = [...messages, newMessage];
+    setMessages(newMessages);
+    props.pushNewChat({ "log": newMessages });
   }
 
   return (
@@ -46,10 +47,11 @@ export default function Chat(props: ChatProps) {
       {
         messages.map((entry: ChatEntry, index: number) => {
           if (entry.role !== "system") {
-            return (<ChatMessage
-              chat={entry}
-              key={index}
-            />);
+            return (
+              <ChatMessage
+                chat={entry}
+                key={index}
+              />);
           }
         })
       }
@@ -59,3 +61,4 @@ export default function Chat(props: ChatProps) {
     </div>
   );
 }
+
