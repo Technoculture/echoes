@@ -1,12 +1,12 @@
 {
   "version": "5",
-  "dialect": "sqlite",
+  "dialect": "mysql",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1686159124773,
-      "tag": "0000_smart_morg",
+      "when": 1686290397543,
+      "tag": "0000_tiresome_sasquatch",
       "breakpoints": false
     }
   ]

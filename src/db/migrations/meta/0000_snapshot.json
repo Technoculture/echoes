@@ -1,94 +1,32 @@
 {
   "version": "5",
-  "dialect": "sqlite",
-  "id": "84c24e7a-f3a2-4a9c-8f27-756218afe308",
+  "dialect": "mysql",
+  "id": "20894c6e-eaf9-44db-ae11-1e48c55c9bd4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "chats": {
-      "name": "chats",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "messages": {
-          "name": "messages",
-          "type": "blob",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "author_id": {
-          "name": "author_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(strftime('%s', 'now'))"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(strftime('%s', 'now'))"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "chats_author_id_users_id_fk": {
-          "name": "chats_author_id_users_id_fk",
-          "tableFrom": "chats",
-          "tableTo": "users",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ]
-        }
-      },
-      "compositePrimaryKeys": {}
-    },
     "users": {
       "name": "users",
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "email": {
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(strftime('%s', 'now'))"
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -96,7 +34,7 @@
       "compositePrimaryKeys": {}
     }
   },
-  "enums": {},
+  "schemas": {},
   "_meta": {
     "schemas": {},
     "tables": {},

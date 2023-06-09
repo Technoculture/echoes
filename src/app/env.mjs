@@ -3,12 +3,18 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
+    // OpenAI
     OPEN_AI_API_KEY: z.string().min(10),
+    // Clerk
     CLERK_SECRET_KEY: z.string().min(10),
+    // Upstash Redis
     UPSTASH_REDIS_REST_URL: z.string().url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
-    DATABASE_URL: z.string().url(),
-    DATABASE_AUTH_TOKEN: z.string().min(1),
+    // Planetscale
+    DATABASE_HOST: z.string().min(1),
+    DATABASE_NAME: z.string().min(1),
+    DATABASE_USERNAME: z.string().min(1),
+    DATABASE_PASSWORD: z.string().min(1),
   },
 
   client: {
@@ -36,9 +42,11 @@ export const env = createEnv({
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
 
-    // Turso
-    DATABASE_URL: process.env.DATABASE_URL,
-    DATABASE_AUTH_TOKEN: process.env.DATABASE_AUTH_TOKEN,
+    // Planetscale
+    DATABASE_HOST: process.env.DATABASE_HOST,
+    DATABASE_USERNAME: process.env.DATABASE_USERNAME,
+    DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
+    DATABASE_NAME: process.env.DATABASE_NAME
   },
 });
 
