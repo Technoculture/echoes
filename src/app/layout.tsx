@@ -2,7 +2,6 @@ import './globals.css';
 import React from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from '@clerk/themes';
-import Header from "@/components/header";
 
 import { Inter } from 'next/font/google';
 
@@ -27,15 +26,15 @@ export default function RootLayout({ children }:
       }}
     >
       <html lang="en"
-        className={`${inter.className} h-full scroll-smooth antialiased`}// TODO: NEEDED? 
+        className={`${inter.className} dark h-full scroll-smooth antialiased`}// TODO: NEEDED? 
       >
         <head>
           <title>Rage</title>
         </head>
-        <body className="bg-linear-50">
+        <body className="bg-background">
           <div className='flex-col flex-grow'>
             {children}
-          </div>)
+          </div>
         </body>
       </html>
     </ClerkProvider>

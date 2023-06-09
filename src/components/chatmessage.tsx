@@ -12,7 +12,7 @@ interface ChatMessageProps {
 
 const ChatMessage = (props: ChatMessageProps) => {
   return (
-    <div className={"flex-col p-4 gap-1 text-sm group hover:bg-linear-400 bg-linear-200"}>
+    <div className={"flex-col p-4 gap-1 text-sm group hover:bg-secondary bg-background"}>
       <div className="grow flex justify-between">
         <p className={
           props.chat.role === "user" || props.chat.role === "tester" ? "text-gray-600 group-hover:text-gray-400 select-none" :
@@ -21,7 +21,7 @@ const ChatMessage = (props: ChatMessageProps) => {
       </div>
 
       <ReactMarkdown
-        className="text-gray-200 text-sm group-hover:text-gray-100"
+        className="text-primary text-sm group-hover:text-gray-100"
         children={props.chat.content}
         remarkPlugins={[remarkGfm]}
        // components={{

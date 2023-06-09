@@ -6,7 +6,7 @@ export type ChatEntry = {
 };
 
 export type ChatLog = {
-  log: Array<ChatEntry>;
+  log: Array<ChatEntry>
 };
 
 export type SystemPersona = "scientist" | "regulator" | "student" | "IPR" | null;

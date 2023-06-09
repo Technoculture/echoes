@@ -3,6 +3,15 @@
 import ChatMessage from '@/components/chatmessage';
 import { ChatLog, ChatEntry } from '@/types/types';
 import InputBar from "@/components/inputBar";
+import { useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/card";
 
 interface ChatProps {
   chat: ChatLog;
@@ -11,10 +20,30 @@ interface ChatProps {
 export default function Chat(props: ChatProps) {
   const { chat } = props;
 
+  const [messages, setMessages] = useState<ChatEntry[]>(chat.log);
+
+  const send = (message: string) => {
+    let newMessage: ChatEntry = { "role": "user", "content": message };
+    setMessages([...messages, newMessage]);
+  }
+
   return (
-    <div className='flex-col flex-grow '>
+    <div className='flex-col grow'>
+      <Card className="max-w-sm rounded-none">
+        <CardHeader>
+          <CardTitle>Objective</CardTitle>
+          <CardDescription>Card Description</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Card Content</p>
+          <CardDescription>Card Description</CardDescription>
+        </CardContent>
+        <CardFooter>
+          <p>Card Footer</p>
+        </CardFooter>
+      </Card>
       {
-        chat.log.map((entry: ChatEntry, index: number) => {
+        messages.map((entry: ChatEntry, index: number) => {
           if (entry.role !== "system") {
             return (<ChatMessage
               chat={entry}
@@ -23,8 +52,8 @@ export default function Chat(props: ChatProps) {
           }
         })
       }
-      <InputBar 
-        onSubmit={ () => console.log("hello") } 
+      <InputBar
+        onSubmit={(msg) => send(msg)}
       />
     </div>
   );

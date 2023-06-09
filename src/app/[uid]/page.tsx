@@ -5,9 +5,8 @@ export default function Page({ params }: { params: { uid: string } }) {
   const { uid } = params;
 
   return (
-    <div>
-      <h1 className="">My Page</h1>
-      <Link href={ `${uid}/new`} className={buttonVariants({ variant: "secondary" })}>Chat</Link>
+    <div className="flex-col gap-2">
+      <Link href={`${uid}/new`} className={buttonVariants({ variant: "secondary" })}>Start a new Chat</Link>
     </div>
   );
 }

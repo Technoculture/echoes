@@ -3,8 +3,7 @@ import { ChatEntry, ChatLog } from '@/types/types';
 import { db } from '@/db';
 
 export default async function Page({ params }: { params: { uid: string, chatid: string } }) {
-  const chatEntry: ChatEntry = { "role": "user", "content": "hello" };
-  const chat: ChatLog = { "log": [chatEntry] };
+  const chat: ChatLog = { "log": [] };
 
   console.log(params);
 
@@ -14,7 +13,7 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
   }
 
   return (
-    <div className='flex-col flex-grow h-full justify-between'>
+    <div className='flex-col grow h-full justify-between'>
       <Chat chat={chat} />
     </div>
   );

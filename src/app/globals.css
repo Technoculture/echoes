@@ -66,7 +66,7 @@
  
     --ring: 216 34% 17%;
  
-    --radius: 0.5rem;
+    /* --radius: 0.5rem; */
   }
 }
  
@@ -80,6 +80,7 @@
   }
 }
 
+/*
 pre,
 table {
   margin-top: 10px;
@@ -101,8 +102,6 @@ th {
 
 th {
   background: #0a2c19;
-  /* text-emphasis: bold; */
-
   border-bottom: 1px solid #1bb666;
 }
 
@@ -147,9 +146,7 @@ blockquote {
   padding-left: 20px;
   margin-left: 5px;
   padding-right: 10px;
-  /* font-style: italic; */
   color: #f8fafa;
-  /* background-color: #28294d; */
   border-left: 2px solid #0d491f;
   word-wrap: break-word;
 }
@@ -159,4 +156,4 @@ code {
   color: #a9bbe1;
   font-size: 95%;
 }
-
+*/
