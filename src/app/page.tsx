@@ -7,7 +7,6 @@ export default function Home() {
         - Upload files, oragnize and share data folders (s3).
         - Research Notebooks
       </p>
-      <button onClick={() => methodDoesNotExist()}>Break the world</button>;
     </div>
   );
 }
