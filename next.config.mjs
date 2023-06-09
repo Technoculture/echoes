@@ -5,6 +5,7 @@ import "./src/app/env.mjs";
 const nextConfig = {
   experimental: {
     appDir: true,
+    serverActions: true
   },
   redirects: async () => {
     return [
