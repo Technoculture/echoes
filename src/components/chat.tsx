@@ -15,15 +15,16 @@ import {
 
 interface ChatProps {
   chat: ChatLog;
+  pushNewChat: (chat: ChatLog) => Promise<void>;
 }
 
 export default function Chat(props: ChatProps) {
   const { chat } = props;
-
   const [messages, setMessages] = useState<ChatEntry[]>(chat.log);
 
   const send = (message: string) => {
     let newMessage: ChatEntry = { "role": "user", "content": message };
+    props.pushNewChat({ "log": messages });
     setMessages([...messages, newMessage]);
   }
 

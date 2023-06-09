@@ -15,6 +15,20 @@
       "when": 1686301847882,
       "tag": "0001_bumpy_doctor_spectrum",
       "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1686332451772,
+      "tag": "0002_nifty_dragon_man",
+      "breakpoints": false
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1686341199168,
+      "tag": "0003_giant_angel",
+      "breakpoints": false
     }
   ]
 }
