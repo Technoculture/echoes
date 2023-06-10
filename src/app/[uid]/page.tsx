@@ -22,10 +22,10 @@ export default async function Page({ params }: { params: { uid: string } }) {
 
   return (
     <div className="grid grid-cols-1 gap-2">
-      <div className="grid grid-cols-4 gap-2">
-      <Link href={`${uid}/chat/new`} className={buttonVariants({ variant: "secondary" })}>
-        Start a new Chat
-      </Link>
+      <div className="grid md:grid-cols-4 gap-2">
+        <Link href={`${uid}/chat/new`} className={buttonVariants({ variant: "secondary" })}>
+          Start a new Chat
+        </Link>
         {
           conversations.map((chat) => (
             <Link

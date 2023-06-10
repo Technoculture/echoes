@@ -69,12 +69,18 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
     }
   }
 
+  //const deleteChat = async (chatid: number) => {
+  //  'use server';
+  //  await db.delete(chats).where(eq(chats.id, chatid));
+  //  return true;
+  //}
+
   return (
     <div className='flex-col h-full justify-between'>
       <div className="flex space-between mb-2">
         <Button asChild><Link href={`/${params.uid}`}><ArrowLeft className="mr-2 h-4 w-4" />Back</Link></Button>
         <div className="grow" />
-        <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" />Delete Chat</Button>
+        { /* <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" />Delete Chat</Button> */}
       </div>
       <div>
         { /*
@@ -92,7 +98,11 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
           </Card>
           */ }
       </div>
-      <Chat chat={chatlog} pushNewChat={pushChat} uid={params.uid} />
+      <Chat 
+        chat={chatlog}
+        pushNewChat={pushChat}
+        uid={params.uid}
+      />
     </div>
   );
 }

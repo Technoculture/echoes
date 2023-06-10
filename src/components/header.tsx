@@ -12,7 +12,11 @@ import {
   UserButton
 } from "@clerk/nextjs";
 
-export default function Header() {
+interface HeaderProps {
+  children?: React.ReactNode;
+}
+
+export default function Header({ children }: HeaderProps) {
   return (
     <header className='flex justify-between p-5'>
       <Link href="/" className='gap-2 flex items-center cursor-pointer h-[32px]'>
@@ -21,7 +25,10 @@ export default function Header() {
       </Link>
       <SignedIn>
         {/* Mount the UserButton component */}
-        <UserButton />
+        <div className="flex">
+          { children }
+          <UserButton />
+        </div>
       </SignedIn>
       <SignedOut>
         { /* Signed out users get sign in button
