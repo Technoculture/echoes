@@ -4,7 +4,6 @@ import ChatMessage from '@/components/chatmessage';
 import { ChatLog, ChatEntry } from '@/types/types';
 import InputBar from "@/components/inputBar";
 import { useState } from 'react';
-
 import { useRouter } from 'next/navigation'
 
 interface ChatProps {

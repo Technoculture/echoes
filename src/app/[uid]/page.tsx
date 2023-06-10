@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { chats, Chat as ChatSchema } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { ChatLog } from "@/types/types";
+import { PlusIcon } from "lucide-react";
 
 export default async function Page({ params }: { params: { uid: string } }) {
   const { uid } = params;
@@ -23,7 +24,8 @@ export default async function Page({ params }: { params: { uid: string } }) {
   return (
     <div className="grid grid-cols-1 gap-2">
       <div className="grid md:grid-cols-4 gap-2">
-        <Link href={`${uid}/chat/new`} className={buttonVariants({ variant: "secondary" })}>
+        <Link href={`${uid}/chat/new`} className={buttonVariants({ variant: "default" })}>
+          <PlusIcon className="w-4 h-4 mr-4" />
           Start a new Chat
         </Link>
         {
@@ -31,7 +33,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
             <Link
               href={`${uid}/chat/${chat.id}`}
               key={chat.id}
-              className={buttonVariants({ variant: "default" })}>{chat.id}(
+              className={buttonVariants({ variant: "secondary" })}>{chat.id}(
               {
                 (JSON.parse(chat.messages as string) as ChatLog)?.log.length || 0
               })

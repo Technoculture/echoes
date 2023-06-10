@@ -14,12 +14,12 @@ import { eq } from 'drizzle-orm';
 //  CardTitle,
 //} from "@/components/card";
 import { Button } from "@/components/button";
-import { Trash2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default async function Page({ params }: { params: { uid: string, chatid: string } }) {
   // console.log(params);
-
+  
   const user = await currentUser();
   if (!params.uid || !params.chatid || !user || user.username !== params.uid) {
     // - userid in url is not undefined
@@ -98,7 +98,7 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
           </Card>
           */ }
       </div>
-      <Chat 
+      <Chat
         chat={chatlog}
         pushNewChat={pushChat}
         uid={params.uid}

@@ -20,7 +20,7 @@ const InputBar = (props: InputBarProps) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   return (
-    <div className='flex gap-2 bg-linear-300 p-2 pt-2'>
+    <div className='flex-col gap-2 bg-linear-300 p-2 pt-2'>
       <TextareaAutosize
         ref={inputRef}
         maxRows={10}
