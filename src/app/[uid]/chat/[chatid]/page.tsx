@@ -1,18 +1,18 @@
 import Chat from '@/components/chat';
-import { ChatLog, ChatEntry } from '@/types/types';
+import { ChatLog } from '@/types/types';
 import { currentUser } from '@clerk/nextjs';
 import { db } from '@/db';
 import { redirect } from 'next/navigation';
-import { chats, Chat as ChatSchema } from '@/db/schema';
+import { Chat as ChatSchema, chats } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/card";
+//import {
+//  Card,
+//  CardContent,
+//  CardDescription,
+//  CardFooter,
+//  CardHeader,
+//  CardTitle,
+//} from "@/components/card";
 import { Button } from "@/components/button";
 import { Trash2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -30,31 +30,48 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
     redirect("/");
   }
 
-  const fetchedChat: ChatSchema[] = await db.select()
-    .from(chats)
-    .where(eq(chats.id, Number(params.chatid)))
-    .limit(1);
-  // console.log('fetchedChat', fetchedChat[0]);
-
-  const msg = fetchedChat[0]?.messages;
-  console.log(msg)
   let chatlog: ChatLog = { "log": [] };
-  if (fetchedChat.length === 1 && msg) {
-    chatlog = JSON.parse(msg as string) as ChatLog;
-    //console.debug('chatlog', chatlog);
+  if (params.chatid !== 'new') {
+    // Fetch the chat if it exists and is not "new"
+    let fetchedChat: ChatSchema[] = await db.select()
+      .from(chats)
+      .where(eq(chats.id, Number(params.chatid)))
+      .limit(1);
+    // console.log('fetchedChat', fetchedChat[0]);
+
+    const msg = fetchedChat[0]?.messages;
+    // console.log(msg)
+    if (fetchedChat.length === 1 && msg) {
+      chatlog = JSON.parse(msg as string) as ChatLog;
+      //console.debug('chatlog', chatlog);
+    }
   }
 
   const pushChat = async (chat_entries: ChatLog) => {
     'use server';
 
-    await db.update(chats)
-      .set({ messages: JSON.stringify(chat_entries) })
-      .where(eq(chats.id, Number(params.chatid)));
+    if (params.chatid === 'new') {
+      // create new chat
+      const { insertId } = await db.insert(chats).values({
+        "user_id": params.uid,
+        "messages": JSON.stringify(chat_entries),
+      });
+      console.debug('New chat created: ', insertId);
+
+      return insertId;
+    } else {
+      // update existing chat
+      await db.update(chats)
+        .set({ messages: JSON.stringify(chat_entries) })
+        .where(eq(chats.id, Number(params.chatid)));
+
+      return "";
+    }
   }
 
   return (
     <div className='flex-col h-full justify-between'>
-      <div className="flex space-between">
+      <div className="flex space-between mb-2">
         <Button asChild><Link href={`/${params.uid}`}><ArrowLeft className="mr-2 h-4 w-4" />Back</Link></Button>
         <div className="grow" />
         <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" />Delete Chat</Button>
@@ -75,7 +92,7 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
           </Card>
           */ }
       </div>
-      <Chat chat={chatlog} pushNewChat={pushChat} />
+      <Chat chat={chatlog} pushNewChat={pushChat} uid={params.uid} />
     </div>
   );
 }

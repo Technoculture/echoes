@@ -2,10 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Inter } from 'next/font/google';
 import logo from '@/assets/logo.png';
-
-const inter = Inter({ subsets: ['latin'] });
+import { Button } from '@/components/button';
 
 import {
   SignedIn,
@@ -26,8 +24,13 @@ export default function Header() {
         <UserButton />
       </SignedIn>
       <SignedOut>
-        {/* Signed out users get sign in button */}
-        <SignInButton />
+        { /* Signed out users get sign in button
+        <SignInButton mode="modal">
+          <Button>
+            Sign in
+          </Button>
+        </SignInButton>
+        */ }
       </SignedOut>
     </header>
   );
