@@ -1,13 +1,24 @@
 import Chat from '@/components/chat';
-import { ChatLog } from '@/types/types';
+import { ChatLog, ChatEntry } from '@/types/types';
 import { currentUser } from '@clerk/nextjs';
 import { db } from '@/db';
 import { redirect } from 'next/navigation';
 import { chats, Chat as ChatSchema } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/card";
+import { Button } from "@/components/button";
+import { Trash2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default async function Page({ params }: { params: { uid: string, chatid: string } }) {
-  console.log(params);
+  // console.log(params);
 
   const user = await currentUser();
   if (!params.uid || !params.chatid || !user || user.username !== params.uid) {
@@ -26,10 +37,11 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
   // console.log('fetchedChat', fetchedChat[0]);
 
   const msg = fetchedChat[0]?.messages;
-  const chatlog: ChatLog = { "log": [] };
+  console.log(msg)
+  let chatlog: ChatLog = { "log": [] };
   if (fetchedChat.length === 1 && msg) {
-    const chatlog: ChatLog = JSON.parse(msg);    
-    console.log('chatlog', chatlog);
+    chatlog = JSON.parse(msg as string) as ChatLog;
+    //console.debug('chatlog', chatlog);
   }
 
   const pushChat = async (chat_entries: ChatLog) => {
@@ -41,7 +53,28 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
   }
 
   return (
-    <div className='flex-col grow h-full justify-between'>
+    <div className='flex-col h-full justify-between'>
+      <div className="flex space-between">
+        <Button asChild><Link href={`/${params.uid}`}><ArrowLeft className="mr-2 h-4 w-4" />Back</Link></Button>
+        <div className="grow" />
+        <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" />Delete Chat</Button>
+      </div>
+      <div>
+        { /*
+          <Card className=" rounded-none">
+            <CardHeader>
+              <CardTitle>Objective</CardTitle>
+              <CardDescription>Card Description</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Card Content</p>
+              <CardDescription>Card Description</CardDescription>
+            </CardContent>
+            <CardFooter>
+            </CardFooter>
+          </Card>
+          */ }
+      </div>
       <Chat chat={chatlog} pushNewChat={pushChat} />
     </div>
   );

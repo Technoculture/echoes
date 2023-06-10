@@ -13,6 +13,6 @@ const connection = connect({
   password: process.env.DATABASE_PASSWORD || "",
 });
 
-console.log(connection);
+// console.log(connection);
 
 export const db = drizzle(connection, { schema });

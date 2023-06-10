@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
   const { insertId } = await db.insert(chats).values({
     user_id: params.uid
   });
-  console.log('insertId', insertId);
+  console.log('New chat created with id: ', insertId);
 
   let chat_url = `/${user.username}/chat/${insertId}`;
   console.log(`redirecting to "${chat_url}"`);

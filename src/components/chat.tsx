@@ -4,14 +4,6 @@ import ChatMessage from '@/components/chatmessage';
 import { ChatLog, ChatEntry } from '@/types/types';
 import InputBar from "@/components/inputBar";
 import { useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/card";
 
 interface ChatProps {
   chat: ChatLog;
@@ -19,31 +11,21 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
-  const { chat } = props;
-  const [messages, setMessages] = useState<ChatEntry[]>(chat.log);
+  // console.log(props.chat)
+  const [messages, setMessages] = useState<ChatEntry[]>(props.chat.log);
+  console.log('messages', messages);
 
   const send = (message: string) => {
-    let newMessage: ChatEntry = { "role": "user", "content": message };
-    let newMessages = [...messages, newMessage];
+    let newMessages = [
+      ...messages, 
+      { "role": "user", "content": message } as ChatEntry
+    ];
     setMessages(newMessages);
     props.pushNewChat({ "log": newMessages });
   }
 
   return (
-    <div className='flex-col grow'>
-      <Card className="max-w-sm rounded-none">
-        <CardHeader>
-          <CardTitle>Objective</CardTitle>
-          <CardDescription>Card Description</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Card Content</p>
-          <CardDescription>Card Description</CardDescription>
-        </CardContent>
-        <CardFooter>
-          <p>Card Footer</p>
-        </CardFooter>
-      </Card>
+    <div className='flex-col cols-span-2'>
       {
         messages.map((entry: ChatEntry, index: number) => {
           if (entry.role !== "system") {

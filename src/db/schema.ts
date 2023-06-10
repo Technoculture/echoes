@@ -1,5 +1,5 @@
 import { InferModel } from 'drizzle-orm';
-import { text, varchar, timestamp, mysqlTable, serial } from 'drizzle-orm/mysql-core';
+import { json, varchar, timestamp, mysqlTable, serial } from 'drizzle-orm/mysql-core';
 
 export const users = mysqlTable('users', {
 	id: serial("id").primaryKey().notNull(),	
@@ -15,7 +15,7 @@ export type NewUser = InferModel<typeof users, 'insert'>
 export const chats = mysqlTable('chats', {
   id: serial("id").primaryKey().notNull(),
   user_id: varchar("user_id", { length: 191 }).notNull(),
-  messages: text('messages'),
+  messages: json('messages'),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow()
 });
