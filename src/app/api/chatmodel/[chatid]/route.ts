@@ -30,7 +30,7 @@ const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
 }
 
 export async function POST(
-  //request: Request, 
+  request: Request, 
   params: { chatid: string }) 
 {
   console.log(params);
