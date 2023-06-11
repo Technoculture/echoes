@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 
 export default async function Page() {
-  const { userId } = auth();
+  const user = await currentUser();
+  const userId = user?.id;
 
   if (!userId) {
     redirect("/sign-in");
