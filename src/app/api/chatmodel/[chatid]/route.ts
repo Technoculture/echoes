@@ -1,15 +1,29 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { HumanChatMessage, SystemChatMessage } from "langchain/schema";
+import { HumanChatMessage, SystemChatMessage, BaseChatMessage } from "langchain/schema";
 import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
+import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
+import { chats, Chat } from "@/lib/db/schema";
 
 export const revalidate = 0; // disable cache 
 
-export async function POST(request: Request, params: { chatid: string }) {
-  const { searchParams } = new URL(request.url);
+//function jsonToLangchain(sqldata: Chat[]): BaseChatMessage[] {
+//  return sqldata.map(msg => {
+//  });
+//}
 
-  /// Validate the payload and parse it
+export async function POST(request: Request, params: { chatid: string }) {
+  // 1. Fetch the chat using the chatid
+  const _chat: Chat[] = await db.select()
+    .from(chats)
+    .where(eq(chats.id, Number(params.chatid)))
+    .limit(1);
+  const chat = _chat[0];
+  console.log(chat);
+
+  // 2. Send the message to OpenAI
+  // Validate the payload and parse it
   const { query } = await request.json();
   console.log('query', query);
 

@@ -16,6 +16,7 @@
     "@clerk/themes": "^1.7.4",
     "@dqbd/tiktoken": "^1.0.3",
     "@planetscale/database": "^1.7.0",
+    "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.0.6",
     "@sentry/nextjs": "^7.54.0",

@@ -5,9 +5,10 @@ import { redirect } from 'next/navigation';
 import { Chat as ChatSchema, chats } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { Button } from "@/components/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 
 export const revalidate = 1;
 
@@ -60,9 +61,21 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
   return (
     <div className='flex-col h-full justify-between'>
       <div className="flex space-between mb-2">
-        <Button variant="outline" asChild>
-          <Link href={`/${params.uid}`}><ArrowLeft className="h-4 w-4" /></Link>
-        </Button>
+        <div className="flex items-center">
+          <Button variant="outline" className="mr-2" asChild>
+            <Link href={`/${params.uid}`}><ArrowLeft className="h-4 w-4" /></Link>
+          </Button>
+
+          <Avatar className="mr-2 w-9 h-9">
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+
+          <Button variant="outline" className="mr-2">
+            <PlusIcon className="h-4 w-4" />
+          </Button>
+        </div>
+
         <div className="grow" />
       </div>
       <div>
