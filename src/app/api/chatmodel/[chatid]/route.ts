@@ -14,7 +14,7 @@ import { ChatEntry, QuerySchema } from "@/lib/types";
 
 export const revalidate = 0; // disable cache
 
-export const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
+const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
   const log = JSON.parse(sqldata.messages as string)["log"];
   let ret: BaseChatMessage[] = [];
   if (system) { ret.push(new SystemChatMessage(system)); }
@@ -26,12 +26,14 @@ export const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage
       ret.push(new AIChatMessage(item.content));
     }
   });
-
   return ret;
 }
 
-export async function POST(request: Request, params: { chatid: string }) {
-  console.log(request);
+export async function POST(
+  //request: Request, 
+  params: { chatid: string }) 
+{
+  console.log(params);
 
   // 1. Fetch the chat using the chatid
   const _chat: Chat[] = await db.select()
@@ -43,8 +45,8 @@ export async function POST(request: Request, params: { chatid: string }) {
   console.log(msgs);
 
   // 2. Send the message to OpenAI
-  const { query } = QuerySchema.parse(request.body); // Validate the payload and parse it
-  console.log('query: ', query);
+  //const { query } = QuerySchema.parse(request.body); // Validate the payload and parse it
+  //console.log('query: ', query);
 
   const chatmodel = new ChatOpenAI({
     temperature: 0,
