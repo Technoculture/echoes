@@ -1,3 +1,6 @@
+import { z } from "zod";
+//import { MessageType } from "langchain/schema";
+
 export type ChatRole = "user" | "assistant" | "system" | "tester";
 
 export type ChatEntry = {
@@ -10,3 +13,9 @@ export type ChatLog = {
 };
 
 export type SystemPersona = "scientist" | "regulator" | "student" | "IPR" | null;
+
+export const QuerySchema = z.object({
+  query: z.string().nonempty(),
+  systemMessage: z.string()
+});
+

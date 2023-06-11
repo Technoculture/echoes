@@ -8,7 +8,7 @@ import { ChatLog } from "@/lib/types";
 import { PlusIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs";
 
-export const revalidate = 1;
+export const revalidate = 0;
 
 export default async function Page({ params }: { params: { uid: string } }) {
   const { uid } = params;

@@ -10,7 +10,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 
-export const revalidate = 1;
+export const revalidate = 0;
 
 export default async function Page({ params }: { params: { uid: string, chatid: string } }) {
   const { userId } = auth();
@@ -46,8 +46,6 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
         "user_id": params.uid,
         "messages": JSON.stringify(chat_entries),
       });
-      //console.debug('New chat created: ', insertId);
-
       return insertId;
     } else {
       // update existing chat
