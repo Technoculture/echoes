@@ -1,0 +1,83 @@
+{
+  "version": "5",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1686301802460,
+      "tag": "0000_closed_firestar",
+      "breakpoints": false
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1686301847882,
+      "tag": "0001_bumpy_doctor_spectrum",
+      "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1686332451772,
+      "tag": "0002_nifty_dragon_man",
+      "breakpoints": false
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1686341199168,
+      "tag": "0003_giant_angel",
+      "breakpoints": false
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1686370364489,
+      "tag": "0004_serious_lionheart",
+      "breakpoints": false
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1686463496847,
+      "tag": "0005_sleepy_golden_guardian",
+      "breakpoints": false
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1686463576185,
+      "tag": "0006_regular_liz_osborn",
+      "breakpoints": false
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1686463654630,
+      "tag": "0007_even_nova",
+      "breakpoints": false
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1686463673294,
+      "tag": "0008_black_tombstone",
+      "breakpoints": false
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1686463829883,
+      "tag": "0009_cooing_cardiac",
+      "breakpoints": false
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1686463864864,
+      "tag": "0010_wooden_preak",
+      "breakpoints": false
+    }
+  ]
+}

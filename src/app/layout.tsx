@@ -7,7 +7,7 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Seeker',
+  title: 'Echo',
   description: 'Seek using Research Agents',
   viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
 
@@ -29,9 +29,9 @@ export default function RootLayout({ children }:
         className={`${inter.className} dark h-full scroll-smooth antialiased`}// TODO: NEEDED? 
       >
         <head>
-          <link rel="icon" href="../../public/favicon.ico" sizes="any" />
-          <link rel="apple-touch-icon" href="../assets/apple-icon.png" type="image/png" sizes="128x128" />
-          <title>Rage</title>
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png" type="image/png" sizes="128x128" />
+          <title>Echo</title>
         </head>
         <body className="bg-background">
           <div className='flex-col flex-grow'>

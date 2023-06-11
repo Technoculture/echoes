@@ -1,25 +1,15 @@
 import Chat from '@/components/chat';
-import { ChatLog } from '@/types/types';
+import { ChatLog } from '@/lib/types';
 import { currentUser } from '@clerk/nextjs';
-import { db } from '@/db';
+import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
-import { Chat as ChatSchema, chats } from '@/db/schema';
+import { Chat as ChatSchema, chats } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-//import {
-//  Card,
-//  CardContent,
-//  CardDescription,
-//  CardFooter,
-//  CardHeader,
-//  CardTitle,
-//} from "@/components/card";
 import { Button } from "@/components/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default async function Page({ params }: { params: { uid: string, chatid: string } }) {
-  // console.log(params);
-  
   const user = await currentUser();
   if (!params.uid || !params.chatid || !user || user.username !== params.uid) {
     // - userid in url is not undefined
@@ -37,13 +27,10 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
       .from(chats)
       .where(eq(chats.id, Number(params.chatid)))
       .limit(1);
-    // console.log('fetchedChat', fetchedChat[0]);
 
     const msg = fetchedChat[0]?.messages;
-    // console.log(msg)
     if (fetchedChat.length === 1 && msg) {
       chatlog = JSON.parse(msg as string) as ChatLog;
-      //console.debug('chatlog', chatlog);
     }
   }
 
@@ -56,7 +43,7 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
         "user_id": params.uid,
         "messages": JSON.stringify(chat_entries),
       });
-      console.debug('New chat created: ', insertId);
+      //console.debug('New chat created: ', insertId);
 
       return insertId;
     } else {
@@ -64,39 +51,20 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
       await db.update(chats)
         .set({ messages: JSON.stringify(chat_entries) })
         .where(eq(chats.id, Number(params.chatid)));
-
       return "";
     }
   }
 
-  //const deleteChat = async (chatid: number) => {
-  //  'use server';
-  //  await db.delete(chats).where(eq(chats.id, chatid));
-  //  return true;
-  //}
-
   return (
     <div className='flex-col h-full justify-between'>
       <div className="flex space-between mb-2">
-        <Button asChild><Link href={`/${params.uid}`}><ArrowLeft className="mr-2 h-4 w-4" />Back</Link></Button>
+        <Button variant="secondary" asChild>
+          <Link href={`/${params.uid}`}><ArrowLeft className="h-4 w-4" /></Link>
+        </Button>
         <div className="grow" />
-        { /* <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" />Delete Chat</Button> */}
       </div>
       <div>
-        { /*
-          <Card className=" rounded-none">
-            <CardHeader>
-              <CardTitle>Objective</CardTitle>
-              <CardDescription>Card Description</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
-              <CardDescription>Card Description</CardDescription>
-            </CardContent>
-            <CardFooter>
-            </CardFooter>
-          </Card>
-          */ }
+
       </div>
       <Chat
         chat={chatlog}

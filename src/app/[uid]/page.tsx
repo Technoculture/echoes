@@ -2,10 +2,10 @@ import { buttonVariants } from "@/components/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentUser } from '@clerk/nextjs';
-import { db } from "@/db";
-import { chats, Chat as ChatSchema } from "@/db/schema";
+import { db } from "@/lib/db";
+import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { ChatLog } from "@/types/types";
+import { ChatLog } from "@/lib/types";
 import { PlusIcon } from "lucide-react";
 
 export default async function Page({ params }: { params: { uid: string } }) {

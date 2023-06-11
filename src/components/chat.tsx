@@ -17,7 +17,7 @@ export default function Chat(props: ChatProps) {
   const [messages, setMessages] = useState<ChatEntry[]>(props.chat.log);
   const router = useRouter()
 
-  console.log('messages', messages);
+  //console.log('messages', messages);
 
   const send = async (message: string) => {
     let newMessages = [
@@ -34,7 +34,7 @@ export default function Chat(props: ChatProps) {
   }
 
   return (
-    <div className='flex-col cols-span-2'>
+    <div className='flex-col'>
       {
         messages.map((entry: ChatEntry, index: number) => {
           if (entry.role !== "system") {

@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.mjs",
-    "src/db/migrate.ts"
+    "src/lib/db/migrate.ts"
   ],
   "exclude": [
     "node_modules"
