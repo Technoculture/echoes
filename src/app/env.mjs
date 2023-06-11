@@ -7,6 +7,7 @@ export const env = createEnv({
     OPEN_AI_API_KEY: z.string().min(10),
     // Clerk
     CLERK_SECRET_KEY: z.string().min(10),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(10),
     // Upstash Redis
     REDIS_URL: z.string().url(),
     // Planetscale
