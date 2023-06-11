@@ -1,16 +1,13 @@
 import { InferModel } from 'drizzle-orm';
-import { text, mysqlEnum, json, varchar, timestamp, mysqlTable, serial } from 'drizzle-orm/mysql-core';
-
-//export const users = mysqlTable('users', {
-//	id: serial("id").primaryKey().notNull(),	
-//  name: varchar("name", { length: 191 }).notNull(),
-//  username: varchar("username", { length: 191 }),
-//	email: varchar("email", { length: 191 }).notNull(),
-//  createdAt: timestamp("createdAt").defaultNow(),
-//  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow()
-//});
-//export type User = InferModel<typeof users, 'select'>
-//export type NewUser = InferModel<typeof users, 'insert'>
+import { 
+  text, 
+  json, 
+  varchar, 
+  timestamp, 
+  serial ,
+  mysqlTable, 
+  mysqlEnum, 
+} from 'drizzle-orm/mysql-core';
 
 export const chats = mysqlTable('chats', {
   id: serial("id").primaryKey().notNull(),
