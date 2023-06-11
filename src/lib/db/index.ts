@@ -13,4 +13,5 @@ const connection = connect({
   password: process.env.PLANETSCALE_DB_PASSWORD || "",
 });
 
+//console.log(connection);
 export const db = drizzle(connection, { schema });
