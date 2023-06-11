@@ -1,25 +1,26 @@
 import { buttonVariants } from "@/components/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { currentUser } from '@clerk/nextjs';
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { ChatLog } from "@/lib/types";
 import { PlusIcon } from "lucide-react";
+import { auth } from "@clerk/nextjs";
+
+export const revalidate = 1;
 
 export default async function Page({ params }: { params: { uid: string } }) {
   const { uid } = params;
-  const user = await currentUser();
-  if (!user || !uid || user?.username !== uid) {
+  const { userId } = auth();
+  if (!userId || !uid || userId !== uid) {
     redirect("/");
   }
-
-  //console.log("user", user);
 
   const conversations: ChatSchema[] = await db.select()
     .from(chats)
     .where(eq(chats.user_id, params.uid))
+    .orderBy(desc(chats.updatedAt))
     .limit(10);
 
   return (

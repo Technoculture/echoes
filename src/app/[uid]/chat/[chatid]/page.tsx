@@ -1,6 +1,5 @@
 import Chat from '@/components/chat';
 import { ChatLog } from '@/lib/types';
-import { currentUser } from '@clerk/nextjs';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import { Chat as ChatSchema, chats } from '@/lib/db/schema';
@@ -8,10 +7,13 @@ import { eq } from 'drizzle-orm';
 import { Button } from "@/components/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs";
+
+export const revalidate = 1;
 
 export default async function Page({ params }: { params: { uid: string, chatid: string } }) {
-  const user = await currentUser();
-  if (!params.uid || !params.chatid || !user || user.username !== params.uid) {
+  const { userId } = auth();
+  if (!params.uid || !params.chatid || !userId || userId !== params.uid) {
     // - userid in url is not undefined
     // - chatid in url is not undefined
     // - user is logged in

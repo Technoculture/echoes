@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 
 export default async function Page() {
-  const user = await currentUser();
-  redirect(`/${user?.username}`);
+  const { userId } = auth();
+  redirect(`/${userId}`);
 }
