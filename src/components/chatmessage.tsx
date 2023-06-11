@@ -1,4 +1,4 @@
-import { ChatEntry } from "@/types/types";
+import { ChatEntry } from "@/lib/types";
 import CopyToClipboard from "@/components/copytoclipboard";
 
 import ReactMarkdown from 'react-markdown';

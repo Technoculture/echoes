@@ -2,7 +2,7 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { HumanChatMessage, SystemChatMessage } from "langchain/schema";
 import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
-import { db } from "@/db";
+import { db } from "@/lib/db";
 
 export const revalidate = 0; // disable cache 
 
