@@ -20,7 +20,7 @@ const InputBar = (props: InputBarProps) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   return (
-    <div className='flex bg-linear-300 p-2 pt-2'>
+    <div className='flex bg-linear-900 p-2 pt-2 rounded-sm'>
       <TextareaAutosize
         ref={inputRef}
         maxRows={10}
@@ -32,7 +32,7 @@ const InputBar = (props: InputBarProps) => {
             e.preventDefault();
           }
         }}
-        className='flex-none resize-none grow bg-linear-200 border border-linear-50 text-gray-200 p-2 text-sm' />
+        className='flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm' />
       <button
         onClick={() => {
           sendNewMessageClicked(props, inputRef);

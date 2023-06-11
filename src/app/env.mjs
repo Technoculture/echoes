@@ -8,13 +8,11 @@ export const env = createEnv({
     // Clerk
     CLERK_SECRET_KEY: z.string().min(10),
     // Upstash Redis
-    UPSTASH_REDIS_REST_URL: z.string().url(),
-    UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+    REDIS_URL: z.string().url(),
     // Planetscale
-    DATABASE_HOST: z.string().min(1),
-    DATABASE_NAME: z.string().min(1),
-    DATABASE_USERNAME: z.string().min(1),
-    DATABASE_PASSWORD: z.string().min(1),
+    PLANETSCALE_DB_HOST: z.string().min(1),
+    PLANETSCALE_DB_USERNAME: z.string().min(1),
+    PLANETSCALE_DB_PASSWORD: z.string().min(1),
   },
 
   client: {
@@ -29,24 +27,18 @@ export const env = createEnv({
     // Clerk (Auth)
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
-
     // Upstash (Redis)
-    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
-    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
-
+    REDIS_URL: process.env.REDIS_URL,
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
-
     // Planetscale
-    DATABASE_HOST: process.env.DATABASE_HOST,
-    DATABASE_USERNAME: process.env.DATABASE_USERNAME,
-    DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
-    DATABASE_NAME: process.env.DATABASE_NAME
+    PLANETSCALE_DB_HOST: process.env.PLANETSCALE_DB_HOST,
+    PLANETSCALE_DB_USERNAME: process.env.PLANETSCALE_DB_USERNAME,
+    PLANETSCALE_DB_PASSWORD: process.env.PLANETSCALE_DB_PASSWORD,
   },
 });
 

@@ -3,11 +3,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import logo from '@/assets/logo.png';
-//import { Button } from '@/components/button';
 import {
   SignedIn,
   SignedOut,
-  //SignInButton,
   UserButton
 } from "@clerk/nextjs";
 
@@ -20,7 +18,7 @@ export default function Header({ children }: HeaderProps) {
     <header className='flex justify-between p-5'>
       <Link href="/" className='gap-2 flex items-center cursor-pointer h-[32px]'>
         <Image src={logo} alt="logo" className='w-6 h-6 border-gray-700 border-2' />
-        <h1 className="text-gray-200 align-middle">Echo</h1>
+        <h1 className="text-gray-200 align-middle">Echoes</h1>
       </Link>
       <SignedIn>
         {/* Mount the UserButton component */}
@@ -30,13 +28,7 @@ export default function Header({ children }: HeaderProps) {
         </div>
       </SignedIn>
       <SignedOut>
-        { /* Signed out users get sign in button
-        <SignInButton mode="modal">
-          <Button>
-            Sign in
-          </Button>
-        </SignInButton>
-        */ }
+
       </SignedOut>
     </header>
   );

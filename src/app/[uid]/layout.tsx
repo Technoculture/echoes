@@ -1,7 +1,4 @@
 import Header from "@/components/header";
-import { Button } from "@/components/button";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 export default function LoggedInLayout({
   children, // will be a page or nested layout
@@ -12,7 +9,7 @@ export default function LoggedInLayout({
     <>
       <Header>
       </Header>
-      <div className="pl-4 pr-4">
+      <div className="pl-5 pr-5">
         {children}
       </div>
     </>

@@ -7,16 +7,17 @@ import remarkGfm from 'remark-gfm';
 //import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface ChatMessageProps {
+  name: string;
   chat: ChatEntry;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
   return (
-    <div className={"flex-col p-4 gap-1 text-sm group hover:bg-secondary bg-background"}>
+    <div className={"flex-col p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-accent bg-background hover:ring-1 ring-ring"}>
       <div className="grow flex justify-between">
         <p className={
-          props.chat.role === "user" || props.chat.role === "tester" ? "text-gray-600 group-hover:text-gray-400 select-none" :
-            "text-green-300 group-hover:text-green-200 select-none"}>{props.chat.role}</p>
+          props.chat.role === "user" || props.chat.role === "tester" ? "text-slate-600 group-hover:text-gray-400 select-none" :
+            "text-green-300 group-hover:text-green-200 select-none"}>{props.name}</p>
         <CopyToClipboard content={props.chat.content} />
       </div>
 

@@ -58,7 +58,7 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
   return (
     <div className='flex-col h-full justify-between'>
       <div className="flex space-between mb-2">
-        <Button variant="secondary" asChild>
+        <Button variant="outline" asChild>
           <Link href={`/${params.uid}`}><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div className="grow" />

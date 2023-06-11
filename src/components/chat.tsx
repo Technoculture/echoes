@@ -34,12 +34,13 @@ export default function Chat(props: ChatProps) {
   }
 
   return (
-    <div className='flex-col'>
+    <div className='grid grig-cols-1 gap-1'>
       {
         messages.map((entry: ChatEntry, index: number) => {
           if (entry.role !== "system") {
             return (
               <ChatMessage
+                name={props.uid}
                 chat={entry}
                 key={index}
               />);

@@ -13,7 +13,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
 
   return (
     <div className="flex-col gap-2">
-      <Link href={`${uid}/chat/new`} className={buttonVariants({ variant: "secondary" })}>
+      <Link href={`${uid}/chat/new`} className={buttonVariants({ variant: "outline" })}>
         Start a new Chat
       </Link>
     </div>

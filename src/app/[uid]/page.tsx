@@ -11,10 +11,11 @@ import { PlusIcon } from "lucide-react";
 export default async function Page({ params }: { params: { uid: string } }) {
   const { uid } = params;
   const user = await currentUser();
-  // console.log(user?.username, uid);
   if (!user || !uid || user?.username !== uid) {
     redirect("/");
   }
+
+  //console.log("user", user);
 
   const conversations: ChatSchema[] = await db.select()
     .from(chats)
