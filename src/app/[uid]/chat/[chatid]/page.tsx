@@ -81,6 +81,7 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
       </div>
       <Chat
         chat={chatlog}
+        chatId={params.chatid}
         pushNewChat={pushChat}
         uid={params.uid}
       />

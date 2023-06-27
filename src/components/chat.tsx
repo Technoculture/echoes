@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 interface ChatProps {
   uid: string;
   chat: ChatLog;
+  chatId: string;
   pushNewChat: (chat: ChatLog) => Promise<string>;
 }
 
@@ -26,10 +27,18 @@ export default function Chat(props: ChatProps) {
     ];
     setMessages(newMessages);
     const id: string = await props.pushNewChat({ "log": newMessages });
-
     if (id !== "") {
       console.log('pushed new chat with id', id);
       router.push(`/${props.uid}/chat/${id}`);
+    }
+    try{
+      const data = await fetch(`/api/chatmodel/${props.chatId}`, {
+        method: 'POST',
+        // credentials: 'include',
+      })
+      console.log("data",data)
+    } catch(err) {
+      console.log("err", err)
     }
   }
 

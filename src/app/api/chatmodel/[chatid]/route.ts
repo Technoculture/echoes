@@ -31,14 +31,14 @@ const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
 
 export async function POST(
   request: Request, 
-  params: { chatid: string }) 
+  params: {params: { chatid: string }}) 
 {
-  console.log(params);
+  console.log(params.params.chatid);
 
   // 1. Fetch the chat using the chatid
   const _chat: Chat[] = await db.select()
     .from(chats)
-    .where(eq(chats.id, Number(params.chatid)))
+    .where(eq(chats.id, Number(params.params.chatid)))
     .limit(1);
   const chat = _chat[0];
   const msgs = jsonToLangchain(chat)
