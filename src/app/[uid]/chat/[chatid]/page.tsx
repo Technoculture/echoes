@@ -49,6 +49,8 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
       return insertId;
     } else {
       // update existing chat
+      // await db.insert(chats)
+      //   .values({user_id: params.uid, message: })
       await db.update(chats)
         .set({ messages: JSON.stringify(chat_entries) })
         .where(eq(chats.id, Number(params.chatid)));

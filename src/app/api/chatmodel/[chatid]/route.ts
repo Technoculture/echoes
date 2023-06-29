@@ -40,9 +40,15 @@ export async function POST(
     .from(chats)
     .where(eq(chats.id, Number(params.params.chatid)))
     .limit(1);
+
+    // await db.update(chats)
+    // .set({ messages: JSON.stringify(chat_entries) })
+    // .where(eq(chats.id, Number(params.params.chatid)));
+
   const chat = _chat[0];
+  console.log("chat", typeof chat, chat)
   const msgs = jsonToLangchain(chat)
-  console.log(msgs);
+  // console.log("line 45",msgs);
 
   // 2. Send the message to OpenAI
   //const { query } = QuerySchema.parse(request.body); // Validate the payload and parse it
@@ -51,10 +57,29 @@ export async function POST(
   const chatmodel = new ChatOpenAI({
     temperature: 0,
     openAIApiKey: env.OPEN_AI_API_KEY,
+    streaming: true
   });
   const response = await chatmodel.call(msgs);
 
-  console.log(response);
+
+  // added ai response to database
+  const messagesObject = JSON.parse(chat?.messages as string)
+  // const latestInput = messagesObject.log[messagesObject.log.length - 1]
+  // latestInput.apiResponse = response.text
+  
+  // 
+  const latestInput =  messagesObject.log.pop()
+  latestInput.apiResponse = response.text
+  messagesObject.log.push(latestInput);
+
+
+  await db.update(chats)
+    .set({ messages: JSON.stringify(messagesObject) })
+    .where(eq(chats.id, Number(params.params.chatid)));
+  
+
+
+  console.log(response.text);
   return new NextResponse(JSON.stringify(response));
 }
 

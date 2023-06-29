@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm';
 interface ChatMessageProps {
   name: string;
   chat: ChatEntry;
+  apiResponse: string
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -45,6 +46,13 @@ const ChatMessage = (props: ChatMessageProps) => {
         //  }
         //}}
       />
+      {props.chat?.apiResponse  &&  
+      <ReactMarkdown
+        className="text-primary text-sm max-w-full border-2 border-red-800 overflow-x-auto group-hover:text-gray-100"
+        children={props.chat?.apiResponse}
+        remarkPlugins={[remarkGfm]}
+      />
+    }
     </div>
   );
 };

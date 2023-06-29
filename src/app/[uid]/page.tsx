@@ -35,10 +35,11 @@ export default async function Page({ params }: { params: { uid: string } }) {
             <Link
               href={`${uid}/chat/${chat.id}`}
               key={chat.id}
-              className={buttonVariants({ variant: "secondary" })}>{chat.id}(
-              {
-                (JSON.parse(chat.messages as string) as ChatLog)?.log.length || 0
-              })
+              className={buttonVariants({ variant: "secondary" })}>
+                {chat.id}(
+                {
+                  (JSON.parse(chat.messages as string) as ChatLog)?.log.length || 0
+                })
             </Link>
           ))}
       </div>

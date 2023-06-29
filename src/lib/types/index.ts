@@ -6,6 +6,7 @@ export type ChatRole = "user" | "assistant" | "system" | "tester";
 export type ChatEntry = {
   role: ChatRole;
   content: string;
+  apiResponse?: string;
 };
 
 export type ChatLog = {
