@@ -46,10 +46,16 @@ const ChatMessage = (props: ChatMessageProps) => {
         //  }
         //}}
       />
-      {props.chat?.apiResponse  &&  
+      {props.chat?.apiResponse  ? 
       <ReactMarkdown
         className="text-primary text-sm max-w-full border-2 border-red-800 overflow-x-auto group-hover:text-gray-100"
         children={props.chat?.apiResponse}
+        remarkPlugins={[remarkGfm]}
+      />
+      :
+      <ReactMarkdown
+        className="text-primary text-sm max-w-full border-2 border-red-800 overflow-x-auto group-hover:text-gray-100"
+        children={props.apiResponse}
         remarkPlugins={[remarkGfm]}
       />
     }

@@ -16,7 +16,7 @@ interface ChatProps {
 export default function Chat(props: ChatProps) {
   // console.log(props.chat)
   const [messages, setMessages] = useState<ChatEntry[]>(props.chat.log);
-  const [apiRes, setApiRes] = useState('')
+  const [streamingData, setStreamingData] = useState('')
   const router = useRouter()
 
   //console.log('messages', messages);
@@ -36,31 +36,50 @@ export default function Chat(props: ChatProps) {
     }
     try{
       const chat_id = id !== '' ? id : props.chatId
-      await fetch(`/api/chatmodel/${chat_id}`, {
+      const response = await fetch(`/api/chatmodel/${chat_id}`, {
         method: 'POST',
         // credentials: 'include',
       })
-      .then((response) => {
-        console.log(response)
-        const decoder = new TextDecoder();
-        const reader = response?.body?.getReader();
-        // // read() returns a promise that resolves when a value has been received
-        // reader?.read().then(function pump({ done, value }): any {
-        //   if (done) {
-        //     // Do something with last chunk of data then exit reader
-        //     return;
-        //   }
-        //   // Otherwise do something here to process current chunk
-        //     console.log("dedoding", decoder.decode(value))
-        //     setApiRes(prev => prev + decoder.decode(value))
-        //   // Read some more, and call this function again
-        //   return reader.read().then(pump);
-        // });
-      })
-      // console.log("data",data)
-    } catch(err) {
-      console.log("err", err)
-    }
+      if(response.body){
+
+        const reader = response?.body.getReader();
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) {
+            break;
+          }
+          
+          const text = new TextDecoder().decode(value);
+          console.log("textChunck" , text, "\n")
+          setStreamingData((prevData) => prevData + text);
+        }
+      }
+  } catch(err) {
+    console.log("something went wrong")
+  }
+    //   .then((response) => {
+    //     console.log(response)
+    //     const decoder = new TextDecoder();
+    //     const reader = response?.body?.getReader();
+    //     // // read() returns a promise that resolves when a value has been received
+    //     // reader?.read().then(function pump({ done, value }): any {
+    //     //   if (done) {
+    //     //     // Do something with last chunk of data then exit reader
+    //     //     return;
+    //     //   }
+    //     //   // Otherwise do something here to process current chunk
+    //     //     console.log("dedoding", decoder.decode(value))
+    //     //     setApiRes(prev => prev + decoder.decode(value))
+    //     //   // Read some more, and call this function again
+    //     //   return reader.read().then(pump);
+    //     // });
+    //   })
+    //   // console.log("data",data)
+    // } catch(err) {
+    //   console.log("err", err)
+    // }
   }
 
   return (
@@ -70,7 +89,7 @@ export default function Chat(props: ChatProps) {
           if (entry.role !== "system") {
             return (
               <ChatMessage
-                apiResponse={apiRes}
+                apiResponse={streamingData}
                 name={props.uid}
                 chat={entry}
                 key={index}
