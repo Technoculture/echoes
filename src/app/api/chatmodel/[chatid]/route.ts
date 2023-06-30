@@ -32,7 +32,7 @@ const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
 export async function POST(
   request: Request,
   params: { params: { chatid: string } }) {
-  console.log(params.params.chatid);
+  // console.log(params.params.chatid);
 
   // 1. Fetch the chat using the chatid
   const _chat: Chat[] = await db.select()
@@ -40,14 +40,11 @@ export async function POST(
     .where(eq(chats.id, Number(params.params.chatid)))
     .limit(1);
 
-  // await db.update(chats)
-  // .set({ messages: JSON.stringify(chat_entries) })
-  // .where(eq(chats.id, Number(params.params.chatid)));
-
   const chat = _chat[0];
-  console.log("chat", typeof chat, chat)
   const msgs = jsonToLangchain(chat)
-  // console.log("line 45",msgs);
+
+  //  messages Object from db to update with ai response 
+  const messagesObject = JSON.parse(chat?.messages as string)
 
   // 2. Send the message to OpenAI
   //const { query } = QuerySchema.parse(request.body); // Validate the payload and parse it
@@ -67,83 +64,26 @@ export async function POST(
     callbacks: [
       {
         async handleLLMNewToken(token) {
-          console.log("got new token")
           await writer.ready;
-          console.log("token", token)
           data += token
           await writer.write(encoder.encode(`${token}`));
         },
-        async handleLLMEnd() {
+        async handleLLMEnd(output) {
+          const latestInput = messagesObject.log.pop()
+          latestInput.apiResponse = data
+          messagesObject.log.push(latestInput);
+
+
+          await db.update(chats)
+            .set({ messages: JSON.stringify(messagesObject) })
+            .where(eq(chats.id, Number(params.params.chatid)));
           await writer.ready;
           await writer.close();
         },
       },
     ],
   });
-   chatmodel.call(msgs);
-
-  // let counter = 0;
-  // const encoder = new TextEncoder();
-  // const decoder = new TextDecoder();
-  // const stream = new ReadableStream({
-  //   async start(controller) {
-  //     // callback
-  //     function onParse(event: ParsedEvent | ReconnectInterval) {
-  //       if (event.type === "event") {
-  //         const data = event.data;
-  //         // https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream
-  //         if (data === "[DONE]") {
-  //           controller.close();
-  //           return;
-  //         }
-  //         try {
-  //           const json = JSON.parse(data);
-  //           const text = json.choices[0].delta?.content || "";
-  //           if (counter < 2 && (text.match(/\n/) || []).length) {
-  //             // this is a prefix character (i.e., "\n\n"), do nothing
-  //             return;
-  //           }
-  //           const queue = encoder.encode(text);
-  //           controller.enqueue(queue);
-  //           counter++;
-  //         } catch (e) {
-  //           // maybe parse error
-  //           controller.error(e);
-  //         }
-  //       }
-  //     }
-
-  //     // stream response (SSE) from OpenAI may be fragmented into multiple chunks
-  //     // this ensures we properly read chunks and invoke an event for each SSE event stream
-  //     const parser = createParser(onParse);
-  //     // https://web.dev/streams/#asynchronous-iteration
-  //     for await (const chunk of response.body as any) {
-  //       parser.feed(decoder.decode(chunk));
-  //     }
-  //   },
-  // });
-
-
-  // added ai response to database
-          // const messagesObject = JSON.parse(chat?.messages as string)
-  // const latestInput = messagesObject.log[messagesObject.log.length - 1]
-  // latestInput.apiResponse = response.text
-
-  // 
-  // const latestInput = messagesObject.log.pop()
-  // latestInput.apiResponse = response.text
-  // messagesObject.log.push(latestInput);
-
-
-  // await db.update(chats)
-  //   .set({ messages: JSON.stringify(messagesObject) })
-  //   .where(eq(chats.id, Number(params.params.chatid)));
-
-
-  console.log("data", data)
-  // console.log(response.text);
-  // console.log("writer", writer)
-  // console.log("stream", stream)
+  chatmodel.call(msgs);
   return new NextResponse(await stream.readable)
 }
 
