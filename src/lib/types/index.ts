@@ -13,6 +13,11 @@ export type ChatLog = {
   log: Array<ChatEntry>
 };
 
+export interface  PostBody {
+  user_id: string,
+  message: ChatEntry
+}
+
 export type SystemPersona = "scientist" | "regulator" | "student" | "IPR" | null;
 
 export const QuerySchema = z.object({

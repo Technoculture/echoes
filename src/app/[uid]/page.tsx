@@ -3,10 +3,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { ChatLog } from "@/lib/types";
 import { PlusIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs";
+import { ExecutedQuery } from "@planetscale/database";
 
 export const revalidate = 0;
 
@@ -23,10 +24,14 @@ export default async function Page({ params }: { params: { uid: string } }) {
     .orderBy(desc(chats.updatedAt))
     .limit(10);
 
+    // this may break while a new user registers and do their first chat
+  const queryResult : ExecutedQuery = await db.execute(sql`select Max(chats.id) as latestChatId from chats`)
+  let maxId = queryResult.rows[0] as {latestChatId: string}
+  console.log(maxId)
   return (
     <div className="grid grid-cols-1 gap-2">
       <div className="grid md:grid-cols-4 gap-2">
-        <Link href={`${uid}/chat/new`} className={buttonVariants({ variant: "default" })}>
+        <Link href={`${uid}/chat/${Number(maxId.latestChatId) + 1}`} className={buttonVariants({ variant: "default" })}>
           <PlusIcon className="w-4 h-4 mr-4" />
           Start a new Chat
         </Link>

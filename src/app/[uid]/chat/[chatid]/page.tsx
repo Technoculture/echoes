@@ -37,28 +37,6 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
     }
   }
 
-  const pushChat = async (chat_entries: ChatLog) => {
-    'use server';
-
-    if (params.chatid === 'new') {
-      // create new chat
-      const { insertId } = await db.insert(chats).values({
-        "user_id": params.uid,
-        "messages": JSON.stringify(chat_entries),
-      });
-      return insertId;
-    } else {
-      // update existing chat
-      // await db.insert(chats)
-      //   .values({user_id: params.uid, message: })
-      await db.update(chats)
-        .set({ messages: JSON.stringify(chat_entries) })
-        .where(eq(chats.id, Number(params.chatid)));
-        console.log("inserted to db")
-      return "";
-    }
-  }
-
   return (
     <div className='flex-col h-full justify-between'>
       <div className="flex space-between mb-2">
@@ -85,7 +63,6 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
       <Chat
         chat={chatlog}
         chatId={params.chatid}
-        pushNewChat={pushChat}
         uid={params.uid}
       />
     </div>

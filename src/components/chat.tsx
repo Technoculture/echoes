@@ -5,13 +5,13 @@ import {ChatLog, ChatEntry} from '@/lib/types';
 import InputBar from '@/components/inputBar';
 import {useState} from 'react';
 import {useRouter} from 'next/navigation';
-
+import { PostBody } from '@/lib/types';
 interface ChatProps {
   uid: string;
   chat: ChatLog;
   chatId: string;
-  pushNewChat: (chat: ChatLog) => Promise<string>;
 }
+
 
 export default function Chat(props: ChatProps) {
   const [messages, setMessages] = useState<ChatEntry[]>(props.chat.log);
@@ -26,15 +26,12 @@ export default function Chat(props: ChatProps) {
     ];
     setMessages(newMessages);
 
-    const id: string = await props.pushNewChat({log: newMessages});
-    if (id !== '') {
-      console.log('pushed new chat with id', id);
-      router.push(`/${props.uid}/chat/${id}`);
-    }
     try {
-      const chat_id = id !== '' ? id : props.chatId;
+      const chat_id = props.chatId;
+      const data : PostBody = {user_id: props.uid, message:  {role: 'user', content:  message}}
       const response = await fetch(`/api/chatmodel/${chat_id}`, {
         method: 'POST',
+        body: JSON.stringify(data)
       });
       if (response.body) {
         const reader = response?.body.getReader();

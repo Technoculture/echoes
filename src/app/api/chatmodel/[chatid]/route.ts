@@ -10,12 +10,13 @@ import { env } from "@/app/env.mjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats, Chat } from "@/lib/db/schema";
-import { ChatEntry, QuerySchema } from "@/lib/types";
+import { ChatEntry, ChatLog, PostBody} from "@/lib/types";
 
 export const revalidate = 0; // disable cache
 
 const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
   const log = JSON.parse(sqldata.messages as string)["log"];
+  console.log("jsontotlangchain Log", log)
   let ret: BaseChatMessage[] = [];
   if (system) { ret.push(new SystemChatMessage(system)); }
 
@@ -32,21 +33,40 @@ const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
 export async function POST(
   request: Request,
   params: { params: { chatid: string } }) {
+
+    const body : PostBody = await request.json();
   // console.log(params.params.chatid);
 
-  // 1. Fetch the chat using the chatid
+  // 1. Check if id alreay exists or not
+
+  // 2. Fetch the chat using the chatid
   const _chat: Chat[] = await db.select()
     .from(chats)
     .where(eq(chats.id, Number(params.params.chatid)))
     .limit(1);
+    console.log(typeof _chat)
 
-  const chat = _chat[0];
-  const msgs = jsonToLangchain(chat)
+    let chat = {} as Chat;
+    if(_chat.length === 0){
+      const { insertId } = await db.insert(chats).values({
+        "user_id": body.user_id,
+        "messages": JSON.stringify({log: [body.message]} as ChatLog),
+      });
+      // setting chat variable as if it is coming from db
+      chat = {id: Number(insertId), user_id: body.user_id, messages: JSON.stringify({log: [body.message]})} as Chat
+      console.log("chat empty", insertId )
+    } else {
+      // adding incoming input to the chat variable that is coming from db
+      chat ={..._chat[0], messages: JSON.stringify({log: [...JSON.parse(_chat[0].messages as string).log, body.message]  })};
+    }
+    console.log("chat", chat)
+    const msgs = jsonToLangchain(chat)
+
 
   //  messages Object from db to update with ai response 
   const messagesObject = JSON.parse(chat?.messages as string)
 
-  // 2. Send the message to OpenAI
+  // 3. Send the message to OpenAI
   //const { query } = QuerySchema.parse(request.body); // Validate the payload and parse it
   //console.log('query: ', query);
 
