@@ -1,4 +1,5 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
+import { StreamingTextResponse, LangChainStream } from "ai";
 import {
   HumanChatMessage,
   SystemChatMessage,
@@ -30,6 +31,8 @@ const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
   return ret;
 }
 
+
+
 export async function POST(
   request: Request,
   params: { params: { chatid: string } }) {
@@ -59,7 +62,7 @@ export async function POST(
       // adding incoming input to the chat variable that is coming from db
       chat ={..._chat[0], messages: JSON.stringify({log: [...JSON.parse(_chat[0].messages as string).log, body.message]  })};
     }
-    console.log("chat", chat)
+
     const msgs = jsonToLangchain(chat)
 
 
@@ -68,42 +71,26 @@ export async function POST(
 
   // 3. Send the message to OpenAI
   //const { query } = QuerySchema.parse(request.body); // Validate the payload and parse it
-  //console.log('query: ', query);
 
 
-  const encoder = new TextEncoder();
+  const {stream, handlers} = LangChainStream({
+    onCompletion: async (fullResponse: string) => {
+      const latestInput = messagesObject.log.pop()
+      latestInput.apiResponse = fullResponse
+      messagesObject.log.push(latestInput);
+      await db.update(chats)
+        .set({ messages: JSON.stringify(messagesObject) })
+        .where(eq(chats.id, Number(params.params.chatid)));
+    }
+  })
 
-  const stream = new TransformStream();
-  const writer = stream.writable.getWriter();
-  let data = '';
 
   const chatmodel: ChatOpenAI = new ChatOpenAI({
     temperature: 0,
     openAIApiKey: env.OPEN_AI_API_KEY,
     streaming: true,
-    callbacks: [
-      {
-        async handleLLMNewToken(token) {
-          await writer.ready;
-          data += token
-          await writer.write(encoder.encode(`${token}`));
-        },
-        async handleLLMEnd(output) {
-          const latestInput = messagesObject.log.pop()
-          latestInput.apiResponse = data
-          messagesObject.log.push(latestInput);
-
-
-          await db.update(chats)
-            .set({ messages: JSON.stringify(messagesObject) })
-            .where(eq(chats.id, Number(params.params.chatid)));
-          await writer.ready;
-          await writer.close();
-        },
-      },
-    ],
   });
-  chatmodel.call(msgs);
-  return new NextResponse(await stream.readable)
+  chatmodel.call(msgs,{}, [handlers]);
+  return new StreamingTextResponse(stream)
 }
 

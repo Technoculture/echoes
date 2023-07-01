@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
     // this may break while a new user registers and do their first chat
   const queryResult : ExecutedQuery = await db.execute(sql`select Max(chats.id) as latestChatId from chats`)
   let maxId = queryResult.rows[0] as {latestChatId: string}
-  console.log(maxId)
+
   return (
     <div className="grid grid-cols-1 gap-2">
       <div className="grid md:grid-cols-4 gap-2">
