@@ -28,7 +28,8 @@ export default async function Page({ params }: { params: { uid: string } }) {
     let maxId = {} as {latestChatId: string}
     try{
       const queryResult : ExecutedQuery = await db.execute(sql`select Max(chats.id) as latestChatId from chats`)
-      let maxId = queryResult.rows[0] 
+      maxId = queryResult.rows[0] as {latestChatId: string} 
+      console.log("maxId", maxId)
     } catch(err){
       maxId.latestChatId = '0';
       console.log(err, "inside /[uid]")
