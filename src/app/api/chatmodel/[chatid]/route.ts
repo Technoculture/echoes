@@ -52,6 +52,7 @@ export async function POST(
     console.log("typeof", _chat)
 
     let chat = {} as Chat;
+    let id = params.params.chatid as any;
     if(_chat.length === 0){
       const { insertId } = await db.insert(chats).values({
         "user_id": body.user_id,
@@ -59,6 +60,7 @@ export async function POST(
       });
       // setting chat variable as if it is coming from db
       chat = {id: Number(insertId), user_id: body.user_id, messages: JSON.stringify({log: [body.message]})} as Chat
+      id =  insertId
       console.log("chat empty", insertId )
     } else {
       // adding incoming input to the chat variable that is coming from db
@@ -66,6 +68,7 @@ export async function POST(
     }
 
     const msgs = jsonToLangchain(chat)
+    console.log("msgs", msgs)
 
 
   //  messages Object from db to update with ai response 
@@ -82,7 +85,7 @@ export async function POST(
       messagesObject.log.push(latestInput);
       await db.update(chats)
         .set({ messages: JSON.stringify(messagesObject) })
-        .where(eq(chats.id, Number(params.params.chatid)));
+        .where(eq(chats.id, Number(id)));
     }
   })
 

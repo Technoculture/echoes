@@ -27,7 +27,8 @@ export default async function Page({ params }: { params: { uid: string } }) {
     // this may break while a new user registers and do their first chat
     let maxId = {} as {latestChatId: string}
     try{
-      const queryResult : ExecutedQuery = await db.execute(sql`select Max(chats.id) as latestChatId from chats where ${chats.user_id} = ${params.uid}`)
+      // const queryResult : ExecutedQuery = await db.execute(sql`select Max(chats.id) as latestChatId from chats where ${chats.user_id} = ${params.uid}`)
+      const queryResult : ExecutedQuery = await db.execute(sql`select Max(chats.id) as latestChatId from chats `)
       maxId = queryResult.rows[0] as {latestChatId: string} 
       console.log("queryResult", queryResult)
       console.log("maxId", maxId)
