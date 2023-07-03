@@ -8,11 +8,11 @@ import {
 } from "langchain/schema";
 import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats, Chat } from "@/lib/db/schema";
 import { ChatEntry, ChatLog, PostBody} from "@/lib/types";
-
+import { auth } from "@clerk/nextjs";
 export const revalidate = 0; // disable cache
 
 const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
@@ -38,6 +38,8 @@ export async function POST(
   params: { params: { chatid: string } }) {
 
     const body : PostBody = await request.json();
+    const {userId} = auth();
+    console.log("userId", userId);
   // console.log(params.params.chatid);
 
   // 1. Check if id alreay exists or not
@@ -45,9 +47,9 @@ export async function POST(
   // 2. Fetch the chat using the chatid
   const _chat: Chat[] = await db.select()
     .from(chats)
-    .where(eq(chats.id, Number(params.params.chatid)))
+    .where(and(eq(chats.id, Number(params.params.chatid)), eq(chats.user_id, body.user_id)))
     .limit(1);
-    console.log(typeof _chat)
+    console.log("typeof", _chat)
 
     let chat = {} as Chat;
     if(_chat.length === 0){

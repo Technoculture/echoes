@@ -3,7 +3,7 @@ import { ChatLog } from '@/lib/types';
 import { db } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import { Chat as ChatSchema, chats } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { Button } from "@/components/button";
 import { ArrowLeft, PlusIcon } from "lucide-react";
 import Link from "next/link";
@@ -28,7 +28,7 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
     // Fetch the chat if it exists and is not "new"
     let fetchedChat: ChatSchema[] = await db.select()
       .from(chats)
-      .where(eq(chats.id, Number(params.chatid)))
+      .where(and(eq(chats.id, Number(params.chatid)), eq(chats.user_id, userId)))
       .limit(1);
 
     const msg = fetchedChat[0]?.messages;
