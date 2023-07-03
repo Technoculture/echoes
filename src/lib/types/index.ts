@@ -15,7 +15,7 @@ export type ChatLog = {
 
 export interface  PostBody {
   user_id: string,
-  message: ChatEntry
+  messages: ChatEntry[]
 }
 
 export type SystemPersona = "scientist" | "regulator" | "student" | "IPR" | null;

@@ -28,7 +28,7 @@ export default function Chat(props: ChatProps) {
 
     try {
       const chat_id = props.chatId;
-      const data : PostBody = {user_id: props.uid, message:  {role: 'user', content:  message}}
+      const data : PostBody = {user_id: props.uid, messages:  newMessages}
       const response = await fetch(`/api/chatmodel/${chat_id}`, {
         method: 'POST',
         body: JSON.stringify(data)

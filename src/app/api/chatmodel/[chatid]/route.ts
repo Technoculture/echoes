@@ -11,17 +11,15 @@ import { env } from "@/app/env.mjs";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats, Chat } from "@/lib/db/schema";
-import { ChatEntry, ChatLog, PostBody} from "@/lib/types";
+import { ChatEntry, ChatLog, PostBody } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
 export const revalidate = 0; // disable cache
 
-const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
-  const log = JSON.parse(sqldata.messages as string)["log"];
-  console.log("jsontotlangchain Log", log)
+const jsonToLangchain = (chatData: ChatEntry[], system?: string): BaseChatMessage[] => {
   let ret: BaseChatMessage[] = [];
   if (system) { ret.push(new SystemChatMessage(system)); }
 
-  log.forEach((item: ChatEntry) => {
+  chatData.forEach((item: ChatEntry) => {
     if (item.role === "user") {
       ret.push(new HumanChatMessage(item.content));
     } else if (item.role === "assistant") {
@@ -37,55 +35,46 @@ export async function POST(
   request: Request,
   params: { params: { chatid: string } }) {
 
-    const body : PostBody = await request.json();
-    const {userId} = auth();
-    console.log("userId", userId);
-  // console.log(params.params.chatid);
-
-  // 1. Check if id alreay exists or not
-
-  // 2. Fetch the chat using the chatid
-  const _chat: Chat[] = await db.select()
-    .from(chats)
-    .where(and(eq(chats.id, Number(params.params.chatid)), eq(chats.user_id, body.user_id)))
-    .limit(1);
-    console.log("typeof", _chat)
-
-    let chat = {} as Chat;
-    let id = params.params.chatid as any;
-    if(_chat.length === 0){
-      const { insertId } = await db.insert(chats).values({
-        "user_id": body.user_id,
-        "messages": JSON.stringify({log: [body.message]} as ChatLog),
-      });
-      // setting chat variable as if it is coming from db
-      chat = {id: Number(insertId), user_id: body.user_id, messages: JSON.stringify({log: [body.message]})} as Chat
-      id =  insertId
-      console.log("chat empty", insertId )
-    } else {
-      // adding incoming input to the chat variable that is coming from db
-      chat ={..._chat[0], messages: JSON.stringify({log: [...JSON.parse(_chat[0].messages as string).log, body.message]  })};
-    }
-
-    const msgs = jsonToLangchain(chat)
-    console.log("msgs", msgs)
+  const body: PostBody = await request.json();
+  const { userId } = auth();
+  console.log("userId", userId);
 
 
-  //  messages Object from db to update with ai response 
-  const messagesObject = JSON.parse(chat?.messages as string)
+  const _chat: ChatEntry[] = body.messages;
 
-  // 3. Send the message to OpenAI
-  //const { query } = QuerySchema.parse(request.body); // Validate the payload and parse it
+  let chat = {} as ChatEntry;
+  let id = params.params.chatid as any;
+  // exceptional case
+  if (_chat.length === 0) {
+
+    console.log("somehow got the length 0")
+    return;
+  }
+  const msgs = jsonToLangchain(_chat)
 
 
-  const {stream, handlers} = LangChainStream({
+
+  const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
-      const latestInput = messagesObject.log.pop()
-      latestInput.apiResponse = fullResponse
-      messagesObject.log.push(latestInput);
-      await db.update(chats)
-        .set({ messages: JSON.stringify(messagesObject) })
-        .where(eq(chats.id, Number(id)));
+      // if(_chat.length > 0){
+
+      if (_chat.length === 1) {
+        let latestInput = _chat.pop() as ChatEntry
+        latestInput.apiResponse = fullResponse
+        _chat.push(latestInput);
+        await db.insert(chats).values({
+          "user_id": body.user_id,
+          "messages": JSON.stringify({ log: _chat } as ChatLog),
+        });
+      } else {
+        let latestInput = _chat.pop() as ChatEntry
+        latestInput.apiResponse = fullResponse
+        _chat.push(latestInput);
+        await db.update(chats)
+          .set({ messages: JSON.stringify({ log: _chat }) })
+          .where(eq(chats.id, Number(id)));
+      }
+      // }
     }
   })
 
@@ -95,7 +84,7 @@ export async function POST(
     openAIApiKey: env.OPEN_AI_API_KEY,
     streaming: true,
   });
-  chatmodel.call(msgs,{}, [handlers]);
+  chatmodel.call(msgs, {}, [handlers]);
   return new StreamingTextResponse(stream)
 }
 
