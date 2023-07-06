@@ -4,9 +4,9 @@ import { z } from "zod";
 export type ChatRole = "user" | "assistant" | "system" | "tester";
 
 export type ChatEntry = {
+  id: string
   role: ChatRole;
   content: string;
-  apiResponse?: string;
 };
 
 export type ChatLog = {

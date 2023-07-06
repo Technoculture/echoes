@@ -1,5 +1,5 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { StreamingTextResponse, LangChainStream } from "ai";
+import { StreamingTextResponse, LangChainStream, Message } from "ai";
 import {
   HumanChatMessage,
   SystemChatMessage,
@@ -22,7 +22,8 @@ const jsonToLangchain = (chatData: ChatEntry[], system?: string): BaseChatMessag
   chatData.forEach((item: ChatEntry) => {
     if (item.role === "user") {
       ret.push(new HumanChatMessage(item.content));
-    } else if (item.role === "assistant") {
+    } 
+    else if (item.role === "assistant") {
       ret.push(new AIChatMessage(item.content));
     }
   });
@@ -35,18 +36,15 @@ export async function POST(
   request: Request,
   params: { params: { chatid: string } }) {
 
-  const body: PostBody = await request.json();
+  const body = await request.json();
   const { userId } = auth();
-  console.log("userId", userId);
 
 
-  const _chat: ChatEntry[] = body.messages;
+  const _chat = body.messages;
 
-  let chat = {} as ChatEntry;
   let id = params.params.chatid as any;
   // exceptional case
   if (_chat.length === 0) {
-
     console.log("somehow got the length 0")
     return;
   }
@@ -56,20 +54,17 @@ export async function POST(
 
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
-      // if(_chat.length > 0){
 
+      const latestReponse = { role: 'assistant', content: fullResponse}
+      // it means it is the first message in a specific chat id
       if (_chat.length === 1) {
-        let latestInput = _chat.pop() as ChatEntry
-        latestInput.apiResponse = fullResponse
-        _chat.push(latestInput);
+        _chat.push(latestReponse)
         await db.insert(chats).values({
-          "user_id": body.user_id,
+          "user_id": String(userId),
           "messages": JSON.stringify({ log: _chat } as ChatLog),
         });
       } else {
-        let latestInput = _chat.pop() as ChatEntry
-        latestInput.apiResponse = fullResponse
-        _chat.push(latestInput);
+        _chat.push(latestReponse);
         await db.update(chats)
           .set({ messages: JSON.stringify({ log: _chat }) })
           .where(eq(chats.id, Number(id)));
