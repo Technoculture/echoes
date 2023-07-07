@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write \"**/*.ts\"",
     "migrate:gen": "drizzle-kit generate:mysql --out src/lib/db/migrations --schema src/lib/db/schema.ts",
     "migrate:push": "node -r esbuild-register src/lib/db/migrate.ts",
     "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts"

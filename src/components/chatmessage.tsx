@@ -26,7 +26,6 @@ const ChatMessage = (props: ChatMessageProps) => {
 
       <ReactMarkdown
         className="text-primary text-sm group-hover:text-gray-100"
-        children={props.chat.content}
         remarkPlugins={[remarkGfm]}
         //components={{
         //  code({ node, inline, className, children, ...props }) {
@@ -47,13 +46,12 @@ const ChatMessage = (props: ChatMessageProps) => {
         //    );
         //  }
         //}}
-      />
+      >{props.chat.content}</ReactMarkdown>
       :
       <ReactMarkdown
         className="text-primary text-sm max-w-full p-4 overflow-x-auto group-hover:text-gray-100"
-        children={props.chat.content}
         remarkPlugins={[remarkGfm]}
-      />
+      >{props.chat.content}</ReactMarkdown>
     }
     </div>
   );
