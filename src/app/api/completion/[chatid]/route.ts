@@ -3,7 +3,7 @@ import { OpenAI } from "langchain/llms/openai";
 import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
 
-export const revalidate = 0; // disable cache 
+export const revalidate = 0; // disable cache
 
 export async function POST(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -26,11 +26,13 @@ export async function POST(request: Request) {
     //    async handleLLMNewToken(token) {
     //      handleNewToken(token);
     //    },
-    //  }), 
+    //  }),
   });
 
   const response = await llm.call(
-    "REPY IN SHORT AS A CHATBOT TO THE FOLLOWING MESSAGE FROM THE USER. USER: " + chat_req);
+    "REPY IN SHORT AS A CHATBOT TO THE FOLLOWING MESSAGE FROM THE USER. USER: " +
+      chat_req,
+  );
 
   //console.log(response);
   return new NextResponse(JSON.stringify(response));
