@@ -13,7 +13,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 export const revalidate = 0;
 
 export default async function Page({ params, searchParams }: { params: { uid: string, chatid: string }, searchParams: { orgId: string } | undefined }) {
-  const { userId } = auth();
+  const { userId, sessionClaims } = auth();
   if (!params.uid || !params.chatid || !userId || userId !== params.uid) {
     // - userid in url is not undefined
     // - chatid in url is not undefined
@@ -21,6 +21,11 @@ export default async function Page({ params, searchParams }: { params: { uid: st
     // - user is the same as the one in the url
     console.log('redirecting to "/"');
     redirect("/");
+  }
+
+  if( searchParams?.orgId !== sessionClaims.org_id){
+    console.log('moving back')
+    redirect(`/${params.uid}`)
   }
 
   let chatlog: ChatLog = { "log": [] };
