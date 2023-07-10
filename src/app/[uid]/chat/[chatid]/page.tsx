@@ -10,7 +10,8 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import { usePathname, useSearchParams } from 'next/navigation';
-export const revalidate = 0;
+export const dynamic = 'force-dynamic',
+  revalidate = 0;
 
 export default async function Page({ params, searchParams }: { params: { uid: string, chatid: string }, searchParams: { orgId: string } | undefined }) {
   const { userId, sessionClaims } = auth();
@@ -48,7 +49,7 @@ export default async function Page({ params, searchParams }: { params: { uid: st
       <div className="flex space-between mb-2">
         <div className="flex items-center">
           <Button variant="outline" className="mr-2" asChild>
-            <Link href={`/${params.uid}`} replace={true}><ArrowLeft className="h-4 w-4" /></Link>
+            <Link href={`/${params.uid}`} ><ArrowLeft className="h-4 w-4" /></Link>
           </Button>
 
           <Avatar className="mr-2 w-9 h-9">

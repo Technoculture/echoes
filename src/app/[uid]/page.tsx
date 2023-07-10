@@ -9,7 +9,8 @@ import { PlusIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs";
 import { ExecutedQuery } from "@planetscale/database";
 
-export const revalidate = 0;
+export const dynamic = 'force-dynamic',
+  revalidate = 0;
 
 export default async function Page({ params }: { params: { uid: string } }) {
   const { uid } = params;
