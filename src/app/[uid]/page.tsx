@@ -1,4 +1,4 @@
-import { buttonVariants } from "@/components/button";
+import { Button, buttonVariants } from "@/components/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -28,12 +28,6 @@ export default async function Page({ params }: { params: { uid: string } }) {
       .where(eq(chats.user_id, String(sessionClaims.org_id)));
   }
 
-  const conversations: ChatSchema[] = await db
-    .select()
-    .from(chats)
-    .where(eq(chats.user_id, params.uid))
-    .orderBy(desc(chats.updatedAt))
-    .limit(10);
 
   let maxId = {} as {latestChatId: string};
   try {
@@ -48,36 +42,15 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   return (
-    <div className={`grid gap-8 ${isOrgExist ? "grid-cols-2" : "grid-cols-1"}`}>
-      <div>
-        <h2 className="mb-4">Personal Chat</h2>
-        <div className="grid md:grid-cols-4 gap-2">
-          <Link
-            href={`${uid}/chat/${Number(maxId.latestChatId) + 1}`}
-            className={buttonVariants({ variant: "default" })}
-          >
-            <PlusIcon className="w-4 h-4 mr-4" />
-            Start a new Chat
-          </Link>
-          {conversations.map((chat) => (
-            <Link
-              href={`${uid}/chat/${chat.id}`}
-              key={chat.id}
-              className={buttonVariants({ variant: "secondary" })}
-            >
-              {chat.id}(
-              {(JSON.parse(chat.messages as string) as ChatLog)?.log.length ||
-                0}
-              )
-            </Link>
-          ))}
-        </div>
-      </div>
-      {!isOrgExist ? null : (
+    <div className={`grid gap-4 "grid-cols-1"}`}>
+      {!isOrgExist ? 
+      <div>You are not a member in any Organisations  <Button className="mr-4 h-[32px]" variant="secondary" asChild>
+      <Link href="/create-org">Create One</Link>
+    </Button></div> 
+    : (
       <div>
         <div>
-          <h2 className="mb-4">Organization Chat</h2>          
-          <div className="grid md:grid-cols-3 gap-2">
+          <div className="grid md:grid-cols-4 gap-2">
             <Link
               href={{
                 pathname: `${uid}/chat/${Number(maxId.latestChatId) + 1}`,
