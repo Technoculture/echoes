@@ -9,10 +9,10 @@ import { ArrowLeft, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
-
+import { usePathname, useSearchParams } from 'next/navigation';
 export const revalidate = 0;
 
-export default async function Page({ params }: { params: { uid: string, chatid: string } }) {
+export default async function Page({ params, searchParams }: { params: { uid: string, chatid: string }, searchParams: { orgId: string } | undefined }) {
   const { userId } = auth();
   if (!params.uid || !params.chatid || !userId || userId !== params.uid) {
     // - userid in url is not undefined
@@ -24,17 +24,23 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
   }
 
   let chatlog: ChatLog = { "log": [] };
-  if (params.chatid !== 'new') {
-    // Fetch the chat if it exists and is not "new"
-    let fetchedChat: ChatSchema[] = await db.select()
+  let fetchedChat: ChatSchema[] = []
+  
+  if (searchParams?.orgId) {
+     fetchedChat = await db.select()
       .from(chats)
-      .where(and(eq(chats.id, Number(params.chatid)), eq(chats.user_id, userId)))
+      .where(and(eq(chats.id, Number(params.chatid)), eq(chats.user_id, searchParams.orgId)))
       .limit(1);
+  } else {
+     fetchedChat = await db.select()
+        .from(chats)
+        .where(and(eq(chats.id, Number(params.chatid)), eq(chats.user_id, userId)))
+        .limit(1);
+  }
 
-    const msg = fetchedChat[0]?.messages;
-    if (fetchedChat.length === 1 && msg) {
-      chatlog = JSON.parse(msg as string) as ChatLog;
-    }
+  const msg = fetchedChat[0]?.messages;
+  if (fetchedChat.length === 1 && msg) {
+    chatlog = JSON.parse(msg as string) as ChatLog;
   }
 
   return (
@@ -61,6 +67,7 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
 
       </div>
       <Chat
+        orgId={searchParams?.orgId ? searchParams.orgId : ''}
         chat={chatlog}
         chatId={params.chatid}
         uid={params.uid}
@@ -68,4 +75,3 @@ export default async function Page({ params }: { params: { uid: string, chatid: 
     </div>
   );
 }
-
