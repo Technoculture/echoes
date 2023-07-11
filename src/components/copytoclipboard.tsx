@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Copy, Check } from 'iconoir-react';
+import { useState } from "react";
+import { Copy, Check } from "iconoir-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/tooltip"
-import useClipboard from '@/lib/useClipboard';
+} from "@/components/tooltip";
+import useClipboard from "@/lib/useClipboard";
 
 interface CopyToClipboardProps {
   content: string;
@@ -20,20 +20,15 @@ const CopyToClipboard = (props: CopyToClipboardProps) => {
   return (
     <TooltipProvider>
       <Tooltip>
-
         <TooltipTrigger
           onClick={() => copyToClipboard(props.content)}
           className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit"
         >
-          {copied ?
-            <Check
-              className="hover:text-primary"
-              height={14} width={14}
-            /> :
-            <Copy
-              className="hover:text-primary"
-              height={14} width={14}
-            />}
+          {copied ? (
+            <Check className="hover:text-primary" height={14} width={14} />
+          ) : (
+            <Copy className="hover:text-primary" height={14} width={14} />
+          )}
         </TooltipTrigger>
 
         <TooltipContent
@@ -42,7 +37,6 @@ const CopyToClipboard = (props: CopyToClipboardProps) => {
         >
           Copy
         </TooltipContent>
-
       </Tooltip>
     </TooltipProvider>
   );

@@ -4,24 +4,28 @@ import { z } from "zod";
 export type ChatRole = "user" | "assistant" | "system" | "tester";
 
 export type ChatEntry = {
-  id: string
+  id: string;
   role: ChatRole;
   content: string;
 };
 
 export type ChatLog = {
-  log: Array<ChatEntry>
+  log: Array<ChatEntry>;
 };
 
-export interface  PostBody {
-  user_id: string,
-  messages: ChatEntry[]
+export interface PostBody {
+  user_id: string;
+  messages: ChatEntry[];
 }
 
-export type SystemPersona = "scientist" | "regulator" | "student" | "IPR" | null;
+export type SystemPersona =
+  | "scientist"
+  | "regulator"
+  | "student"
+  | "IPR"
+  | null;
 
 export const QuerySchema = z.object({
   query: z.string().nonempty(),
-  systemMessage: z.string()
+  systemMessage: z.string(),
 });
-
