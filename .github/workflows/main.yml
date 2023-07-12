@@ -1,0 +1,38 @@
+name: Lint, TypeScript Check, and Format
+
+on: [push]
+jobs:
+  lint:
+    runs-on: ubuntu-latest # host's operating system
+    steps: # each job consists of 1+ steps
+      - name: Checkout commit # download the code from triggering commit
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Lint and fix
+        run: npm run lint:fix
+        env:
+          PLANETSCALE_DB_HOST: ${{secrets.PLANETSCALE_DB_HOST}}
+          PLANETSCALE_DB_USERNAME: ${{secrets.PLANETSCALE_DB_USERNAME}}
+          PLANETSCALE_DB_PASSWORD: ${{secrets.PLANETSCALE_DB_PASSWORD}}
+          OPEN_AI_API_KEY: ${{secrets.OPEN_AI_API_KEY}}
+          REDIS_URL: ${{secrets.REDIS_URL}}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}}
+          CLERK_SECRET_KEY: ${{secrets.CLERK_SECRET_KEY}}
+          NEXT_PUBLIC_CLERK_SIGN_IN_URL: ${{secrets.NEXT_PUBLIC_CLERK_SIGN_IN_URL}}
+          NEXT_PUBLIC_CLERK_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_SIGN_UP_URL}}
+          NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL}}
+          NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL}}
+
+      - name: Formatting Check
+        run: npm run format-check
+
+      - name: Type check
+        run: npm run type-check

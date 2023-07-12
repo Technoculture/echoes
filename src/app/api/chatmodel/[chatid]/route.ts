@@ -1,25 +1,29 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { 
-  HumanChatMessage, 
-  SystemChatMessage, 
-  AIChatMessage, 
-  BaseChatMessage 
+import { StreamingTextResponse, LangChainStream } from "ai";
+import {
+  HumanChatMessage,
+  SystemChatMessage,
+  AIChatMessage,
+  BaseChatMessage,
 } from "langchain/schema";
-import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { chats, Chat } from "@/lib/db/schema";
-import { ChatEntry, QuerySchema } from "@/lib/types";
-
+import { chats } from "@/lib/db/schema";
+import { ChatEntry, ChatLog } from "@/lib/types";
+import { auth } from "@clerk/nextjs";
 export const revalidate = 0; // disable cache
 
-const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
-  const log = JSON.parse(sqldata.messages as string)["log"];
+const jsonToLangchain = (
+  chatData: ChatEntry[],
+  system?: string,
+): BaseChatMessage[] => {
   let ret: BaseChatMessage[] = [];
-  if (system) { ret.push(new SystemChatMessage(system)); }
+  if (system) {
+    ret.push(new SystemChatMessage(system));
+  }
 
-  log.forEach((item: ChatEntry) => {
+  chatData.forEach((item: ChatEntry) => {
     if (item.role === "user") {
       ret.push(new HumanChatMessage(item.content));
     } else if (item.role === "assistant") {
@@ -27,34 +31,53 @@ const jsonToLangchain = (sqldata: Chat, system?: string): BaseChatMessage[] => {
     }
   });
   return ret;
-}
+};
 
 export async function POST(
-  request: Request, 
-  params: { chatid: string }) 
-{
-  console.log(params);
+  request: Request,
+  params: { params: { chatid: string } },
+) {
+  const body = await request.json();
+  const { userId } = auth();
 
-  // 1. Fetch the chat using the chatid
-  const _chat: Chat[] = await db.select()
-    .from(chats)
-    .where(eq(chats.id, Number(params.chatid)))
-    .limit(1);
-  const chat = _chat[0];
-  const msgs = jsonToLangchain(chat)
-  console.log(msgs);
+  const _chat = body.messages;
 
-  // 2. Send the message to OpenAI
-  //const { query } = QuerySchema.parse(request.body); // Validate the payload and parse it
-  //console.log('query: ', query);
+  let id = params.params.chatid as any;
+  // exceptional case
+  if (_chat.length === 0) {
+    console.error(
+      "somehow got the length 0, this shouldn't happen if validating messages length before calling the api",
+    );
+    return;
+  }
+  const msgs = jsonToLangchain(_chat);
 
-  const chatmodel = new ChatOpenAI({
+  const { stream, handlers } = LangChainStream({
+    onCompletion: async (fullResponse: string) => {
+      const latestReponse = { role: "assistant", content: fullResponse };
+      // it means it is the first message in a specific chat id
+      if (_chat.length === 1) {
+        _chat.push(latestReponse);
+        await db.insert(chats).values({
+          user_id: String(userId),
+          messages: JSON.stringify({ log: _chat } as ChatLog),
+        });
+      } else {
+        _chat.push(latestReponse);
+        await db
+          .update(chats)
+          .set({ messages: JSON.stringify({ log: _chat }) })
+          .where(eq(chats.id, Number(id)));
+      }
+      // }
+    },
+  });
+
+  const chatmodel: ChatOpenAI = new ChatOpenAI({
     temperature: 0,
     openAIApiKey: env.OPEN_AI_API_KEY,
+    streaming: true,
   });
-  const response = await chatmodel.call(msgs);
-
-  console.log(response);
-  return new NextResponse(JSON.stringify(response));
+  chatmodel.call(msgs, {}, [handlers]);
+  return new StreamingTextResponse(stream);
 }
-

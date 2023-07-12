@@ -1,56 +1,40 @@
-'use client';
+"use client";
 
-import ChatMessage from '@/components/chatmessage';
-import { ChatLog, ChatEntry } from '@/lib/types';
+import ChatMessage from "@/components/chatmessage";
+import { ChatLog } from "@/lib/types";
 import InputBar from "@/components/inputBar";
-import { useState } from 'react';
-import { useRouter } from 'next/navigation'
+import { Message, useChat } from "ai/react";
 
 interface ChatProps {
   uid: string;
   chat: ChatLog;
-  pushNewChat: (chat: ChatLog) => Promise<string>;
+  chatId: string;
 }
 
 export default function Chat(props: ChatProps) {
-  // console.log(props.chat)
-  const [messages, setMessages] = useState<ChatEntry[]>(props.chat.log);
-  const router = useRouter()
-
-  //console.log('messages', messages);
-
-  const send = async (message: string) => {
-    let newMessages = [
-      ...messages, 
-      { "role": "user", "content": message } as ChatEntry
-    ];
-    setMessages(newMessages);
-    const id: string = await props.pushNewChat({ "log": newMessages });
-
-    if (id !== "") {
-      console.log('pushed new chat with id', id);
-      router.push(`/${props.uid}/chat/${id}`);
-    }
-  }
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: `/api/chatmodel/${props.chatId}`,
+    initialMessages: props.chat.log as Message[], // some conflicts in role
+  });
 
   return (
-    <div className='grid grig-cols-1 gap-1'>
-      {
-        messages.map((entry: ChatEntry, index: number) => {
-          if (entry.role !== "system") {
-            return (
-              <ChatMessage
-                name={props.uid}
-                chat={entry}
-                key={index}
-              />);
-          }
-        })
-      }
+    <div className="grid grig-cols-1 gap-1">
+      {messages.map((entry, index) => {
+        if (entry.role !== "system") {
+          return (
+            <ChatMessage
+              name={props.uid}
+              chat={entry}
+              key={entry.id || index}
+            />
+          );
+        }
+      })}
       <InputBar
-        onSubmit={(msg) => send(msg)}
+        onSubmit={handleSubmit}
+        value={input}
+        onChange={handleInputChange}
       />
     </div>
   );
 }
-
