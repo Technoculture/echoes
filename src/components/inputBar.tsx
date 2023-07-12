@@ -1,7 +1,7 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import { ChangeEvent, FormEvent, useRef } from "react";
+import { ChangeEvent, FormEvent } from "react";
 import { ChatRequestOptions } from "ai";
 
 interface InputBarProps {

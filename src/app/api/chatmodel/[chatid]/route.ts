@@ -1,17 +1,16 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { StreamingTextResponse, LangChainStream, Message } from "ai";
+import { StreamingTextResponse, LangChainStream } from "ai";
 import {
   HumanChatMessage,
   SystemChatMessage,
   AIChatMessage,
   BaseChatMessage,
 } from "langchain/schema";
-import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { chats, Chat } from "@/lib/db/schema";
-import { ChatEntry, ChatLog, PostBody } from "@/lib/types";
+import { chats } from "@/lib/db/schema";
+import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
 export const revalidate = 0; // disable cache
 

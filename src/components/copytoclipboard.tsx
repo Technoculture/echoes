@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Copy, Check } from "iconoir-react";
 import {
   Tooltip,
