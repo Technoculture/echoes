@@ -1,17 +1,16 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { StreamingTextResponse, LangChainStream, Message } from "ai";
+import { StreamingTextResponse, LangChainStream } from "ai";
 import {
   HumanChatMessage,
   SystemChatMessage,
   AIChatMessage,
   BaseChatMessage,
 } from "langchain/schema";
-import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { chats, Chat } from "@/lib/db/schema";
-import { ChatEntry, ChatLog, PostBody } from "@/lib/types";
+import { chats } from "@/lib/db/schema";
+import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
 export const revalidate = 0; // disable cache
 
@@ -52,17 +51,16 @@ export async function POST(
   let id = params.params.chatid as any;
   // exceptional case
   if (_chat.length === 0) {
-    console.log("somehow got the length 0");
+    console.error(
+      "somehow got the length 0, this shouldn't happen if validating messages length before calling the api",
+    );
     return;
   }
-  // console.log("incoming chats", _chat.length)
   const msgs = jsonToLangchain(_chat);
-  // console.log("jsontolangchain", msgs)
 
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
       const latestReponse = { role: "assistant", content: fullResponse };
-
       if (orgId !== "") {
         // it means it is the first message in a specific chat id
         // Handling organization chat inputs

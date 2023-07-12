@@ -18,7 +18,6 @@ export default async function Page({ params }: { params: { uid: string } }) {
   if (!userId || !uid || userId !== uid) {
     redirect("/");
   }
-
   
   let orgConversations = [] as ChatSchema[];
   const isOrgExist = sessionClaims.org_id;
@@ -28,19 +27,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
       .from(chats)
       .where(eq(chats.user_id, String(sessionClaims.org_id)));
   }
-
-
-  let maxId = {} as {latestChatId: string};
-  try {
-    // const queryResult : ExecutedQuery = await db.execute(sql`select Max(chats.id) as latestChatId from chats where ${chats.user_id} = ${params.uid}`)
-    const queryResult: ExecutedQuery = await db.execute(
-      sql`select Max(chats.id) as latestChatId from chats `
-    );
-    maxId = queryResult.rows[0] as {latestChatId: string};
-  } catch(err){
-    maxId.latestChatId = '0';
-      console.log(err, "inside /[uid]")
-  }
+  const maxChatId = await getMaxId();
 
   return (
     <div className={`grid gap-4 "grid-cols-1"}`}>
@@ -54,7 +41,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
           <div className="grid md:grid-cols-4 gap-2">
             <Link
               href={{
-                pathname: `${uid}/chat/${Number(maxId.latestChatId) + 1}`,
+                pathname: `${uid}/chat/${maxChatId + 1}`,
                 query: {
                   orgId: String(sessionClaims.org_id),
                 },
@@ -87,3 +74,16 @@ export default async function Page({ params }: { params: { uid: string } }) {
     </div>
   );
 }
+
+const getMaxId = async (): Promise<number> => {
+  let maxId = {} as { latestChatId: string };
+  try {
+    const queryResult: ExecutedQuery = await db.execute(
+      sql`select Max(chats.id) as latestChatId from chats `,
+    );
+    maxId = queryResult.rows[0] as { latestChatId: string };
+    return +maxId.latestChatId;
+  } catch (err) {
+    return 0;
+  }
+};

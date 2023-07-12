@@ -1,25 +1,23 @@
-'use client';
+"use client";
 
-import TextareaAutosize from 'react-textarea-autosize';
-import {ChangeEvent, FormEvent, useRef} from 'react';
-import { ChatRequestOptions } from 'ai';
+import TextareaAutosize from "react-textarea-autosize";
+import { ChangeEvent, FormEvent } from "react";
+import { ChatRequestOptions } from "ai";
 
 interface InputBarProps {
-  value: string
+  value: string;
   onChange: (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => void;
   onSubmit: (
     e: FormEvent<HTMLFormElement>,
-    chatRequestOptions?: ChatRequestOptions | undefined
+    chatRequestOptions?: ChatRequestOptions | undefined,
   ) => void;
 }
 
-
 const InputBar = (props: InputBarProps) => {
-
   return (
-    <form onSubmit={props.onSubmit} >
+    <form onSubmit={props.onSubmit}>
       <div className="flex bg-linear-900 p-2 pt-2 rounded-sm">
         <TextareaAutosize
           maxRows={10}

@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
-import ChatMessage from '@/components/chatmessage';
-import {ChatLog, ChatEntry} from '@/lib/types';
-import InputBar from '@/components/inputBar';
-import {Message, useChat} from 'ai/react'
-
+import ChatMessage from "@/components/chatmessage";
+import { ChatLog } from "@/lib/types";
+import InputBar from "@/components/inputBar";
+import { Message, useChat } from "ai/react";
 
 interface ChatProps {
   orgId: string;
@@ -13,9 +12,7 @@ interface ChatProps {
   chatId: string;
 }
 
-
 export default function Chat(props: ChatProps) {
-
   const {messages, input, handleInputChange, handleSubmit} = useChat({
         api: `/api/chatmodel/${props.chatId}`,
         initialMessages: props.chat.log as Message[],
@@ -23,13 +20,10 @@ export default function Chat(props: ChatProps) {
           orgId: props.orgId
         } // some conflicts in role
       })
-
-      console.log('initialMessages', messages)
   
   return (
     <div className="grid grig-cols-1 gap-1">
       {messages.map((entry, index) => {
-      //  if(entry.role){
         if (entry.role !== 'system') {
           return (
             <ChatMessage
@@ -39,9 +33,12 @@ export default function Chat(props: ChatProps) {
             />
           );
         }
-      //  }
       })}
-      <InputBar onSubmit={handleSubmit} value={input} onChange={handleInputChange} />
+      <InputBar
+        onSubmit={handleSubmit}
+        value={input}
+        onChange={handleInputChange}
+      />
     </div>
   );
 }

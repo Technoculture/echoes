@@ -4,7 +4,7 @@ import { OrganizationSwitcher, RedirectToOrganizationProfile, auth } from "@cler
 export default function LoggedInLayout({
   children, // will be a page or nested layout
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   const {sessionClaims} = auth();
   return (
@@ -20,5 +20,5 @@ export default function LoggedInLayout({
         {children}
       </div>
     </>
-  )
+  );
 }

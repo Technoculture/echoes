@@ -31,8 +31,8 @@ jobs:
           NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL}}
           NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL}}
 
-      - name: Format
-        run: npm run format
+      - name: Formatting Check
+        run: npm run format-check
 
       - name: Type check
         run: npm run type-check
