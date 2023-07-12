@@ -6,9 +6,14 @@ import { Message } from "ai";
 //import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 //import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+// totally Message with an optional createdBy property
+interface OrganizationChatMessage extends Message {
+  createdBy?: string;
+}
+
 interface ChatMessageProps {
   name: string;
-  chat: Message;
+  chat: OrganizationChatMessage;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -26,7 +31,7 @@ const ChatMessage = (props: ChatMessageProps) => {
               : "text-green-300 group-hover:text-green-200 select-none"
           }
         >
-          {props.chat.role}
+          {props.chat?.createdBy ? props.chat.createdBy : props.chat.role}
         </p>
         <CopyToClipboard content={props.chat.content} />
       </div>

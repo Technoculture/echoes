@@ -6,6 +6,7 @@ import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 
 interface ChatProps {
+  orgId: string;
   uid: string;
   chat: ChatLog;
   chatId: string;
@@ -14,7 +15,10 @@ interface ChatProps {
 export default function Chat(props: ChatProps) {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: `/api/chatmodel/${props.chatId}`,
-    initialMessages: props.chat.log as Message[], // some conflicts in role
+    initialMessages: props.chat.log as Message[],
+    body: {
+      orgId: props.orgId,
+    }, // some conflicts in role
   });
 
   return (
