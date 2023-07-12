@@ -19,29 +19,21 @@ export default async function Page({
 }) {
   const { userId } = auth();
   if (!params.uid || !params.chatid || !userId || userId !== params.uid) {
-    // - userid in url is not undefined
-    // - chatid in url is not undefined
-    // - user is logged in
-    // - user is the same as the one in the url
     console.log('redirecting to "/"');
     redirect("/");
   }
 
   let chatlog: ChatLog = { log: [] };
-  if (params.chatid !== "new") {
-    // Fetch the chat if it exists and is not "new"
-    let fetchedChat: ChatSchema[] = await db
-      .select()
-      .from(chats)
-      .where(
-        and(eq(chats.id, Number(params.chatid)), eq(chats.user_id, userId)),
-      )
-      .limit(1);
 
-    const msg = fetchedChat[0]?.messages;
-    if (fetchedChat.length === 1 && msg) {
-      chatlog = JSON.parse(msg as string) as ChatLog;
-    }
+  let fetchedChat: ChatSchema[] = await db
+    .select()
+    .from(chats)
+    .where(and(eq(chats.id, Number(params.chatid)), eq(chats.user_id, userId)))
+    .limit(1);
+
+  const msg = fetchedChat[0]?.messages;
+  if (fetchedChat.length === 1 && msg) {
+    chatlog = JSON.parse(msg as string) as ChatLog;
   }
 
   return (

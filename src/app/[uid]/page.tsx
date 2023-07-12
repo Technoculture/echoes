@@ -25,26 +25,13 @@ export default async function Page({ params }: { params: { uid: string } }) {
     .orderBy(desc(chats.updatedAt))
     .limit(10);
 
-  // this may break while a new user registers and do their first chat
-  let maxId = {} as { latestChatId: string };
-  try {
-    // const queryResult : ExecutedQuery = await db.execute(sql`select Max(chats.id) as latestChatId from chats where ${chats.user_id} = ${params.uid}`)
-    const queryResult: ExecutedQuery = await db.execute(
-      sql`select Max(chats.id) as latestChatId from chats `,
-    );
-    maxId = queryResult.rows[0] as { latestChatId: string };
-    console.log("queryResult", queryResult);
-    console.log("maxId", maxId);
-  } catch (err) {
-    maxId.latestChatId = "0";
-    console.log(err, "inside /[uid]");
-  }
+  const maxChatId = await getMaxId();
 
   return (
     <div className="grid grid-cols-1 gap-2">
       <div className="grid md:grid-cols-4 gap-2">
         <Link
-          href={`${uid}/chat/${Number(maxId.latestChatId) + 1}`}
+          href={`${uid}/chat/${maxChatId + 1}`}
           className={buttonVariants({ variant: "default" })}
         >
           <PlusIcon className="w-4 h-4 mr-4" />
@@ -64,3 +51,16 @@ export default async function Page({ params }: { params: { uid: string } }) {
     </div>
   );
 }
+
+const getMaxId = async (): Promise<number> => {
+  let maxId = {} as { latestChatId: string };
+  try {
+    const queryResult: ExecutedQuery = await db.execute(
+      sql`select Max(chats.id) as latestChatId from chats `,
+    );
+    maxId = queryResult.rows[0] as { latestChatId: string };
+    return +maxId.latestChatId;
+  } catch (err) {
+    return 0;
+  }
+};

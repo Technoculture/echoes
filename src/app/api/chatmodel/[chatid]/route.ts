@@ -43,11 +43,6 @@ export async function POST(
   const _chat = body.messages;
 
   let id = params.params.chatid as any;
-  // exceptional case
-  if (_chat.length === 0) {
-    console.log("somehow got the length 0");
-    return;
-  }
   const msgs = jsonToLangchain(_chat);
 
   const { stream, handlers } = LangChainStream({
