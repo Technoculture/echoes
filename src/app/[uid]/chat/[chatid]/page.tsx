@@ -9,29 +9,39 @@ import { ArrowLeft, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
-import { usePathname, useSearchParams } from 'next/navigation';
-export const dynamic = 'force-dynamic',
+export const dynamic = "force-dynamic",
   revalidate = 0;
 
-
-export default async function Page({ params, searchParams }: { params: { uid: string, chatid: string }, searchParams: { orgId: string } | undefined }) {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: { uid: string; chatid: string };
+  searchParams: { orgId: string } | undefined;
+}) {
   const { userId, sessionClaims } = auth();
   if (!params.uid || !params.chatid || !userId || userId !== params.uid) {
     console.log('redirecting to "/"');
     redirect("/");
   }
 
-  if( searchParams?.orgId !== sessionClaims.org_id){
-    console.log('moving back')
-    redirect(`/${params.uid}`)
+  if (searchParams?.orgId !== sessionClaims.org_id) {
+    console.log("moving back");
+    redirect(`/${params.uid}`);
   }
   let chatlog: ChatLog = { log: [] };
-  let fetchedChat: ChatSchema[] = []
-  
+  let fetchedChat: ChatSchema[] = [];
+
   if (searchParams?.orgId) {
-     fetchedChat = await db.select()
+    fetchedChat = await db
+      .select()
       .from(chats)
-      .where(and(eq(chats.id, Number(params.chatid)), eq(chats.user_id, searchParams.orgId)))
+      .where(
+        and(
+          eq(chats.id, Number(params.chatid)),
+          eq(chats.user_id, searchParams.orgId),
+        ),
+      )
       .limit(1);
   }
   const msg = fetchedChat[0]?.messages;
@@ -60,11 +70,9 @@ export default async function Page({ params, searchParams }: { params: { uid: st
 
         <div className="grow" />
       </div>
-      <div>
-
-      </div>
+      <div></div>
       <Chat
-        orgId={searchParams?.orgId ? searchParams.orgId : ''}
+        orgId={searchParams?.orgId ? searchParams.orgId : ""}
         chat={chatlog}
         chatId={params.chatid}
         uid={params.uid}

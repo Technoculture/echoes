@@ -13,18 +13,18 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
-  const {messages, input, handleInputChange, handleSubmit} = useChat({
-        api: `/api/chatmodel/${props.chatId}`,
-        initialMessages: props.chat.log as Message[],
-        body: {
-          orgId: props.orgId
-        } // some conflicts in role
-      })
-  
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: `/api/chatmodel/${props.chatId}`,
+    initialMessages: props.chat.log as Message[],
+    body: {
+      orgId: props.orgId,
+    }, // some conflicts in role
+  });
+
   return (
     <div className="grid grig-cols-1 gap-1">
       {messages.map((entry, index) => {
-        if (entry.role !== 'system') {
+        if (entry.role !== "system") {
           return (
             <ChatMessage
               name={props.uid}

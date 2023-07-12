@@ -8,12 +8,12 @@ import { Message } from "ai";
 
 // totally Message with an optional createdBy property
 interface OrganizationChatMessage extends Message {
-  createdBy? : string
+  createdBy?: string;
 }
 
 interface ChatMessageProps {
   name: string;
-  chat: OrganizationChatMessage
+  chat: OrganizationChatMessage;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -31,7 +31,7 @@ const ChatMessage = (props: ChatMessageProps) => {
               : "text-green-300 group-hover:text-green-200 select-none"
           }
         >
-          { props.chat?.createdBy ?  props.chat.createdBy :props.chat.role}
+          {props.chat?.createdBy ? props.chat.createdBy : props.chat.role}
         </p>
         <CopyToClipboard content={props.chat.content} />
       </div>
