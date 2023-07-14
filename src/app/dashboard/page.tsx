@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth, clerkClient } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 
 export default async function Page() {
   const { sessionClaims } = auth();
