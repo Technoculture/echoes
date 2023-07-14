@@ -20,7 +20,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   let orgConversations = [] as ChatSchema[];
-  const isOrgExist = sessionClaims.org_id;
+  const isOrgExist = Object.keys(sessionClaims?.organizations as Object).length;
   if (isOrgExist) {
     orgConversations = await db
       .select()
