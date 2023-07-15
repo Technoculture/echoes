@@ -14,9 +14,26 @@ interface OrganizationChatMessage extends Message {
 interface ChatMessageProps {
   name: string;
   chat: OrganizationChatMessage;
+  uid: string
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
+  let userName = '';
+  if(props?.chat.name){
+    const [name, id] = props.chat.name.split(',');
+    if(id === props.uid){
+      userName = 'You';
+    } else {
+      userName = name
+    }
+  } else{
+    if(props.chat.role === 'user'){
+      userName = 'You'
+    } else {
+      userName = props.chat.role
+    }
+  }
+
   return (
     <div
       className={
@@ -31,7 +48,7 @@ const ChatMessage = (props: ChatMessageProps) => {
               : "text-green-300 group-hover:text-green-200 select-none"
           }
         >
-          {props.chat?.createdBy ? props.chat.createdBy : props.chat.role}
+          {userName}
         </p>
         <CopyToClipboard content={props.chat.content} />
       </div>

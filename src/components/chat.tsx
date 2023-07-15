@@ -27,6 +27,7 @@ export default function Chat(props: ChatProps) {
         if (entry.role !== "system") {
           return (
             <ChatMessage
+              uid={props.uid}
               name={props.uid}
               chat={entry}
               key={entry.id || index}
