@@ -12,9 +12,10 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth, currentUser } from "@clerk/nextjs";
+import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
 export const revalidate = 0; // disable cache
 
-const jsonToLangchain = (
+export const jsonToLangchain = (
   chatData: ChatEntry[],
   system?: string,
 ): BaseChatMessage[] => {
@@ -72,10 +73,13 @@ export async function POST(
           console.log("got in 1 length case");
           _chat.push(userInput);
           _chat.push(latestReponse);
-          console.log("db push", _chat);
+          const title = await generateTitle(_chat as ChatEntry[]);
+          _chat.pop();
+          console.log("generated title", title);
           await db.insert(chats).values({
             user_id: String(orgId),
             messages: JSON.stringify({ log: _chat } as ChatLog),
+            title: title,
           });
           console.log("inserted");
         } else {
