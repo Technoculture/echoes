@@ -42,8 +42,8 @@ export async function POST(
   const body = await request.json();
   const { userId } = auth();
 
-  const user = await currentUser()
-  const username = user?.firstName + ' ' + user?.lastName;
+  const user = await currentUser();
+  const username = user?.firstName + " " + user?.lastName;
   const _chat = body.messages;
   let orgId = "";
   orgId = body.orgId;
