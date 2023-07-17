@@ -45,10 +45,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
             <div className="grid md:grid-cols-4 gap-2">
               <Link
                 href={{
-                  pathname: `${uid}/chat/${maxChatId + 1}`,
-                  query: {
-                    orgId: String(sessionClaims.org_id),
-                  },
+                  pathname: `${sessionClaims.org_slug}/chat/${maxChatId + 1}`,
                 }}
                 className={buttonVariants({ variant: "default" })}
               >
@@ -62,6 +59,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
                     org_id={sessionClaims.org_id}
                     uid={uid}
                     key={chat.id}
+                    org_slug={sessionClaims?.org_slug as string}
                   />
                 );
               })}

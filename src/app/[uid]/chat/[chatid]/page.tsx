@@ -14,32 +14,32 @@ export const dynamic = "force-dynamic",
 
 export default async function Page({
   params,
-  searchParams,
 }: {
   params: { uid: string; chatid: string };
-  searchParams: { orgId: string } | undefined;
 }) {
   const { userId, sessionClaims } = auth();
-  if (!params.uid || !params.chatid || !userId || userId !== params.uid) {
+
+  if (
+    !params.uid ||
+    !params.chatid ||
+    !userId ||
+    sessionClaims?.org_slug !== params.uid
+  ) {
     console.log('redirecting to "/"');
     redirect("/");
   }
 
-  if (searchParams?.orgId !== sessionClaims.org_id) {
-    console.log("moving back");
-    redirect(`/${params.uid}`);
-  }
   let chatlog: ChatLog = { log: [] };
   let fetchedChat: ChatSchema[] = [];
 
-  if (searchParams?.orgId) {
+  if (sessionClaims.org_id) {
     fetchedChat = await db
       .select()
       .from(chats)
       .where(
         and(
           eq(chats.id, Number(params.chatid)),
-          eq(chats.user_id, searchParams.orgId),
+          eq(chats.user_id, sessionClaims.org_id),
         ),
       )
       .limit(1);
@@ -54,7 +54,7 @@ export default async function Page({
       <div className="flex space-between mb-2">
         <div className="flex items-center">
           <Button variant="outline" className="mr-2" asChild>
-            <Link href={`/${params.uid}`}>
+            <Link href={`/${userId}`}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
@@ -72,10 +72,10 @@ export default async function Page({
       </div>
       <div></div>
       <Chat
-        orgId={searchParams?.orgId ? searchParams.orgId : ""}
+        orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
         chat={chatlog}
         chatId={params.chatid}
-        uid={params.uid}
+        uid={userId}
       />
     </div>
   );

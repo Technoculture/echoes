@@ -19,9 +19,10 @@ type Props = {
   chat: Chat;
   uid: string;
   org_id: string | undefined;
+  org_slug: string;
 };
 
-const Chatcard = ({ chat, uid, org_id }: Props) => {
+const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
   const generateTitle = async () => {
     const res = await fetch(`/api/generateTitle/${chat.id}/${org_id}`, {
       method: "POST",
@@ -91,10 +92,10 @@ const Chatcard = ({ chat, uid, org_id }: Props) => {
       <CardFooter className="w-full">
         <Link
           href={{
-            pathname: `${uid}/chat/${chat.id}`,
-            query: {
-              orgId: String(org_id),
-            },
+            pathname: `${org_slug}/chat/${chat.id}`,
+            // query: {
+            //   orgId: String(org_id),
+            // },
           }}
           key={chat.id}
           className={buttonVariants({ variant: "secondary" })}
