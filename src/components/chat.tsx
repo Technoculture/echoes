@@ -14,7 +14,7 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
-  const [isFast, setIsFast] = useState<boolean>(false);
+  const [isFast, setIsFast] = useState<boolean>(true);
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: `/api/chatmodel/${props.chatId}`,
     initialMessages: props.chat.log as Message[],

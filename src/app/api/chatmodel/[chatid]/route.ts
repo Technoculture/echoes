@@ -116,6 +116,7 @@ export async function POST(
 
   // change model type based on isFast variable and OPEN_AI_API_KEY as well
   const chatmodel: ChatOpenAI = new ChatOpenAI({
+    modelName: isFast ? "gpt-4" : "gpt-3.5-turbo",
     temperature: 0,
     openAIApiKey: env.OPEN_AI_API_KEY,
     streaming: true,

@@ -21,9 +21,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   let userName = "";
   if (props?.chat.name) {
     const [name, id] = props.chat.name.split(",");
-    if (id === props.uid) {
-      userName = name;
-    }
+    userName = name;
   } else {
     if (props.chat.role === "user") {
       userName = props.name;

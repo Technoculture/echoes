@@ -4,9 +4,9 @@ import { Chat } from "@/lib/db/schema";
 import { ChatLog } from "@/lib/types";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
-import { Button, buttonVariants } from "./button";
-import { Popover } from "./popover";
-import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+// import { Button, buttonVariants } from "./button";
+// import { Popover } from "./popover";
+// import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 
 interface Props {
   chat: Chat;
@@ -59,7 +59,15 @@ const Chatusersavatars = ({ chat }: Props) => {
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             }
-            <Popover>
+            <div className="ml-2 flex">
+              {users.slice(1, 4).map((user) => (
+                <Avatar className=" -ml-2 w-9 h-9" key={user.id}>
+                  <AvatarImage src={user?.img} alt="@shadcn" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              ))}
+            </div>
+            {/* <Popover>
               <PopoverTrigger>
                 <Button className={buttonVariants({ variant: "secondary" })}>
                   Others
@@ -75,7 +83,7 @@ const Chatusersavatars = ({ chat }: Props) => {
                   ))}
                 </div>
               </PopoverContent>
-            </Popover>
+            </Popover> */}
           </div>
         )
       ) : null}
