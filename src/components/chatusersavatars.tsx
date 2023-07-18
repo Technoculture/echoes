@@ -21,7 +21,6 @@ const Chatusersavatars = ({ chat }: Props) => {
   const [users, setUsers] = useState<Array<UserAvatarData>>(
     [] as UserAvatarData[],
   );
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getUsers = async (ids: Array<string>) => {
@@ -32,20 +31,18 @@ const Chatusersavatars = ({ chat }: Props) => {
       const data = await users.json();
       console.log("data", data);
       setUsers(data.users);
-      setLoading(() => false);
     };
-
-    const ids = getUserIdList(chat.messages as string);
-    if (ids.length) {
-      getUsers(ids);
-    } else setLoading(() => false);
+    if (chat) {
+      const ids = getUserIdList(chat.messages as string);
+      if (ids.length) {
+        getUsers(ids);
+      }
+    }
   }, []);
 
   return (
     <div className="flex">
-      {loading ? (
-        <div>Loading</div>
-      ) : users.length > 0 ? (
+      {users.length > 0 ? (
         users.length === 1 ? (
           // handle first user and other seperately
           users.map((user) => (
@@ -81,9 +78,7 @@ const Chatusersavatars = ({ chat }: Props) => {
             </Popover>
           </div>
         )
-      ) : (
-        "No Data Saved"
-      )}
+      ) : null}
     </div>
   );
 };

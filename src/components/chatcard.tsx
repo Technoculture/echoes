@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardDescription,
   CardContent,
-  CardFooter,
+  CardTitle,
 } from "./card";
 import Chatusers from "@/components/chatusersavatars";
 
@@ -30,12 +30,20 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
   // filter all the distinct users from the chat.messages.log => will get all the user's id
   // have to get the user's list and then again filter the users of particular Chat
   // then from the imgUrl on the user object generate the image
+  let title = "";
+  let description = "";
+  if (chat.title) {
+    const trimmed = chat.title?.replace('"', "").replace('"', "");
+    title = trimmed.split(":")[0];
+    description = trimmed.split(":")[1];
+  }
 
   return (
     <Card>
       <CardHeader>
+        <CardTitle>{title}</CardTitle>
         <CardDescription>
-          {chat.title === "" ? (
+          {description === "" ? (
             <p>
               No title{" "}
               <button
@@ -46,31 +54,22 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
               </button>{" "}
             </p>
           ) : (
-            <>{chat.title?.replace('"', "")}</>
+            <>{description}</>
           )}
         </CardDescription>
       </CardHeader>
-      <CardContent className="">
+      <CardContent className="flex justify-between">
         <Chatusers chat={chat} />
-      </CardContent>
-      <CardFooter className="w-full">
         <Link
           href={{
             pathname: `${org_slug}/chat/${chat.id}`,
-            // query: {
-            //   orgId: String(org_id),
-            // },
           }}
           key={chat.id}
           className={buttonVariants({ variant: "secondary" })}
         >
-          {/* {chat.id}(
-                        {(JSON.parse(chat.messages as string) as ChatLog)?.log
-                          .length || 0}
-                        ) */}
-          Enter <ArrowRight className=" ml-2 w-4 h-4 mr-10" />
+          <ArrowRight className=" m-1 w-4 h-4" />
         </Link>
-      </CardFooter>
+      </CardContent>
     </Card>
   );
 };
