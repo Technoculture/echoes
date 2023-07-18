@@ -5,10 +5,11 @@ import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { Button } from "@/components/button";
-import { ArrowLeft, PlusIcon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
+import Chatusers from "@/components/chatusersavatars";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
@@ -58,14 +59,11 @@ export default async function Page({
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <Avatar className="mr-2 w-9 h-9">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+          <Chatusers chat={fetchedChat[0]} />
 
-          <Button variant="outline" className="mr-2">
+          {/* <Button variant="outline" className="mr-2">
             <PlusIcon className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
 
         <div className="grow" />
