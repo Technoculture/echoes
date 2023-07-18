@@ -7,7 +7,7 @@ import { eq, and } from "drizzle-orm";
 import { Button } from "@/components/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 // import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import Chatusers from "@/components/chatusersavatars";
 export const dynamic = "force-dynamic",
@@ -20,6 +20,11 @@ export default async function Page({
 }) {
   const { userId, sessionClaims } = auth();
 
+  const user = await currentUser();
+  console.log("user", user?.firstName, user?.lastName);
+  const fullname = ((user?.firstName as string) +
+    " " +
+    user?.lastName) as string;
   if (
     !params.uid ||
     !params.chatid ||
@@ -74,6 +79,7 @@ export default async function Page({
         chat={chatlog}
         chatId={params.chatid}
         uid={userId}
+        username={fullname}
       />
     </div>
   );

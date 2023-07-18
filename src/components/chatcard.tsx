@@ -40,8 +40,8 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
+      <CardHeader className="h-36 overflow-y-hidden">
+        <CardTitle className="h-20 overflow-y-hidden">{title}</CardTitle>
         <CardDescription>
           {description === "" ? (
             <p>

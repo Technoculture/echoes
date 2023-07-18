@@ -3,6 +3,7 @@
 import TextareaAutosize from "react-textarea-autosize";
 import { ChangeEvent, FormEvent } from "react";
 import { ChatRequestOptions } from "ai";
+import { Switch } from "./switch";
 
 interface InputBarProps {
   value: string;
@@ -13,12 +14,22 @@ interface InputBarProps {
     e: FormEvent<HTMLFormElement>,
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => void;
+  isFast: boolean;
+  setIsFast: (arg0: boolean) => void;
 }
 
 const InputBar = (props: InputBarProps) => {
   return (
     <form onSubmit={props.onSubmit}>
-      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm">
+      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm items-center">
+        <div className="mr-2 align-middle">
+          🐢
+          <Switch
+            checked={props.isFast}
+            onCheckedChange={() => props.setIsFast(!props.isFast)}
+          />
+          🐇
+        </div>
         <TextareaAutosize
           maxRows={10}
           placeholder="Type your message here..."

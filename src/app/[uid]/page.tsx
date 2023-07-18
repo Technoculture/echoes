@@ -3,12 +3,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 import { PlusIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs";
 import { ExecutedQuery } from "@planetscale/database";
 
 import Chatcard from "@/components/chatcard";
+// import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
   revalidate = 0;
@@ -26,7 +27,9 @@ export default async function Page({ params }: { params: { uid: string } }) {
     orgConversations = await db
       .select()
       .from(chats)
-      .where(eq(chats.user_id, String(sessionClaims.org_id)));
+      .where(eq(chats.user_id, String(sessionClaims.org_id)))
+      .orderBy(desc(chats.updatedAt))
+      .limit(10);
   }
   const maxChatId = await getMaxId();
 
@@ -64,6 +67,10 @@ export default async function Page({ params }: { params: { uid: string } }) {
                 );
               })}
             </div>
+            {/* <Uploadzone
+              orgId={sessionClaims.org_id as string}
+              className="my-4 border"
+            /> */}
           </div>
         </div>
       )}

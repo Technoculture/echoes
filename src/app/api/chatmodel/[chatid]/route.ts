@@ -46,10 +46,12 @@ export async function POST(
   const user = await currentUser();
   const username = user?.firstName + " " + user?.lastName;
   const _chat = body.messages;
+  const isFast = body.isFast;
   let orgId = "";
   orgId = body.orgId;
 
   console.log("orgId", orgId);
+  console.log("got isFast", isFast);
 
   let id = params.params.chatid as any;
   // exceptional case
@@ -112,6 +114,7 @@ export async function POST(
     },
   });
 
+  // change model type based on isFast variable and OPEN_AI_API_KEY as well
   const chatmodel: ChatOpenAI = new ChatOpenAI({
     temperature: 0,
     openAIApiKey: env.OPEN_AI_API_KEY,
