@@ -3,6 +3,8 @@
 import TextareaAutosize from "react-textarea-autosize";
 import { ChangeEvent, FormEvent } from "react";
 import { ChatRequestOptions } from "ai";
+import { Toggle } from "@/components/toogle";
+import { Brain, Lightning } from "@phosphor-icons/react";
 
 interface InputBarProps {
   value: string;
@@ -13,12 +15,26 @@ interface InputBarProps {
     e: FormEvent<HTMLFormElement>,
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => void;
+  isFast: boolean;
+  setIsFast: (arg0: boolean) => void;
 }
 
 const InputBar = (props: InputBarProps) => {
   return (
     <form onSubmit={props.onSubmit}>
-      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm">
+      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm  ">
+        {/* <Switch
+            checked={props.isFast}
+            onCheckedChange={() => props.setIsFast(!props.isFast)}
+          /> */}
+        <Toggle
+          className="mr-2"
+          pressed={props.isFast}
+          onPressedChange={() => props.setIsFast(!props.isFast)}
+        >
+          {props.isFast ? <Brain /> : <Lightning />}
+        </Toggle>
+
         <TextareaAutosize
           maxRows={10}
           placeholder="Type your message here..."

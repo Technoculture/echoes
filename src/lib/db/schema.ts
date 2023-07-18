@@ -13,6 +13,7 @@ export const chats = mysqlTable("chats", {
   id: serial("id").primaryKey().notNull(),
   user_id: varchar("user_id", { length: 191 }).notNull(),
   messages: json("messages"),
+  title: text("title").default(""),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });

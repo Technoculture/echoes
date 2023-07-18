@@ -5,41 +5,47 @@ import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { Button } from "@/components/button";
-import { ArrowLeft, PlusIcon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
+import { auth, currentUser } from "@clerk/nextjs";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
+import Chatusers from "@/components/chatusersavatars";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
 export default async function Page({
   params,
-  searchParams,
 }: {
   params: { uid: string; chatid: string };
-  searchParams: { orgId: string } | undefined;
 }) {
   const { userId, sessionClaims } = auth();
-  if (!params.uid || !params.chatid || !userId || userId !== params.uid) {
+
+  const user = await currentUser();
+  console.log("user", user?.firstName, user?.lastName);
+  const fullname = ((user?.firstName as string) +
+    " " +
+    user?.lastName) as string;
+  if (
+    !params.uid ||
+    !params.chatid ||
+    !userId ||
+    sessionClaims?.org_slug !== params.uid
+  ) {
     console.log('redirecting to "/"');
     redirect("/");
   }
 
-  if (searchParams?.orgId !== sessionClaims.org_id) {
-    console.log("moving back");
-    redirect(`/${params.uid}`);
-  }
   let chatlog: ChatLog = { log: [] };
   let fetchedChat: ChatSchema[] = [];
 
-  if (searchParams?.orgId) {
+  if (sessionClaims.org_id) {
     fetchedChat = await db
       .select()
       .from(chats)
       .where(
         and(
           eq(chats.id, Number(params.chatid)),
-          eq(chats.user_id, searchParams.orgId),
+          eq(chats.user_id, sessionClaims.org_id),
         ),
       )
       .limit(1);
@@ -54,28 +60,26 @@ export default async function Page({
       <div className="flex space-between mb-2">
         <div className="flex items-center">
           <Button variant="outline" className="mr-2" asChild>
-            <Link href={`/${params.uid}`}>
+            <Link href={`/${userId}`}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <Avatar className="mr-2 w-9 h-9">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+          <Chatusers chat={fetchedChat[0]} />
 
-          <Button variant="outline" className="mr-2">
+          {/* <Button variant="outline" className="mr-2">
             <PlusIcon className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
 
         <div className="grow" />
       </div>
       <div></div>
       <Chat
-        orgId={searchParams?.orgId ? searchParams.orgId : ""}
+        orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
         chat={chatlog}
         chatId={params.chatid}
-        uid={params.uid}
+        uid={userId}
+        username={fullname}
       />
     </div>
   );

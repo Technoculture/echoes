@@ -3,11 +3,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
-import { ChatLog } from "@/lib/types";
+import { eq, sql, desc } from "drizzle-orm";
 import { PlusIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs";
 import { ExecutedQuery } from "@planetscale/database";
+
+import Chatcard from "@/components/chatcard";
+// import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
   revalidate = 0;
@@ -20,12 +22,14 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   let orgConversations = [] as ChatSchema[];
-  const isOrgExist = sessionClaims.org_id;
+  const isOrgExist = Object.keys(sessionClaims?.organizations as Object).length;
   if (isOrgExist) {
     orgConversations = await db
       .select()
       .from(chats)
-      .where(eq(chats.user_id, String(sessionClaims.org_id)));
+      .where(eq(chats.user_id, String(sessionClaims.org_id)))
+      .orderBy(desc(chats.updatedAt))
+      .limit(10);
   }
   const maxChatId = await getMaxId();
 
@@ -44,34 +48,29 @@ export default async function Page({ params }: { params: { uid: string } }) {
             <div className="grid md:grid-cols-4 gap-2">
               <Link
                 href={{
-                  pathname: `${uid}/chat/${maxChatId + 1}`,
-                  query: {
-                    orgId: String(sessionClaims.org_id),
-                  },
+                  pathname: `${sessionClaims.org_slug}/chat/${maxChatId + 1}`,
                 }}
                 className={buttonVariants({ variant: "default" })}
               >
                 <PlusIcon className="w-4 h-4 mr-4" />
                 Start a new Chat
               </Link>
-              {orgConversations.map((chat) => (
-                <Link
-                  href={{
-                    pathname: `${uid}/chat/${chat.id}`,
-                    query: {
-                      orgId: String(sessionClaims.org_id),
-                    },
-                  }}
-                  key={chat.id}
-                  className={buttonVariants({ variant: "secondary" })}
-                >
-                  {chat.id}(
-                  {(JSON.parse(chat.messages as string) as ChatLog)?.log
-                    .length || 0}
-                  )
-                </Link>
-              ))}
+              {orgConversations.map((chat) => {
+                return (
+                  <Chatcard
+                    chat={chat}
+                    org_id={sessionClaims.org_id}
+                    uid={uid}
+                    key={chat.id}
+                    org_slug={sessionClaims?.org_slug as string}
+                  />
+                );
+              })}
             </div>
+            {/* <Uploadzone
+              orgId={sessionClaims.org_id as string}
+              className="my-4 border"
+            /> */}
           </div>
         </div>
       )}
