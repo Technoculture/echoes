@@ -1,14 +1,13 @@
-import { Button, buttonVariants } from "@/components/button";
+import { Button } from "@/components/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq, sql, desc } from "drizzle-orm";
-import { PlusIcon } from "lucide-react";
+import { eq } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
-import { ExecutedQuery } from "@planetscale/database";
 
 import Chatcard from "@/components/chatcard";
+import Startnewchatbutton from "@/components/startnewchatbutton";
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
@@ -27,11 +26,10 @@ export default async function Page({ params }: { params: { uid: string } }) {
     orgConversations = await db
       .select()
       .from(chats)
-      .where(eq(chats.user_id, String(sessionClaims.org_id)))
-      .orderBy(desc(chats.updatedAt))
-      .limit(10);
+      .where(eq(chats.user_id, String(sessionClaims.org_id)));
+    // .orderBy(desc(chats.updatedAt))
+    // .limit(10);
   }
-  const maxChatId = await getMaxId();
 
   return (
     <div className={`grid gap-4 "grid-cols-1"}`}>
@@ -46,15 +44,10 @@ export default async function Page({ params }: { params: { uid: string } }) {
         <div>
           <div>
             <div className="grid md:grid-cols-4 gap-2">
-              <Link
-                href={{
-                  pathname: `${sessionClaims.org_slug}/chat/${maxChatId + 1}`,
-                }}
-                className={buttonVariants({ variant: "default" })}
-              >
-                <PlusIcon className="w-4 h-4 mr-4" />
-                Start a new Chat
-              </Link>
+              <Startnewchatbutton
+                org_id={sessionClaims.org_id as string}
+                org_slug={sessionClaims.org_slug as string}
+              />
               {orgConversations.map((chat) => {
                 return (
                   <Chatcard
@@ -77,16 +70,3 @@ export default async function Page({ params }: { params: { uid: string } }) {
     </div>
   );
 }
-
-const getMaxId = async (): Promise<number> => {
-  let maxId = {} as { latestChatId: string };
-  try {
-    const queryResult: ExecutedQuery = await db.execute(
-      sql`select Max(chats.id) as latestChatId from chats `,
-    );
-    maxId = queryResult.rows[0] as { latestChatId: string };
-    return +maxId.latestChatId;
-  } catch (err) {
-    return 0;
-  }
-};

@@ -44,7 +44,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
         <CardTitle className="">{title}</CardTitle>
         <CardDescription>
           {description === "" ? (
-            <p>
+            <span>
               No title{" "}
               <button
                 className={buttonVariants({ variant: "outline" })}
@@ -52,7 +52,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
               >
                 Generate
               </button>{" "}
-            </p>
+            </span>
           ) : (
             <>{description}</>
           )}
