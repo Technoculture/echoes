@@ -26,7 +26,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
     orgConversations = await db
       .select()
       .from(chats)
-      .where(eq(chats.user_id, String(sessionClaims.org_id)));
+      .where(eq(chats.user_id, String(sessionClaims.org_id)))
       .orderBy(desc(chats.updatedAt))
     // .limit(10);
   }
