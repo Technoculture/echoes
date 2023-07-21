@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
       .select()
       .from(chats)
       .where(eq(chats.user_id, String(sessionClaims.org_id)));
-    // .orderBy(desc(chats.updatedAt))
+      .orderBy(desc(chats.updatedAt))
     // .limit(10);
   }
 
