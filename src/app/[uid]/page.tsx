@@ -65,7 +65,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
   );
 }
 
-export const getConversations = async ({
+const getConversations = async ({
   orgId,
   offset = 0,
 }: {
