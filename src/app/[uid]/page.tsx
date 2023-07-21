@@ -6,8 +6,8 @@ import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 
-import Chatcard from "@/components/chatcard";
 import Startnewchatbutton from "@/components/startnewchatbutton";
+import ChatCardWrapper from "@/components/chatcardwrapper";
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
@@ -21,14 +21,13 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   let orgConversations = [] as ChatSchema[];
+  // fetch initial posts to start with
   const isOrgExist = Object.keys(sessionClaims?.organizations as Object).length;
+
   if (isOrgExist) {
-    orgConversations = await db
-      .select()
-      .from(chats)
-      .where(eq(chats.user_id, String(sessionClaims.org_id)))
-      .orderBy(desc(chats.updatedAt))
-      .limit(20);
+    orgConversations = await getConversations({
+      orgId: String(sessionClaims.org_id),
+    });
   }
 
   return (
@@ -43,22 +42,17 @@ export default async function Page({ params }: { params: { uid: string } }) {
       ) : (
         <div>
           <div>
-            <div className="grid md:grid-cols-4 gap-2">
+            <div>
               <Startnewchatbutton
                 org_id={sessionClaims.org_id as string}
                 org_slug={sessionClaims.org_slug as string}
               />
-              {orgConversations.map((chat) => {
-                return (
-                  <Chatcard
-                    chat={chat}
-                    org_id={sessionClaims.org_id}
-                    uid={uid}
-                    key={chat.id}
-                    org_slug={sessionClaims?.org_slug as string}
-                  />
-                );
-              })}
+              <ChatCardWrapper
+                initialData={orgConversations}
+                org_id={sessionClaims.org_id}
+                uid={uid}
+                org_slug={sessionClaims?.org_slug as string}
+              />
             </div>
             {/* <Uploadzone
               orgId={sessionClaims.org_id as string}
@@ -70,3 +64,20 @@ export default async function Page({ params }: { params: { uid: string } }) {
     </div>
   );
 }
+
+export const getConversations = async ({
+  orgId,
+  offset = 0,
+}: {
+  orgId: string;
+  offset?: number;
+}): Promise<ChatSchema[]> => {
+  let orgConversations = await db
+    .select()
+    .from(chats)
+    .where(eq(chats.user_id, String(orgId)))
+    .orderBy(desc(chats.updatedAt))
+    .offset(offset)
+    .limit(4);
+  return orgConversations;
+};

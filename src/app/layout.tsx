@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
 import { Inter } from "next/font/google";
+import Providers from "./queryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -43,7 +44,9 @@ export default function RootLayout({
           <title>Echoes</title>
         </head>
         <body className="bg-background">
-          <div className="flex-col flex-grow">{children}</div>
+          <Providers>
+            <div className="flex-col flex-grow">{children}</div>
+          </Providers>
         </body>
       </html>
     </ClerkProvider>
