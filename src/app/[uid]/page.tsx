@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 
 import Chatcard from "@/components/chatcard";
@@ -28,7 +28,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
       .from(chats)
       .where(eq(chats.user_id, String(sessionClaims.org_id)))
       .orderBy(desc(chats.updatedAt))
-    // .limit(10);
+      .limit(20);
   }
 
   return (
