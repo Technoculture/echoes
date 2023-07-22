@@ -7,9 +7,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 // import { Button, buttonVariants } from "./button";
 // import { Popover } from "./popover";
 // import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-
 interface Props {
   chat: Chat;
+  allPresenceIds?: Array<string>;
 }
 
 interface UserAvatarData {
@@ -17,28 +17,49 @@ interface UserAvatarData {
   img: string;
 }
 
-const Chatusersavatars = ({ chat }: Props) => {
+const Chatusersavatars = ({ chat, allPresenceIds }: Props) => {
   const [users, setUsers] = useState<Array<UserAvatarData>>(
     [] as UserAvatarData[],
   );
 
+  const getUsers = async (ids: Array<string>) => {
+    const users = await fetch("/api/getUsers", {
+      method: "POST",
+      body: JSON.stringify({ ids: ids }),
+    });
+    const data = await users.json();
+    setUsers(data.users);
+  };
+
   useEffect(() => {
-    const getUsers = async (ids: Array<string>) => {
-      const users = await fetch("/api/getUsers", {
-        method: "POST",
-        body: JSON.stringify({ ids: ids }),
-      });
-      const data = await users.json();
-      console.log("data", data);
-      setUsers(data.users);
-    };
-    if (chat) {
+    // this handles all the previous participants
+
+    if (chat && chat.messages !== null) {
       const ids = getUserIdList(chat.messages as string);
+      // setIds(ids);
       if (ids.length) {
         getUsers(ids);
       }
     }
   }, []);
+
+  // maintain ids
+  // const [ids, setIds] = useState<Array<string>>([] as Array<string>);
+  // useEffect(() => {
+  //  // fetch the profile images of newly joined users;
+  //  let newIds = [] as Array<string>
+  //  if(allPresenceIds){
+  //   if(allPresenceIds.length){
+  //     newIds = allPresenceIds.filter( id => {
+  //         return !ids.includes(id)
+  //     })
+  //   }
+  //  }
+  //  if(newIds.length){
+  //   getUsers(newIds)
+  //  }
+  //  // request profile images for these ids and appent to user
+  // },[allPresenceIds, allPresenceIds?.length])
 
   return (
     <div className="flex">
@@ -54,14 +75,32 @@ const Chatusersavatars = ({ chat }: Props) => {
         ) : (
           <div className="flex">
             {
-              <Avatar className="mr-2 w-9 h-9" key={users[0]?.id}>
+              <Avatar
+                className={`mr-2 w-9 h-9 ${
+                  allPresenceIds
+                    ? allPresenceIds.includes(users[0].id)
+                      ? "border-2 border-green-600"
+                      : ""
+                    : null
+                }`}
+                key={users[0]?.id}
+              >
                 <AvatarImage src={users[0]?.img} alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             }
             <div className="ml-2 flex">
               {users.slice(1, 4).map((user) => (
-                <Avatar className=" -ml-2 w-9 h-9" key={user.id}>
+                <Avatar
+                  className={` -ml-2 w-9 h-9 ${
+                    allPresenceIds
+                      ? allPresenceIds.includes(user.id)
+                        ? "border-2 border-green-600"
+                        : ""
+                      : null
+                  } `}
+                  key={user.id}
+                >
                   <AvatarImage src={user?.img} alt="@shadcn" />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
@@ -111,6 +150,5 @@ export const getUserIdList = (chatMessages: string): Array<string> => {
     return split.length > 0 ? split[1] : null;
   });
   const filteredIds = ids.filter((id) => id !== undefined);
-  console.log("ArrayContainingUsers", filteredIds);
   return filteredIds as Array<string>;
 };

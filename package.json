@@ -19,6 +19,8 @@
     "@clerk/nextjs": "^4.19.0",
     "@clerk/themes": "^1.7.4",
     "@dqbd/tiktoken": "^1.0.3",
+    "@liveblocks/client": "^1.1.6",
+    "@liveblocks/react": "^1.1.6",
     "@phosphor-icons/react": "^2.0.10",
     "@planetscale/database": "^1.7.0",
     "@radix-ui/react-avatar": "^1.0.3",

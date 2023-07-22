@@ -5,6 +5,7 @@ import { ChangeEvent, FormEvent } from "react";
 import { ChatRequestOptions } from "ai";
 import { Toggle } from "@/components/toogle";
 import { Brain, Lightning } from "@phosphor-icons/react";
+// import { ChatEntry } from "@/lib/types";
 
 interface InputBarProps {
   value: string;
@@ -17,11 +18,30 @@ interface InputBarProps {
   ) => void;
   isFast: boolean;
   setIsFast: (arg0: boolean) => void;
+  username: string;
+  userId: string;
+  pushToLiveStorage: (data: {
+    role: string;
+    content: string;
+    id?: string;
+  }) => void;
 }
 
 const InputBar = (props: InputBarProps) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    console.log("custom submit ", props.value);
+    console.log("props", props.username, props.userId);
+    const obj = {
+      role: "user",
+      content: props.value,
+      name: `${props.username},${props.userId}`,
+    };
+    // props.pushToLiveStorage(obj as ChatEntry)
+    props.onSubmit(e);
+  };
+
   return (
-    <form onSubmit={props.onSubmit}>
+    <form onSubmit={handleSubmit}>
       <div className="flex bg-linear-900 p-2 pt-2 rounded-sm  ">
         {/* <Switch
             checked={props.isFast}
