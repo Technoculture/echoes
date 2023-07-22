@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Chatcard from "./chatcard";
 import { Button, buttonVariants } from "./button";
-
+import { useIntersection } from "@mantine/hooks";
+import { CircleNotch } from "@phosphor-icons/react";
 interface Props {
   org_id: string | undefined;
   org_slug: string; // handle case of undefined in future
@@ -47,27 +48,45 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
       enabled: false,
     });
 
+  const lastPostRef = React.useRef<HTMLElement>(null);
+  const { ref, entry } = useIntersection({
+    root: lastPostRef.current,
+    threshold: 1,
+  });
+
+  React.useEffect(() => {
+    if (entry && entry.isIntersecting) fetchNextPage();
+  }, [entry]);
+
+  const allCards = data?.pages.flatMap((page) => page);
+
   return (
     <div>
       <div className="grid md:grid-cols-4 gap-2 mt-4">
-        {data?.pages.flat().map((chat) => {
+        {allCards?.map((chat, i) => {
           return (
-            <Chatcard
-              chat={chat}
-              org_id={org_id}
-              uid={uid}
-              key={chat.id}
-              org_slug={org_slug as string}
-            />
+            <div key={chat.id} ref={allCards.length - 1 === i ? ref : null}>
+              <Chatcard
+                chat={chat}
+                org_id={org_id}
+                uid={uid}
+                org_slug={org_slug as string}
+              />
+            </div>
           );
         })}
       </div>
       <Button
         disabled={isFetchingNextPage || !hasNextPage}
-        onClick={() => fetchNextPage()}
-        className={`${buttonVariants({ variant: "secondary" })} mt-4`}
+        className={`${buttonVariants({ variant: "secondary" })} mt-4 `}
       >
-        {hasNextPage ? "Load More" : "No More Chats"}
+        <CircleNotch
+          className={`${isFetchingNextPage ? "animate-spin" : "hidden"}`}
+          size={24}
+          color="#618a9e"
+          weight="bold"
+        />
+        {!hasNextPage ? "No More Chats" : "  Loading"}
       </Button>
     </div>
   );
