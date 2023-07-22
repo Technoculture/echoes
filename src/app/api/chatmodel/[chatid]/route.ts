@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { ChatEntry, ChatLog } from "@/lib/types";
-import { auth, currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
 export const revalidate = 0; // disable cache
 
@@ -43,8 +43,6 @@ export async function POST(
   const body = await request.json();
   const { userId } = auth();
 
-  const user = await currentUser();
-  const username = user?.firstName + " " + user?.lastName;
   const _chat = body.messages;
   const isFast = body.isFast;
   let orgId = "";
@@ -69,11 +67,8 @@ export async function POST(
       if (orgId !== "") {
         // it means it is the first message in a specific chat id
         // Handling organization chat inputs
-        const userInput = _chat.pop();
-        userInput["name"] = `${username},${userId}`;
-        if (_chat.length === 0) {
+        if (_chat.length === 1) {
           console.log("got in 1 length case");
-          _chat.push(userInput);
           _chat.push(latestReponse);
           const title = await generateTitle(_chat as ChatEntry[]);
           _chat.pop();
@@ -86,7 +81,6 @@ export async function POST(
           console.log("inserted");
         } else {
           console.log("more than 1 case");
-          _chat.push(userInput);
           _chat.push(latestReponse);
           await db
             .update(chats)

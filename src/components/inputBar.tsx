@@ -1,43 +1,37 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import { ChangeEvent, FormEvent } from "react";
-import { ChatRequestOptions } from "ai";
+import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
+import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { Toggle } from "@/components/toogle";
 import { Brain, Lightning } from "@phosphor-icons/react";
-// import { ChatEntry } from "@/lib/types";
 
 interface InputBarProps {
   value: string;
   onChange: (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => void;
-  onSubmit: (
-    e: FormEvent<HTMLFormElement>,
-    chatRequestOptions?: ChatRequestOptions | undefined,
-  ) => void;
   isFast: boolean;
   setIsFast: (arg0: boolean) => void;
   username: string;
   userId: string;
-  pushToLiveStorage: (data: {
-    role: string;
-    content: string;
-    id?: string;
-  }) => void;
+  append: (
+    message: Message | CreateMessage,
+    chatRequestOptions?: ChatRequestOptions | undefined,
+  ) => Promise<string | null | undefined>;
+  setInput: Dispatch<SetStateAction<string>>;
 }
 
 const InputBar = (props: InputBarProps) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    console.log("custom submit ", props.value);
-    console.log("props", props.username, props.userId);
-    const obj = {
+    e.preventDefault();
+    const message = {
       role: "user",
       content: props.value,
       name: `${props.username},${props.userId}`,
     };
-    // props.pushToLiveStorage(obj as ChatEntry)
-    props.onSubmit(e);
+    props.append(message as Message);
+    props.setInput("");
   };
 
   return (

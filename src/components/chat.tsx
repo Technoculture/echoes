@@ -28,29 +28,31 @@ export default function Chat(props: ChatProps) {
   );
   const pushToLiveStorage2 = useMutation(({ storage }, data) => {
     const chats = storage.get("chat");
+    // if(data[data.length - 1].role === 'user'){
+    //   data[data.length - 1].name = name;
+    // }
     storage.set("chat", data);
   }, []);
 
   const [isFast, setIsFast] = useState<boolean>(true);
-  const { messages, input, handleInputChange, handleSubmit, setMessages } =
-    useChat({
-      api: `/api/chatmodel/${props.chatId}`,
-      // initialMessages: props.chat.log as Message[],
-      initialMessages: props.chat as Message[],
-      onFinish: (message) => {
-        // console.log("onFinish", message)
-        // pushToLiveStorage({role: message.role, content: message.content, id: message.id})
-      },
-      body: {
-        orgId: props.orgId,
-        isFast: isFast,
-      }, // some conflicts in role
-    });
-
-  // useEffect(() => {
-  //   console.log("isFast changing", props.chat);
-  //   setMessages(props.chat as Message[])
-  // }, [props.chat]);
+  const {
+    messages,
+    input,
+    setInput,
+    handleInputChange,
+    handleSubmit,
+    append,
+    setMessages,
+  } = useChat({
+    api: `/api/chatmodel/${props.chatId}`,
+    // initialMessages: props.chat.log as Message[],
+    initialMessages: props.chat as Message[],
+    body: {
+      orgId: props.orgId,
+      isFast: isFast,
+      name: name,
+    }, // some conflicts in role
+  });
 
   useEffect(() => {
     pushToLiveStorage2(messages);
@@ -58,13 +60,13 @@ export default function Chat(props: ChatProps) {
 
   return (
     <div className="grid grig-cols-1 gap-1">
-      {messages.map((entry, index) => {
+      {props.chat.map((entry, index) => {
         if (entry.role !== "system") {
           return (
             <ChatMessage
               uid={props.uid}
               name={props.username}
-              chat={entry}
+              chat={entry as Message}
               key={entry.id || index}
             />
           );
@@ -73,12 +75,14 @@ export default function Chat(props: ChatProps) {
       <InputBar
         username={props.username}
         userId={props.uid}
-        pushToLiveStorage={pushToLiveStorage}
+        // pushToLiveStorage={pushToLiveStorage}
         isFast={isFast}
         setIsFast={setIsFast}
-        onSubmit={handleSubmit}
+        // onSubmit={handleSubmit}
         value={input}
         onChange={handleInputChange}
+        setInput={setInput}
+        append={append}
       />
     </div>
   );
