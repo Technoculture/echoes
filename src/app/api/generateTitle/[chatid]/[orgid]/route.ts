@@ -21,7 +21,7 @@ export async function POST(
     .select()
     .from(chats)
     .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))))
-    .limit(1);
+    .limit(1).all();
 
   const messages = JSON.parse(
     orgConversations[0]?.messages as string,
