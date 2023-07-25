@@ -124,6 +124,9 @@ const components: Components = {
   ul: ({ children, node, ...props }) => {
     return <ul className="my-6 ml-6 list-disc [&>li]:mt-2">{children}</ul>;
   },
+  ol: ({ children, node, ...props }) => {
+    return <ol className="my-6 ml-6 list-decimal [&>li]:mt-2">{children}</ol>;
+  },
   code({ node, inline, className, style, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
     return !inline && match ? (
@@ -167,6 +170,13 @@ const components: Components = {
       <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
         {children}
       </td>
+    );
+  },
+  a: ({ children }) => {
+    return (
+      <a className="underline underline-offset-4 hover:text-primary">
+        {children}
+      </a>
     );
   },
 };
