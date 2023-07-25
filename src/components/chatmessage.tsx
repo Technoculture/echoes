@@ -1,5 +1,4 @@
 import CopyToClipboard from "@/components/copytoclipboard";
-import { CSSProperties } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Message } from "ai";
@@ -7,6 +6,8 @@ import { Message } from "ai";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { NormalComponents } from "react-markdown/lib/complex-types";
+import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 
 // totally Message with an optional createdBy property
 interface OrganizationChatMessage extends Message {
@@ -18,10 +19,11 @@ interface ChatMessageProps {
   chat: OrganizationChatMessage;
   uid: string;
 }
-interface HighlighterStyleType {
-  [key: string]: CSSProperties;
-}
 
+interface Components
+  extends Partial<
+    Omit<NormalComponents, keyof SpecialComponents> & SpecialComponents
+  > {}
 const ChatMessage = (props: ChatMessageProps) => {
   let userName = "";
   if (props?.chat.name) {
@@ -57,82 +59,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         <ReactMarkdown
           className="text-primary text-sm group-hover:text-gray-100"
           remarkPlugins={[remarkGfm]}
-          components={{
-            h1: ({ children, node, level, ...props }) => {
-              return (
-                <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-                  {children}
-                </h1>
-              );
-            },
-            h2: ({ children, node, level, ...props }) => {
-              return (
-                <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                  {children}
-                </h2>
-              );
-            },
-            h3: ({ children, node, level, ...props }) => {
-              return (
-                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                  {children}
-                </h3>
-              );
-            },
-            h4: ({ children, node, level, ...props }) => {
-              return (
-                <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                  {children}
-                </h4>
-              );
-            },
-            p: ({ children, node, ...props }) => {
-              return (
-                <p className="leading-7 [&:not(:first-child)]:mt-6  font-semibold">
-                  {children}
-                </p>
-              );
-            },
-            blockquote: ({ children, node, ...props }) => {
-              return (
-                <blockquote className="mt-6 border-l-2 pl-6 italic">
-                  {children}
-                </blockquote>
-              );
-            },
-            ul: ({ children, node, ...props }) => {
-              return (
-                <ul className="my-6 ml-6 list-disc [&>li]:mt-2">{children}</ul>
-              );
-            },
-            code({ node, inline, className, style, children, ...props }) {
-              const match = /language-(\w+)/.exec(className || "");
-              return !inline && match ? (
-                <div style={dark}>
-                  <SyntaxHighlighter
-                    style={atomDark}
-                    language={match[1]}
-                    PreTag="div"
-                    showLineNumbers
-                    {...props}
-                  >
-                    {String(children).replace(/\n$/, "")}
-                  </SyntaxHighlighter>
-                </div>
-              ) : (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              );
-            },
-            small: ({ children }) => {
-              return (
-                <small className="text-sm font-medium leading-none">
-                  {children}
-                </small>
-              );
-            },
-          }}
+          components={components}
         >
           {props.chat.content}
         </ReactMarkdown>
@@ -140,82 +67,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         <ReactMarkdown
           className="text-primary text-sm max-w-full p-4 overflow-x-auto "
           remarkPlugins={[remarkGfm]}
-          components={{
-            h1: ({ children, node, level, ...props }) => {
-              return (
-                <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-                  {children}
-                </h1>
-              );
-            },
-            h2: ({ children, node, level, ...props }) => {
-              return (
-                <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                  {children}
-                </h2>
-              );
-            },
-            h3: ({ children, node, level, ...props }) => {
-              return (
-                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                  {children}
-                </h3>
-              );
-            },
-            h4: ({ children, node, level, ...props }) => {
-              return (
-                <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-                  {children}
-                </h4>
-              );
-            },
-            p: ({ children, node, ...props }) => {
-              return (
-                <p className="leading-7 [&:not(:first-child)]:mt-6">
-                  {children}
-                </p>
-              );
-            },
-            blockquote: ({ children, node, ...props }) => {
-              return (
-                <blockquote className="mt-6 border-l-2 pl-6 italic">
-                  {children}
-                </blockquote>
-              );
-            },
-            ul: ({ children, node, ...props }) => {
-              return (
-                <ul className="my-6 ml-6 list-disc [&>li]:mt-2">{children}</ul>
-              );
-            },
-            code({ node, inline, className, style, children, ...props }) {
-              const match = /language-(\w+)/.exec(className || "");
-              return !inline && match ? (
-                <div style={dark}>
-                  <SyntaxHighlighter
-                    style={atomDark}
-                    language={match[1]}
-                    PreTag="div"
-                    showLineNumbers
-                    {...props}
-                  >
-                    {String(children).replace(/\n$/, "")}
-                  </SyntaxHighlighter>
-                </div>
-              ) : (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              );
-            },
-            small: ({ children }) => {
-              return (
-                <small className="text-sm font-medium leading-none">
-                  {children}
-                </small>
-              );
-            },
-          }}
+          components={components}
         >
           {props.chat.content}
         </ReactMarkdown>
@@ -225,3 +77,96 @@ const ChatMessage = (props: ChatMessageProps) => {
 };
 
 export default ChatMessage;
+
+const components: Components = {
+  h1: ({ children, node, level, ...props }) => {
+    return (
+      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+        {children}
+      </h1>
+    );
+  },
+  h2: ({ children, node, level, ...props }) => {
+    return (
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+        {children}
+      </h2>
+    );
+  },
+  h3: ({ children, node, level, ...props }) => {
+    return (
+      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+        {children}
+      </h3>
+    );
+  },
+  h4: ({ children, node, level, ...props }) => {
+    return (
+      <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
+        {children}
+      </h4>
+    );
+  },
+  p: ({ children, node, ...props }) => {
+    return (
+      <p className="leading-7 [&:not(:first-child)]:mt-6  font-semibold">
+        {children}
+      </p>
+    );
+  },
+  blockquote: ({ children, node, ...props }) => {
+    return (
+      <blockquote className="mt-6 border-l-2 pl-6 italic">
+        {children}
+      </blockquote>
+    );
+  },
+  ul: ({ children, node, ...props }) => {
+    return <ul className="my-6 ml-6 list-disc [&>li]:mt-2">{children}</ul>;
+  },
+  code({ node, inline, className, style, children, ...props }) {
+    const match = /language-(\w+)/.exec(className || "");
+    return !inline && match ? (
+      <div style={dark}>
+        <SyntaxHighlighter
+          style={atomDark}
+          language={match[1]}
+          PreTag="div"
+          showLineNumbers
+          {...props}
+        >
+          {String(children).replace(/\n$/, "")}
+        </SyntaxHighlighter>
+      </div>
+    ) : (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  },
+  small: ({ children }) => {
+    return (
+      <small className="text-sm font-medium leading-none">{children}</small>
+    );
+  },
+  table: ({ children }) => {
+    return <table className="w-full">{children}</table>;
+  },
+  tr: ({ children }) => {
+    return <tr className="m-0 border-t p-0 even:bg-muted">{children}</tr>;
+  },
+  th: ({ children }) => {
+    return (
+      <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
+        {children}
+      </th>
+    );
+  },
+  td: ({ children }) => {
+    return (
+      <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
+        {children}
+      </td>
+    );
+  },
+};
