@@ -14,7 +14,8 @@
     "migrate:gen": "drizzle-kit generate:mysql --out src/lib/db/migrations --schema src/lib/db/schema.ts",
     "migrate:genlite": "drizzle-kit generate:sqlite --out src/lib/db/miglite --schema src/lib/db/schema.ts",
     "migrate:push": "node -r esbuild-register src/lib/db/migrate.ts",
-    "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts"
+    "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts",
+    "pre-commit" : "yarn format && yarn lint:fix && yarn type-check"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.19.0",
