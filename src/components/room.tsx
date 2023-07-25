@@ -50,7 +50,10 @@ const Room = (props: Props) => {
             </Button>
 
             {/* <Chatusers allPresenceIds={ids2} chat={props.chatAvatarData} /> */}
-            <Chatusers allPresenceIds={ids2} chatlive={IncomingChatData as ChatEntry[]} />
+            <Chatusers
+              allPresenceIds={ids2}
+              chatlive={IncomingChatData as ChatEntry[]}
+            />
             {/* <Button variant="outline" className="mr-2">
             <PlusIcon className="h-4 w-4" />
           </Button> */}
