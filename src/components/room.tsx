@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useMyPresence, useOthers, useStorage } from "../../liveblocks.config";
-import { ChatLog } from "@/lib/types";
+import { ChatEntry, ChatLog } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 
 import { Button } from "@/components/button";
@@ -49,7 +49,8 @@ const Room = (props: Props) => {
               </Link>
             </Button>
 
-            <Chatusers allPresenceIds={ids2} chat={props.chatAvatarData} />
+            {/* <Chatusers allPresenceIds={ids2} chat={props.chatAvatarData} /> */}
+            <Chatusers allPresenceIds={ids2} chatlive={IncomingChatData as ChatEntry[]} />
             {/* <Button variant="outline" className="mr-2">
             <PlusIcon className="h-4 w-4" />
           </Button> */}

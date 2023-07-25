@@ -1,6 +1,7 @@
 "use client";
 
 import { Chat } from "@/lib/db/schema";
+import { ChatEntry } from "@/lib/types";
 import { ChatLog } from "@/lib/types";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
@@ -8,7 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 // import { Popover } from "./popover";
 // import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 interface Props {
-  chat: Chat;
+  chat?: Chat;
+  chatlive?: ChatEntry[];
   allPresenceIds?: Array<string>;
 }
 
@@ -17,7 +19,7 @@ interface UserAvatarData {
   img: string;
 }
 
-const Chatusersavatars = ({ chat, allPresenceIds }: Props) => {
+const Chatusersavatars = ({ chat, chatlive, allPresenceIds }: Props) => {
   const [users, setUsers] = useState<Array<UserAvatarData>>(
     [] as UserAvatarData[],
   );
@@ -35,13 +37,21 @@ const Chatusersavatars = ({ chat, allPresenceIds }: Props) => {
     // this handles all the previous participants
 
     if (chat && chat.messages !== null) {
-      const ids = getUserIdList(chat.messages as string);
+      const chatArray = (JSON.parse(chat.messages as string) as ChatLog)?.log;
+      const ids = getUserIdList(chatArray);
       // setIds(ids);
       if (ids.length) {
         getUsers(ids);
       }
     }
-  }, []);
+    if (chatlive) {
+      const ids = getUserIdList(chatlive);
+      // setIds(ids);
+      if (ids.length) {
+        getUsers(ids);
+      }
+    }
+  }, [chat, chatlive]);
 
   // maintain ids
   // const [ids, setIds] = useState<Array<string>>([] as Array<string>);
@@ -67,7 +77,16 @@ const Chatusersavatars = ({ chat, allPresenceIds }: Props) => {
         users.length === 1 ? (
           // handle first user and other seperately
           users.map((user) => (
-            <Avatar className="mr-2 w-9 h-9" key={user.id}>
+            <Avatar
+              className={`mr-2 w-9 h-9 ${
+                allPresenceIds
+                  ? allPresenceIds.includes(user.id)
+                    ? "border-2 border-green-600"
+                    : ""
+                  : null
+              }`}
+              key={user.id}
+            >
               <AvatarImage src={user?.img} alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
@@ -140,9 +159,9 @@ export const getChatCreator = (chatMessages: string): string => {
   return creator;
 };
 
-export const getUserIdList = (chatMessages: string): Array<string> => {
-  const chatArray = (JSON.parse(chatMessages as string) as ChatLog)?.log;
-  const ArrayContainingUsers = chatArray.filter((chat) =>
+export const getUserIdList = (chatMessages: ChatEntry[]): Array<string> => {
+  // const chatArray = (JSON.parse(chatMessages as string) as ChatLog)?.log;
+  const ArrayContainingUsers = chatMessages.filter((chat) =>
     chat.name !== "" ? chat.name : null,
   );
   const ids = ArrayContainingUsers.map((usr) => {
