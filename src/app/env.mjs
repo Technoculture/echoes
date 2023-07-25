@@ -14,6 +14,9 @@ export const env = createEnv({
     PLANETSCALE_DB_HOST: z.string().min(1),
     PLANETSCALE_DB_USERNAME: z.string().min(1),
     PLANETSCALE_DB_PASSWORD: z.string().min(1),
+    // 
+    // TURSO_DB_URL: z.string().min(),
+    // TURSO_DB_AUTH_TOKEN: z.string().min(1)
   },
 
   client: {
@@ -40,6 +43,9 @@ export const env = createEnv({
     PLANETSCALE_DB_HOST: process.env.PLANETSCALE_DB_HOST,
     PLANETSCALE_DB_USERNAME: process.env.PLANETSCALE_DB_USERNAME,
     PLANETSCALE_DB_PASSWORD: process.env.PLANETSCALE_DB_PASSWORD,
+    // turso db
+    // TURSO_DB_URL: process.env.TURSO_DB_URL,
+    // TURSO_DB_AUTH_TOKEN: process.env.TURSO_DB_AUTH_TOKEN
   },
 });
 

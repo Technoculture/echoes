@@ -12,6 +12,7 @@
     "format-check": "prettier --check \"**/*.(ts|tsx)\"",
     "type-check": "tsc --pretty --noEmit",
     "migrate:gen": "drizzle-kit generate:mysql --out src/lib/db/migrations --schema src/lib/db/schema.ts",
+    "migrate:genlite": "drizzle-kit generate:sqlite --out src/lib/db/miglite --schema src/lib/db/schema.ts",
     "migrate:push": "node -r esbuild-register src/lib/db/migrate.ts",
     "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts"
   },
@@ -19,6 +20,7 @@
     "@clerk/nextjs": "^4.19.0",
     "@clerk/themes": "^1.7.4",
     "@dqbd/tiktoken": "^1.0.3",
+    "@libsql/client": "^0.3.1",
     "@phosphor-icons/react": "^2.0.10",
     "@planetscale/database": "^1.7.0",
     "@radix-ui/react-avatar": "^1.0.3",

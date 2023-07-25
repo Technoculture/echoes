@@ -3,10 +3,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq, sql, desc } from "drizzle-orm";
+// import { eq, sql, desc } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { PlusIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs";
-import { ExecutedQuery } from "@planetscale/database";
+// import { ExecutedQuery } from "@planetscale/database";
 
 import Chatcard from "@/components/chatcard";
 // import Uploadzone from "@/components/uploadzone";
@@ -29,9 +30,11 @@ export default async function Page({ params }: { params: { uid: string } }) {
       .from(chats)
       .where(eq(chats.user_id, String(sessionClaims.org_id)))
       .orderBy(desc(chats.updatedAt))
-      .limit(10);
+      .limit(10)
+      .all();
   }
-  const maxChatId = await getMaxId();
+  // const maxChatId = await getMaxId();
+  const maxChatId = await getMaxId(sessionClaims.org_id);
 
   return (
     <div className={`grid gap-4 "grid-cols-1"}`}>
@@ -55,7 +58,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
                 <PlusIcon className="w-4 h-4 mr-4" />
                 Start a new Chat
               </Link>
-              {orgConversations.map((chat) => {
+              {orgConversations?.map((chat) => {
                 return (
                   <Chatcard
                     chat={chat}
@@ -78,14 +81,30 @@ export default async function Page({ params }: { params: { uid: string } }) {
   );
 }
 
-const getMaxId = async (): Promise<number> => {
-  let maxId = {} as { latestChatId: string };
+// postgres
+// const getMaxId = async (): Promise<number> => {
+//   let maxId = {} as { latestChatId: string };
+//   try {
+//     const queryResult: ExecutedQuery = await db.execute(
+//       sql`select Max(chats.id) as latestChatId from chats `,
+//     );
+//     maxId = queryResult.rows[0] as { latestChatId: string };
+//     return +maxId.latestChatId;
+//   } catch (err) {
+//     return 0;
+//   }
+// };
+// sqlite
+const getMaxId = async (id: string | undefined): Promise<number> => {
   try {
-    const queryResult: ExecutedQuery = await db.execute(
-      sql`select Max(chats.id) as latestChatId from chats `,
-    );
-    maxId = queryResult.rows[0] as { latestChatId: string };
-    return +maxId.latestChatId;
+    const queryResult = await db
+      .select()
+      .from(chats)
+      .where(eq(chats.user_id, String(id)))
+      .orderBy(desc(chats.updatedAt))
+      .all();
+    console.log("queryResult length", queryResult.length);
+    return queryResult.length;
   } catch (err) {
     return 0;
   }

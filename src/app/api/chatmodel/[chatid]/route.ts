@@ -78,11 +78,14 @@ export async function POST(
           const title = await generateTitle(_chat as ChatEntry[]);
           _chat.pop();
           console.log("generated title", title);
-          await db.insert(chats).values({
-            user_id: String(orgId),
-            messages: JSON.stringify({ log: _chat } as ChatLog),
-            title: title,
-          });
+          await db
+            .insert(chats)
+            .values({
+              user_id: String(orgId),
+              messages: JSON.stringify({ log: _chat } as ChatLog),
+              title: title,
+            })
+            .run();
           console.log("inserted");
         } else {
           console.log("more than 1 case");
@@ -91,7 +94,8 @@ export async function POST(
           await db
             .update(chats)
             .set({ messages: JSON.stringify({ log: _chat }) })
-            .where(eq(chats.id, Number(id)));
+            .where(eq(chats.id, Number(id)))
+            .run();
           console.log("updated");
         }
       } else {
