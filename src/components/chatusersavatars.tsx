@@ -32,7 +32,7 @@ const Chatusersavatars = ({ chat }: Props) => {
       console.log("data", data);
       setUsers(data.users);
     };
-    if (chat) {
+    if (chat && chat.messages) {
       const ids = getUserIdList(chat.messages as string);
       if (ids.length) {
         getUsers(ids);

@@ -79,12 +79,12 @@ export async function POST(
           _chat.pop();
           console.log("generated title", title);
           await db
-            .insert(chats)
-            .values({
-              user_id: String(orgId),
+            .update(chats)
+            .set({
               messages: JSON.stringify({ log: _chat } as ChatLog),
               title: title,
             })
+            .where(eq(chats.id, Number(id)))
             .run();
           console.log("inserted");
         } else {
@@ -93,7 +93,10 @@ export async function POST(
           _chat.push(latestReponse);
           await db
             .update(chats)
-            .set({ messages: JSON.stringify({ log: _chat }) })
+            .set({
+              messages: JSON.stringify({ log: _chat }),
+              updatedAt: new Date(),
+            })
             .where(eq(chats.id, Number(id)))
             .run();
           console.log("updated");
