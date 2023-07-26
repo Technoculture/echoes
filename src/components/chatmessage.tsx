@@ -175,9 +175,13 @@ const components: Components = {
       </td>
     );
   },
-  a: ({ children }) => {
+  a: ({ children, href }) => {
     return (
-      <a className="underline underline-offset-4 hover:text-primary">
+      <a
+        href={href}
+        target="_blank"
+        className="underline underline-offset-4 hover:text-primary"
+      >
         {children}
       </a>
     );
