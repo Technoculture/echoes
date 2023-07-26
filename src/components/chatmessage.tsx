@@ -109,9 +109,7 @@ const components: Components = {
   },
   p: ({ children, node, ...props }) => {
     return (
-      <p className="leading-7 [&:not(:first-child)]:mt-6  font-semibold">
-        {children}
-      </p>
+      <p className="leading-normal [&:not(:first-child)]:mt-6">{children}</p>
     );
   },
   blockquote: ({ children, node, ...props }) => {
@@ -178,5 +176,11 @@ const components: Components = {
         {children}
       </a>
     );
+  },
+  b: ({ children }) => {
+    return <b className="font-bold">{children}</b>;
+  },
+  i: ({ children }) => {
+    return <i className="italic">{children}</i>;
   },
 };
