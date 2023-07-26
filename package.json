@@ -54,6 +54,7 @@
     "react-syntax-highlighter": "^15.5.0",
     "react-textarea-autosize": "^8.4.1",
     "remark-gfm": "^3.0.1",
+    "remark-rehype": "^10.1.0",
     "tailwind-merge": "^1.12.0",
     "tailwindcss-animate": "^1.0.5",
     "typescript": "5.0.3",

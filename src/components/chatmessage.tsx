@@ -2,13 +2,14 @@ import CopyToClipboard from "@/components/copytoclipboard";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Message } from "ai";
-
+import remarkRehype from "remark-rehype/lib";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { NormalComponents } from "react-markdown/lib/complex-types";
 import { SpecialComponents } from "react-markdown/lib/ast-to-react";
-
+import { PluggableList } from "react-markdown/lib/react-markdown";
+// import Plugable
 // totally Message with an optional createdBy property
 interface OrganizationChatMessage extends Message {
   createdBy?: string;
@@ -24,6 +25,7 @@ interface Components
   extends Partial<
     Omit<NormalComponents, keyof SpecialComponents> & SpecialComponents
   > {}
+
 const ChatMessage = (props: ChatMessageProps) => {
   let userName = "";
   if (props?.chat.name) {
@@ -59,6 +61,8 @@ const ChatMessage = (props: ChatMessageProps) => {
         <ReactMarkdown
           className="text-primary text-sm group-hover:text-gray-100"
           remarkPlugins={[remarkGfm]}
+          rehypePlugins={[remarkRehype] as PluggableList}
+          remarkRehypeOptions={{}}
           components={components}
         >
           {props.chat.content}
@@ -67,6 +71,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         <ReactMarkdown
           className="text-primary text-sm max-w-full p-4 overflow-x-auto "
           remarkPlugins={[remarkGfm]}
+          rehypePlugins={[remarkRehype] as PluggableList}
           components={components}
         >
           {props.chat.content}
