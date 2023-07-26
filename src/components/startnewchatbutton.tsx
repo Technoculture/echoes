@@ -1,7 +1,7 @@
 "use client";
 import { PlusIcon } from "lucide-react";
 // import Link from 'next/link';
-import { buttonVariants } from "./button";
+import { buttonVariants } from "@/components/button";
 import { useRouter } from "next/navigation";
 
 interface Props {

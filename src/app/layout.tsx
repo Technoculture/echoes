@@ -4,7 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
 import { Inter } from "next/font/google";
-import Providers from "./queryProvider";
+import Providers from "@/app/queryProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -31,7 +31,7 @@ export default function RootLayout({
     >
       <html
         lang="en"
-        className={`${inter.className} dark h-full scroll-smooth antialiased`} // TODO: NEEDED?
+        className={`${inter.className} dark h-full scroll-smooth antialiased`}
       >
         <head>
           <link rel="icon" href="/favicon.ico" sizes="any" />

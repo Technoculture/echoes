@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, ne, and } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -25,7 +25,7 @@ export async function GET(
   let orgConversations = await db
     .select()
     .from(chats)
-    .where(eq(chats.user_id, String(org_id)))
+    .where(and(eq(chats.user_id, String(org_id)), ne(chats.messages, "NULL")))
     .orderBy(desc(chats.updatedAt))
     .offset(skip)
     .limit(4);

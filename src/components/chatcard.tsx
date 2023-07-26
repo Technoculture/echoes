@@ -2,14 +2,14 @@
 import { Chat } from "@/lib/db/schema";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { buttonVariants } from "./button";
+import { buttonVariants } from "@/components/button";
 import {
   Card,
   CardHeader,
   CardDescription,
   CardContent,
   CardTitle,
-} from "./card";
+} from "@/components/card";
 import Chatusers from "@/components/chatusersavatars";
 
 type Props = {

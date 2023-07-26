@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 
 import Startnewchatbutton from "@/components/startnewchatbutton";
@@ -75,7 +75,7 @@ const getConversations = async ({
   let orgConversations = await db
     .select()
     .from(chats)
-    .where(eq(chats.user_id, String(orgId)))
+    .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
     .orderBy(desc(chats.updatedAt))
     .offset(offset)
     .limit(4);

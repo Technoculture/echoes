@@ -4,8 +4,8 @@ import React from "react";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 import { redirect } from "next/navigation";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import Chatcard from "./chatcard";
-import { Button, buttonVariants } from "./button";
+import Chatcard from "@/components/chatcard";
+import { Button, buttonVariants } from "@/components/button";
 import { useIntersection } from "@mantine/hooks";
 import { CircleNotch } from "@phosphor-icons/react";
 interface Props {
