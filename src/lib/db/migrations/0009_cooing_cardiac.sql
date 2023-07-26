@@ -1,1 +1,0 @@
-ALTER TABLE `system_messages` ADD `category` enum('persona');

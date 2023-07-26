@@ -1,56 +1,53 @@
 {
   "version": "5",
-  "dialect": "mysql",
-  "id": "0a4526f1-f2b6-4ae5-8494-0ad2817e53ea",
+  "dialect": "sqlite",
+  "id": "da872df2-6b1d-4e2d-939c-487c7e73bb58",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "users": {
-      "name": "users",
+    "chats": {
+      "name": "chats",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(191)",
+        "user_id": {
+          "name": "user_id",
+          "type": "text(191)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "username": {
-          "name": "username",
-          "type": "varchar(191)",
+        "messages": {
+          "name": "messages",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false
+          "default": "('')"
         },
-        "email": {
-          "name": "email",
-          "type": "varchar(191)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "(now())"
+          "default": "(strftime('%s', 'now'))"
         },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "onUpdate": true,
-          "default": "(now())"
+          "default": "(strftime('%s', 'now'))"
         }
       },
       "indexes": {},
@@ -58,7 +55,7 @@
       "compositePrimaryKeys": {}
     }
   },
-  "schemas": {},
+  "enums": {},
   "_meta": {
     "schemas": {},
     "tables": {},

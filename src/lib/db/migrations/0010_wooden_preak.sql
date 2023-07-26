@@ -1,1 +1,0 @@
-ALTER TABLE `system_messages` MODIFY COLUMN `category` enum('persona','task');

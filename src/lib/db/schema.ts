@@ -1,26 +1,6 @@
 import { InferModel } from "drizzle-orm";
-// import {
-//   text,
-//   json,
-//   varchar,
-//   timestamp,
-//   serial,
-//   mysqlTable,
-//   mysqlEnum,
-// } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text, blob } from "drizzle-orm/sqlite-core";
-
-// export const chats = mysqlTable("chats", {
-//   id: serial("id").primaryKey().notNull(),
-//   user_id: varchar("user_id", { length: 191 }).notNull(),
-//   messages: json("messages"),
-//   title: text("title").default(""),
-//   createdAt: timestamp("createdAt").defaultNow(),
-//   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
-// });
-// export type Chat = InferModel<typeof chats, "select">;
-// export type NewChat = InferModel<typeof chats, "insert">;
 
 // export const system_messages = mysqlTable("system_messages", {
 //   id: serial("id").primaryKey().notNull(),
