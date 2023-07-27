@@ -37,10 +37,6 @@ const InputBar = (props: InputBarProps) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex bg-linear-900 p-2 pt-2 rounded-sm  ">
-        {/* <Switch
-            checked={props.isFast}
-            onCheckedChange={() => props.setIsFast(!props.isFast)}
-          /> */}
         <Toggle
           className="mr-2"
           pressed={props.isFast}

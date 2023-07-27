@@ -9,25 +9,14 @@ import { useMutation } from "../../liveblocks.config";
 interface ChatProps {
   orgId: string;
   uid: string;
-  dbchat?: ChatLog;
-  livechat?: readonly ChatEntry[] | null;
+  dbChat?: ChatLog;
+  liveChat?: readonly ChatEntry[] | null;
   chatId: string;
   username: string;
 }
 
 export default function Chat(props: ChatProps) {
-  const pushToLiveStorage = useMutation(
-    (
-      { storage },
-      data: { role: string; content: string; name?: string; id?: string },
-    ) => {
-      const chats = storage.get("chat");
-      chats.push(data as ChatEntry);
-    },
-    [],
-  );
-  const pushToLiveStorage2 = useMutation(({ storage }, data) => {
-    const chats = storage.get("chat");
+  const updateRoomData = useMutation(({ storage }, data) => {
     storage.set("chat", data);
   }, []);
 
@@ -44,9 +33,9 @@ export default function Chat(props: ChatProps) {
     api: `/api/chatmodel/${props.chatId}`,
     // initialMessages: props.chat.log as Message[],
     initialMessages:
-      props.livechat !== null
-        ? (props.livechat as Message[])
-        : (props.dbchat?.log as Message[]),
+      props.liveChat !== null
+        ? (props.liveChat as Message[])
+        : (props.dbChat?.log as Message[]),
     body: {
       orgId: props.orgId,
       isFast: isFast,
@@ -55,15 +44,15 @@ export default function Chat(props: ChatProps) {
   });
 
   useEffect(() => {
-    if (props.livechat !== null) {
-      pushToLiveStorage2(messages);
+    if (props.liveChat !== null) {
+      updateRoomData(messages);
     }
   }, [messages]);
 
   return (
     <div className="grid grig-cols-1 gap-1">
-      {props.livechat
-        ? props.livechat.map((entry, index) => {
+      {props.liveChat
+        ? props.liveChat.map((entry, index) => {
             if (entry.role !== "system") {
               return (
                 <ChatMessage
@@ -90,10 +79,8 @@ export default function Chat(props: ChatProps) {
       <InputBar
         username={props.username}
         userId={props.uid}
-        // pushToLiveStorage={pushToLiveStorage}
         isFast={isFast}
         setIsFast={setIsFast}
-        // onSubmit={handleSubmit}
         value={input}
         onChange={handleInputChange}
         setInput={setInput}

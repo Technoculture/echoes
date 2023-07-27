@@ -19,7 +19,7 @@ interface Props {
   chatAvatarData: ChatSchema;
 }
 
-const Room = (props: Props) => {
+const RoomWrapper = (props: Props) => {
   const others = useOthers();
   const me = useMyPresence();
 
@@ -29,9 +29,9 @@ const Room = (props: Props) => {
   // adding myself to the active users list
   ids2.push(me[0].id as string);
 
-  const IncomingChatData = useStorage((root) => root.chat);
+  const incomingChatData = useStorage((root) => root.chat);
 
-  console.log("this is initialized data", IncomingChatData);
+  console.log("this is initialized data", incomingChatData);
   // console.log("others", others)
   // useEffect(() => {
   const userCount = others.length;
@@ -52,7 +52,7 @@ const Room = (props: Props) => {
             {/* <Chatusers allPresenceIds={ids2} chat={props.chatAvatarData} /> */}
             <Chatusers
               allPresenceIds={ids2}
-              chatlive={IncomingChatData as ChatEntry[]}
+              chatlive={incomingChatData as ChatEntry[]}
             />
             {/* <Button variant="outline" className="mr-2">
             <PlusIcon className="h-4 w-4" />
@@ -64,8 +64,8 @@ const Room = (props: Props) => {
         <div></div>
         <Chat
           orgId={props.orgId}
-          dbchat={props.chat}
-          livechat={IncomingChatData}
+          dbChat={props.chat}
+          liveChat={incomingChatData}
           chatId={props.chatId}
           uid={props.uid}
           username={props.username}
@@ -75,4 +75,4 @@ const Room = (props: Props) => {
   );
 };
 
-export default Room;
+export default RoomWrapper;
