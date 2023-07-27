@@ -2,14 +2,14 @@
 import { Chat } from "@/lib/db/schema";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { buttonVariants } from "./button";
+import { buttonVariants } from "@/components/button";
 import {
   Card,
   CardHeader,
   CardDescription,
   CardContent,
   CardTitle,
-} from "./card";
+} from "@/components/card";
 import Chatusers from "@/components/chatusersavatars";
 
 type Props = {
@@ -44,7 +44,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
         <CardTitle className="">{title}</CardTitle>
         <CardDescription>
           {description === "" ? (
-            <p>
+            <span>
               No title{" "}
               <button
                 className={buttonVariants({ variant: "outline" })}
@@ -52,7 +52,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
               >
                 Generate
               </button>{" "}
-            </p>
+            </span>
           ) : (
             <>{description}</>
           )}
