@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import ChatMessage from "@/components/chatmessage";
-import { ChatEntry } from "@/lib/types";
+import { ChatEntry, ChatLog } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
@@ -9,8 +9,8 @@ import { useMutation } from "../../liveblocks.config";
 interface ChatProps {
   orgId: string;
   uid: string;
-  // chat: ChatLog;
-  chat: readonly ChatEntry[];
+  dbchat?: ChatLog;
+  livechat?: readonly ChatEntry[] | null;
   chatId: string;
   username: string;
 }
@@ -28,9 +28,6 @@ export default function Chat(props: ChatProps) {
   );
   const pushToLiveStorage2 = useMutation(({ storage }, data) => {
     const chats = storage.get("chat");
-    // if(data[data.length - 1].role === 'user'){
-    //   data[data.length - 1].name = name;
-    // }
     storage.set("chat", data);
   }, []);
 
@@ -46,32 +43,50 @@ export default function Chat(props: ChatProps) {
   } = useChat({
     api: `/api/chatmodel/${props.chatId}`,
     // initialMessages: props.chat.log as Message[],
-    initialMessages: props.chat as Message[],
+    initialMessages:
+      props.livechat !== null
+        ? (props.livechat as Message[])
+        : (props.dbchat?.log as Message[]),
     body: {
       orgId: props.orgId,
       isFast: isFast,
-      name: name,
+      name: props.username,
     }, // some conflicts in role
   });
 
   useEffect(() => {
-    pushToLiveStorage2(messages);
+    if (props.livechat !== null) {
+      pushToLiveStorage2(messages);
+    }
   }, [messages]);
 
   return (
     <div className="grid grig-cols-1 gap-1">
-      {props.chat.map((entry, index) => {
-        if (entry.role !== "system") {
-          return (
-            <ChatMessage
-              uid={props.uid}
-              name={props.username}
-              chat={entry as Message}
-              key={entry.id || index}
-            />
-          );
-        }
-      })}
+      {props.livechat
+        ? props.livechat.map((entry, index) => {
+            if (entry.role !== "system") {
+              return (
+                <ChatMessage
+                  uid={props.uid}
+                  name={props.username}
+                  chat={entry as Message}
+                  key={entry.id || index}
+                />
+              );
+            }
+          })
+        : messages.map((entry, index) => {
+            if (entry.role !== "system") {
+              return (
+                <ChatMessage
+                  uid={props.uid}
+                  name={props.username}
+                  chat={entry as Message}
+                  key={entry.id || index}
+                />
+              );
+            }
+          })}
       <InputBar
         username={props.username}
         userId={props.uid}

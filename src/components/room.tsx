@@ -64,8 +64,8 @@ const Room = (props: Props) => {
         <div></div>
         <Chat
           orgId={props.orgId}
-          // chat={props.chat}
-          chat={IncomingChatData}
+          dbchat={props.chat}
+          livechat={IncomingChatData}
           chatId={props.chatId}
           uid={props.uid}
           username={props.username}

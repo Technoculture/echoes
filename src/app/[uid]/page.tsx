@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq, sql, desc } from "drizzle-orm";
+import { eq, sql, desc, ne, and } from "drizzle-orm";
 import { PlusIcon } from "lucide-react";
 import { auth } from "@clerk/nextjs";
 import { ExecutedQuery } from "@planetscale/database";
@@ -27,7 +27,12 @@ export default async function Page({ params }: { params: { uid: string } }) {
     orgConversations = await db
       .select()
       .from(chats)
-      .where(eq(chats.user_id, String(sessionClaims.org_id)))
+      .where(
+        and(
+          eq(chats.user_id, String(sessionClaims.org_id)),
+          ne(chats.messages, "NULL"),
+        ),
+      )
       .orderBy(desc(chats.updatedAt))
       .limit(10);
   }
