@@ -24,10 +24,12 @@ const RoomWrapper = (props: Props) => {
   const me = useMyPresence();
 
   // getting the ids of all the active (presence) users
-  const ids = others.filter((o) => o.presence.id !== null);
-  const ids2: Array<string> = ids.map((o) => o.presence.id) as Array<string>;
+  const userWithIds = others.filter((o) => o.presence.id !== null);
+  const liveUsersIds: Array<string> = userWithIds.map(
+    (o) => o.presence.id,
+  ) as Array<string>;
   // adding myself to the active users list
-  ids2.push(me[0].id as string);
+  liveUsersIds.push(me[0].id as string);
 
   const incomingChatData = useStorage((root) => root.chat);
 
@@ -51,8 +53,12 @@ const RoomWrapper = (props: Props) => {
 
             {/* <Chatusers allPresenceIds={ids2} chat={props.chatAvatarData} /> */}
             <Chatusers
-              allPresenceIds={ids2}
-              chatlive={incomingChatData as ChatEntry[]}
+              allPresenceIds={liveUsersIds}
+              chatLive={
+                incomingChatData !== null
+                  ? (incomingChatData as ChatEntry[])
+                  : props.chat.log
+              }
             />
             {/* <Button variant="outline" className="mr-2">
             <PlusIcon className="h-4 w-4" />

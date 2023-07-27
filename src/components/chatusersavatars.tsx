@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 // import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 interface Props {
   chat?: Chat;
-  chatlive?: ChatEntry[];
+  chatLive?: ChatEntry[];
   allPresenceIds?: Array<string>;
 }
 
@@ -19,7 +19,7 @@ interface UserAvatarData {
   img: string;
 }
 
-const Chatusersavatars = ({ chat, chatlive, allPresenceIds }: Props) => {
+const Chatusersavatars = ({ chat, chatLive, allPresenceIds }: Props) => {
   const [users, setUsers] = useState<Array<UserAvatarData>>(
     [] as UserAvatarData[],
   );
@@ -44,32 +44,21 @@ const Chatusersavatars = ({ chat, chatlive, allPresenceIds }: Props) => {
         getUsers(ids);
       }
     }
-    if (chatlive) {
-      const ids = getUserIdList(chatlive);
+    if (chatLive) {
+      const ids = getUserIdList(chatLive);
+      // include ids of users who have not participated in the chat but viewing the chat
+      const viewersIds = allPresenceIds?.filter((id) => !ids?.includes(id));
+      console.log("viewersIds", viewersIds);
       // setIds(ids);
       if (ids.length) {
-        getUsers(ids);
+        if (viewersIds) {
+          getUsers([...ids, ...viewersIds]);
+        } else {
+          getUsers([...ids]);
+        }
       }
     }
-  }, [chat, chatlive?.length]);
-
-  // maintain ids
-  // const [ids, setIds] = useState<Array<string>>([] as Array<string>);
-  // useEffect(() => {
-  //  // fetch the profile images of newly joined users;
-  //  let newIds = [] as Array<string>
-  //  if(allPresenceIds){
-  //   if(allPresenceIds.length){
-  //     newIds = allPresenceIds.filter( id => {
-  //         return !ids.includes(id)
-  //     })
-  //   }
-  //  }
-  //  if(newIds.length){
-  //   getUsers(newIds)
-  //  }
-  //  // request profile images for these ids and appent to user
-  // },[allPresenceIds, allPresenceIds?.length])
+  }, [chat, chatLive?.length, allPresenceIds?.length]);
 
   return (
     <div className="flex">
@@ -169,5 +158,6 @@ export const getUserIdList = (chatMessages: ChatEntry[]): Array<string> => {
     return split.length > 0 ? split[1] : null;
   });
   const filteredIds = ids.filter((id) => id !== undefined);
-  return filteredIds as Array<string>;
+  const uniqueIds = Array.from(new Set(filteredIds));
+  return uniqueIds as Array<string>;
 };

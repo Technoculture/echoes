@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { auth, currentUser } from "@clerk/nextjs";
-import RoomProvider from "@/app/[uid]/chat/[chatid]/Room";
+import RoomProvider from "@/components/roomprovider";
 import RoomWrapper from "@/components/room";
 export const dynamic = "force-dynamic",
   revalidate = 0;
