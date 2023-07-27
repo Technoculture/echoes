@@ -20,7 +20,9 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   let orgConversations = [] as ChatSchema[];
+  // fetch initial posts to start with
   const isOrgExist = Object.keys(sessionClaims?.organizations as Object).length;
+
   if (isOrgExist) {
     orgConversations = await getConversations({
       orgId: String(sessionClaims.org_id),

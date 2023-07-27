@@ -30,6 +30,5 @@ export async function GET(
     .offset(skip)
     .limit(4)
     .all();
-
   return NextResponse.json({ conversations: orgConversations });
 }

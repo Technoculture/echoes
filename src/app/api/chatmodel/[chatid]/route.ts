@@ -74,7 +74,6 @@ export async function POST(
           const title = await generateTitle(_chat as ChatEntry[]);
           // popping up because inserted the prompt for generating the title so removing the title prompt
           _chat.pop();
-          console.log("generated title", title);
           await db
             .update(chats)
             .set({
@@ -83,9 +82,7 @@ export async function POST(
             })
             .where(eq(chats.id, Number(id)))
             .run();
-          console.log("inserted");
         } else {
-          console.log("more than 1 case");
           _chat.push(userInput);
           _chat.push(latestReponse);
           await db
@@ -96,7 +93,6 @@ export async function POST(
             })
             .where(eq(chats.id, Number(id)))
             .run();
-          console.log("updated");
         }
       }
       // handling user's personal chat
