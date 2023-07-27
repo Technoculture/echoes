@@ -1,14 +1,13 @@
-import { Button, buttonVariants } from "@/components/button";
+import { Button } from "@/components/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { eq, sql, desc, ne, and } from "drizzle-orm";
-import { PlusIcon } from "lucide-react";
+import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
-import { ExecutedQuery } from "@planetscale/database";
 
-import Chatcard from "@/components/chatcard";
+import Startnewchatbutton from "@/components/startnewchatbutton";
+import ChatCardWrapper from "@/components/chatcardwrapper";
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
@@ -22,21 +21,14 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   let orgConversations = [] as ChatSchema[];
+  // fetch initial posts to start with
   const isOrgExist = Object.keys(sessionClaims?.organizations as Object).length;
+
   if (isOrgExist) {
-    orgConversations = await db
-      .select()
-      .from(chats)
-      .where(
-        and(
-          eq(chats.user_id, String(sessionClaims.org_id)),
-          ne(chats.messages, "NULL"),
-        ),
-      )
-      .orderBy(desc(chats.updatedAt))
-      .limit(10);
+    orgConversations = await getConversations({
+      orgId: String(sessionClaims.org_id),
+    });
   }
-  const maxChatId = await getMaxId();
 
   return (
     <div className={`grid gap-4 "grid-cols-1"}`}>
@@ -50,27 +42,17 @@ export default async function Page({ params }: { params: { uid: string } }) {
       ) : (
         <div>
           <div>
-            <div className="grid md:grid-cols-4 gap-2">
-              <Link
-                href={{
-                  pathname: `${sessionClaims.org_slug}/chat/${maxChatId + 1}`,
-                }}
-                className={buttonVariants({ variant: "default" })}
-              >
-                <PlusIcon className="w-4 h-4 mr-4" />
-                Start a new Chat
-              </Link>
-              {orgConversations.map((chat) => {
-                return (
-                  <Chatcard
-                    chat={chat}
-                    org_id={sessionClaims.org_id}
-                    uid={uid}
-                    key={chat.id}
-                    org_slug={sessionClaims?.org_slug as string}
-                  />
-                );
-              })}
+            <div>
+              <Startnewchatbutton
+                org_id={sessionClaims.org_id as string}
+                org_slug={sessionClaims.org_slug as string}
+              />
+              <ChatCardWrapper
+                initialData={orgConversations}
+                org_id={sessionClaims.org_id}
+                uid={uid}
+                org_slug={sessionClaims?.org_slug as string}
+              />
             </div>
             {/* <Uploadzone
               orgId={sessionClaims.org_id as string}
@@ -83,15 +65,19 @@ export default async function Page({ params }: { params: { uid: string } }) {
   );
 }
 
-const getMaxId = async (): Promise<number> => {
-  let maxId = {} as { latestChatId: string };
-  try {
-    const queryResult: ExecutedQuery = await db.execute(
-      sql`select Max(chats.id) as latestChatId from chats `,
-    );
-    maxId = queryResult.rows[0] as { latestChatId: string };
-    return +maxId.latestChatId;
-  } catch (err) {
-    return 0;
-  }
+const getConversations = async ({
+  orgId,
+  offset = 0,
+}: {
+  orgId: string;
+  offset?: number;
+}): Promise<ChatSchema[]> => {
+  let orgConversations = await db
+    .select()
+    .from(chats)
+    .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
+    .orderBy(desc(chats.updatedAt))
+    .offset(offset)
+    .limit(4);
+  return orgConversations;
 };

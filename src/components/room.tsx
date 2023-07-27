@@ -9,6 +9,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Chatusers from "@/components/chatusersavatars";
 import Chat from "@/components/chat";
+// import {useRouter} from 'next/navigation'
 
 interface Props {
   orgId: string;
@@ -22,6 +23,8 @@ interface Props {
 const RoomWrapper = (props: Props) => {
   const others = useOthers();
   const me = useMyPresence();
+  // const router = useRouter();
+  // const room = useRoom()
 
   // getting the ids of all the active (presence) users
   const userWithIds = others.filter((o) => o.presence.id !== null);
@@ -39,6 +42,19 @@ const RoomWrapper = (props: Props) => {
   const userCount = others.length;
   console.log("this is count of live Users", others, userCount);
   // }, [others])
+
+  // const goBack = async () => {
+
+  //   // checking the room state
+  //   if(others.length === 0){
+  //     // list?.clear()
+  //     const data = await room.getStorage()
+  //     await data.root.delete("chat")
+  //     console.log("cleared the list")
+  //   }
+
+  //   router.push(`/${props.uid}`);
+  // }
 
   return (
     <>

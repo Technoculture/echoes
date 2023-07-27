@@ -34,12 +34,9 @@ const Chatusersavatars = ({ chat, chatLive, allPresenceIds }: Props) => {
   };
 
   useEffect(() => {
-    // this handles all the previous participants
-
     if (chat && chat.messages !== null) {
       const chatArray = (JSON.parse(chat.messages as string) as ChatLog)?.log;
       const ids = getUserIdList(chatArray);
-      // setIds(ids);
       if (ids.length) {
         getUsers(ids);
       }
@@ -49,7 +46,6 @@ const Chatusersavatars = ({ chat, chatLive, allPresenceIds }: Props) => {
       // include ids of users who have not participated in the chat but viewing the chat
       const viewersIds = allPresenceIds?.filter((id) => !ids?.includes(id));
       console.log("viewersIds", viewersIds);
-      // setIds(ids);
       if (ids.length) {
         if (viewersIds) {
           getUsers([...ids, ...viewersIds]);

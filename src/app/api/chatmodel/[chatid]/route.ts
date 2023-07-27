@@ -48,9 +48,6 @@ export async function POST(
   let orgId = "";
   orgId = body.orgId;
 
-  console.log("orgId", orgId);
-  console.log("got isFast", isFast);
-
   let id = params.params.chatid as any;
   // exceptional case
   if (_chat.length === 0) {
@@ -71,32 +68,16 @@ export async function POST(
           console.log("got in 1 length case");
           _chat.push(latestReponse);
           const title = await generateTitle(_chat as ChatEntry[]);
+          // popping up because inserted the prompt for generating the title so removing the title prompt
           _chat.pop();
           console.log("generated title", title);
-          await db.insert(chats).values({
-            user_id: String(orgId),
-            messages: JSON.stringify({ log: _chat } as ChatLog),
-            title: title,
-          });
-          console.log("inserted");
-        } else {
-          console.log("more than 1 case");
-          _chat.push(latestReponse);
           await db
             .update(chats)
-            .set({ messages: JSON.stringify({ log: _chat }) })
+            .set({
+              messages: JSON.stringify({ log: _chat } as ChatLog),
+              title: title,
+            })
             .where(eq(chats.id, Number(id)));
-          console.log("updated");
-        }
-      } else {
-        // it means it is the first message in a specific chat id
-        // Handling User's Personal chat
-        if (_chat.length === 1) {
-          _chat.push(latestReponse);
-          await db.insert(chats).values({
-            user_id: String(userId),
-            messages: JSON.stringify({ log: _chat } as ChatLog),
-          });
         } else {
           _chat.push(latestReponse);
           await db
@@ -105,6 +86,23 @@ export async function POST(
             .where(eq(chats.id, Number(id)));
         }
       }
+      // handling user's personal chat
+      //  else {
+      //   // it means it is the first message in a specific chat id
+      //   if (_chat.length === 1) {
+      //     _chat.push(latestReponse);
+      //     await db.insert(chats).values({
+      //       user_id: String(userId),
+      //       messages: JSON.stringify({ log: _chat } as ChatLog),
+      //     });
+      //   } else {
+      //     _chat.push(latestReponse);
+      //     await db
+      //       .update(chats)
+      //       .set({ messages: JSON.stringify({ log: _chat }) })
+      //       .where(eq(chats.id, Number(id)));
+      //   }
+      // }
     },
   });
 
