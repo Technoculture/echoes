@@ -3,13 +3,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-// import { eq, sql, desc } from "drizzle-orm";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
-// import { ExecutedQuery } from "@planetscale/database";
-
-import Chatcard from "@/components/chatcard";
 import Startnewchatbutton from "@/components/startnewchatbutton";
+import ChatCardWrapper from "@/components/chatcardwrapper";
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
@@ -25,21 +22,10 @@ export default async function Page({ params }: { params: { uid: string } }) {
   let orgConversations = [] as ChatSchema[];
   const isOrgExist = Object.keys(sessionClaims?.organizations as Object).length;
   if (isOrgExist) {
-    orgConversations = await db
-      .select()
-      .from(chats)
-      .where(
-        and(
-          eq(chats.user_id, String(sessionClaims.org_id)),
-          ne(chats.messages, "NULL"),
-        ),
-      )
-      .orderBy(desc(chats.updatedAt))
-      .limit(10)
-      .all();
+    orgConversations = await getConversations({
+      orgId: String(sessionClaims.org_id),
+    });
   }
-  // const maxChatId = await getMaxId();
-  const maxChatId = await getMaxId(sessionClaims.org_id);
 
   return (
     <div className={`grid gap-4 "grid-cols-1"}`}>
@@ -53,22 +39,17 @@ export default async function Page({ params }: { params: { uid: string } }) {
       ) : (
         <div>
           <div>
-            <div className="grid md:grid-cols-4 gap-2">
+            <div>
               <Startnewchatbutton
                 org_id={sessionClaims.org_id as string}
                 org_slug={sessionClaims.org_slug as string}
               />
-              {orgConversations?.map((chat) => {
-                return (
-                  <Chatcard
-                    chat={chat}
-                    org_id={sessionClaims.org_id}
-                    uid={uid}
-                    key={chat.id}
-                    org_slug={sessionClaims?.org_slug as string}
-                  />
-                );
-              })}
+              <ChatCardWrapper
+                initialData={orgConversations}
+                org_id={sessionClaims.org_id}
+                uid={uid}
+                org_slug={sessionClaims?.org_slug as string}
+              />
             </div>
             {/* <Uploadzone
               orgId={sessionClaims.org_id as string}
@@ -81,31 +62,20 @@ export default async function Page({ params }: { params: { uid: string } }) {
   );
 }
 
-// postgres
-// const getMaxId = async (): Promise<number> => {
-//   let maxId = {} as { latestChatId: string };
-//   try {
-//     const queryResult: ExecutedQuery = await db.execute(
-//       sql`select Max(chats.id) as latestChatId from chats `,
-//     );
-//     maxId = queryResult.rows[0] as { latestChatId: string };
-//     return +maxId.latestChatId;
-//   } catch (err) {
-//     return 0;
-//   }
-// };
-// sqlite
-const getMaxId = async (id: string | undefined): Promise<number> => {
-  try {
-    const queryResult = await db
-      .select()
-      .from(chats)
-      .where(eq(chats.user_id, String(id)))
-      .orderBy(desc(chats.updatedAt))
-      .all();
-    console.log("queryResult length", queryResult.length);
-    return queryResult.length;
-  } catch (err) {
-    return 0;
-  }
+const getConversations = async ({
+  orgId,
+  offset = 0,
+}: {
+  orgId: string;
+  offset?: number;
+}): Promise<ChatSchema[]> => {
+  let orgConversations = await db
+    .select()
+    .from(chats)
+    .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
+    .orderBy(desc(chats.updatedAt))
+    .offset(offset)
+    .limit(4)
+    .all();
+  return orgConversations;
 };

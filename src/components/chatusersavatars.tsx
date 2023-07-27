@@ -29,10 +29,9 @@ const Chatusersavatars = ({ chat }: Props) => {
         body: JSON.stringify({ ids: ids }),
       });
       const data = await users.json();
-      console.log("data", data);
       setUsers(data.users);
     };
-    if (chat && chat.messages) {
+    if (chat && chat.messages !== null) {
       const ids = getUserIdList(chat.messages as string);
       if (ids.length) {
         getUsers(ids);
