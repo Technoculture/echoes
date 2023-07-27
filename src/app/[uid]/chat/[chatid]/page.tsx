@@ -1,15 +1,11 @@
-import Chat from "@/components/chat";
 import { ChatLog } from "@/lib/types";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { Button } from "@/components/button";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { auth, currentUser } from "@clerk/nextjs";
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
-import Chatusers from "@/components/chatusersavatars";
+import RoomProvider from "@/components/roomprovider";
+import RoomWrapper from "@/components/room";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
@@ -56,31 +52,17 @@ export default async function Page({
   }
 
   return (
-    <div className="flex-col h-full justify-between">
-      <div className="flex space-between mb-2">
-        <div className="flex items-center">
-          <Button variant="outline" className="mr-2" asChild>
-            <Link href={`/${userId}`}>
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Chatusers chat={fetchedChat[0]} />
-
-          {/* <Button variant="outline" className="mr-2">
-            <PlusIcon className="h-4 w-4" />
-          </Button> */}
-        </div>
-
-        <div className="grow" />
-      </div>
-      <div></div>
-      <Chat
+    // Room Provider
+    <RoomProvider roomId={params.chatid} initialData={chatlog.log} uid={userId}>
+      {/* Actual Room Handling */}
+      <RoomWrapper
         orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
         chat={chatlog}
         chatId={params.chatid}
         uid={userId}
         username={fullname}
-      />
-    </div>
+        chatAvatarData={fetchedChat[0]}
+      ></RoomWrapper>
+    </RoomProvider>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import { ChangeEvent, FormEvent } from "react";
-import { ChatRequestOptions } from "ai";
+import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
+import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { Toggle } from "@/components/toogle";
 import { Brain, Lightning } from "@phosphor-icons/react";
 
@@ -11,22 +11,32 @@ interface InputBarProps {
   onChange: (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => void;
-  onSubmit: (
-    e: FormEvent<HTMLFormElement>,
-    chatRequestOptions?: ChatRequestOptions | undefined,
-  ) => void;
   isFast: boolean;
   setIsFast: (arg0: boolean) => void;
+  username: string;
+  userId: string;
+  append: (
+    message: Message | CreateMessage,
+    chatRequestOptions?: ChatRequestOptions | undefined,
+  ) => Promise<string | null | undefined>;
+  setInput: Dispatch<SetStateAction<string>>;
 }
 
 const InputBar = (props: InputBarProps) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const message = {
+      role: "user",
+      content: props.value,
+      name: `${props.username},${props.userId}`,
+    };
+    props.append(message as Message);
+    props.setInput("");
+  };
+
   return (
-    <form onSubmit={props.onSubmit}>
+    <form onSubmit={handleSubmit}>
       <div className="flex bg-linear-900 p-2 pt-2 rounded-sm  ">
-        {/* <Switch
-            checked={props.isFast}
-            onCheckedChange={() => props.setIsFast(!props.isFast)}
-          /> */}
         <Toggle
           className="mr-2"
           pressed={props.isFast}
