@@ -51,7 +51,7 @@ const Chatusersavatars = ({ chat, chatlive, allPresenceIds }: Props) => {
         getUsers(ids);
       }
     }
-  }, [chat, chatlive]);
+  }, [chat, chatlive?.length]);
 
   // maintain ids
   // const [ids, setIds] = useState<Array<string>>([] as Array<string>);
