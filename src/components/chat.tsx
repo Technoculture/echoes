@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ChatMessage from "@/components/chatmessage";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import InputBar from "@/components/inputBar";
-import { Message, useChat } from "ai/react";
+// import { Message, useChat } from "ai/react";
+import { useChat, Message } from "@/utils/ai";
 import { useMutation } from "../../liveblocks.config";
 
 interface ChatProps {
@@ -16,9 +17,25 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
-  const updateRoomData = useMutation(({ storage }, data) => {
-    storage.set("chat", data);
+  const addNewLiveMessage = useMutation(({ storage }, newMessage) => {
+    const list = storage.get("chat");
+    list.push(newMessage);
+    console.log("added new message");
   }, []);
+  const updateLiveMessages = useMutation(({ storage }, updatedMessage) => {
+    console.log("updatedMessage", updatedMessage);
+    const list = storage.get("chat");
+    const latestItem = list.get(list.length - 1);
+    if (latestItem?.role === "user") {
+      list.push(updatedMessage);
+    } else {
+      list.set(list.length - 1, updatedMessage);
+    }
+  }, []);
+  const getLiveMessages = () => {
+    console.log("got live Messages");
+    return props.liveChat ? (props.liveChat as Message[]) : ([] as Message[]);
+  };
 
   const [isFast, setIsFast] = useState<boolean>(true);
   const {
@@ -40,14 +57,11 @@ export default function Chat(props: ChatProps) {
       orgId: props.orgId,
       isFast: isFast,
       name: props.username,
-    }, // some conflicts in role
+    },
+    getLiveMessages,
+    updateLiveMessages,
+    addNewLiveMessage,
   });
-
-  useEffect(() => {
-    if (props.liveChat !== null) {
-      updateRoomData(messages);
-    }
-  }, [messages]);
 
   return (
     <div className="grid grig-cols-1 gap-1">

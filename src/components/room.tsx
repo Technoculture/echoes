@@ -36,25 +36,17 @@ const RoomWrapper = (props: Props) => {
 
   const incomingChatData = useStorage((root) => root.chat);
 
-  console.log("this is initialized data", incomingChatData);
-  // console.log("others", others)
   // useEffect(() => {
-  const userCount = others.length;
-  console.log("this is count of live Users", others, userCount);
-  // }, [others])
-
-  // const goBack = async () => {
-
-  //   // checking the room state
-  //   if(others.length === 0){
-  //     // list?.clear()
-  //     const data = await room.getStorage()
-  //     await data.root.delete("chat")
-  //     console.log("cleared the list")
+  //   // have to properly check for users in the room
+  //   const initializeRoom = async () => {
+  //     if(others.length === 0){ // not efficient
+  //       console.log("initializing room data")
+  //       const data = await room.getStorage()
+  //           await data.root.set("chat", new LiveList(props.chat.log))
+  //     }
   //   }
-
-  //   router.push(`/${props.uid}`);
-  // }
+  //   initializeRoom();
+  // }, [props.chat.log])
 
   return (
     <>
