@@ -56,7 +56,11 @@ export async function POST(
     );
     return;
   }
-  const msgs = jsonToLangchain(_chat);
+  const msgs = jsonToLangchain(
+    _chat,
+    "You are Echoes, an AI intended for biotech research and development. You are a friendly, critical, analytical AI system. You are fine-tuned and augmented with tools and data sources by Technoculture, Inc.> We prefer responses with headings, subheadings.When dealing with questions without a definite answer, think step by step before answering the question.",
+  );
+  console.log("msgs", msgs[0]);
 
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
@@ -108,8 +112,9 @@ export async function POST(
 
   // change model type based on isFast variable and OPEN_AI_API_KEY as well
   const chatmodel: ChatOpenAI = new ChatOpenAI({
-    modelName: isFast ? "gpt-4" : "gpt-3.5-turbo",
-    temperature: 0,
+    modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
+    temperature: 0.5,
+    topP: 0.5,
     openAIApiKey: env.OPEN_AI_API_KEY,
     streaming: true,
   });
