@@ -45,7 +45,6 @@
     "drizzle-zod": "^0.4.2",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
-    "eslint-config-vercel-ai": "^0.0.0",
     "iconoir-react": "^6.8.0",
     "langchain": "^0.0.92",
     "lucide-react": "^0.224.0",
