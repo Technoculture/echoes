@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/card";
 import Chatusers from "@/components/chatusersavatars";
-import { Spinner } from "@phosphor-icons/react";
+import { CircleNotch } from "@phosphor-icons/react";
 
 type Props = {
   chat: Chat;
@@ -73,7 +73,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
           className={buttonVariants({ variant: "secondary" })}
         >
           {isActive ? (
-            <Spinner className=" m-1 w-4 h-4 animate-spin" />
+            <CircleNotch className="m-1 w-4 h-4 animate-spin" />
           ) : (
             <ArrowRight className=" m-1 w-4 h-4" />
           )}
