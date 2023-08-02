@@ -8,8 +8,6 @@ export const env = createEnv({
     // Clerk
     CLERK_SECRET_KEY: z.string().min(10),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(10),
-    // Upstash Redis
-    REDIS_URL: z.string().url(),
     // Planetscale
     PLANETSCALE_DB_HOST: z.string().min(1),
     PLANETSCALE_DB_USERNAME: z.string().min(1),
@@ -32,8 +30,6 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
-    // Upstash (Redis)
-    REDIS_URL: process.env.REDIS_URL,
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
     // Planetscale
