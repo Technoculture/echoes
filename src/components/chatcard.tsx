@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Chat } from "@/lib/db/schema";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -11,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/card";
 import Chatusers from "@/components/chatusersavatars";
+import { Spinner } from "@phosphor-icons/react";
 
 type Props = {
   chat: Chat;
@@ -20,6 +22,8 @@ type Props = {
 };
 
 const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
+  const [isActive, setIsActive] = useState(false);
+
   const generateTitle = async () => {
     const res = await fetch(`/api/generateTitle/${chat.id}/${org_id}`, {
       method: "POST",
@@ -61,13 +65,18 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
       <CardContent className="flex justify-between">
         <Chatusers chat={chat} />
         <Link
+          onClick={() => setIsActive(true)}
           href={{
             pathname: `${org_slug}/chat/${chat.id}`,
           }}
           key={chat.id}
           className={buttonVariants({ variant: "secondary" })}
         >
-          <ArrowRight className=" m-1 w-4 h-4" />
+          {isActive ? (
+            <Spinner className=" m-1 w-4 h-4 animate-spin" />
+          ) : (
+            <ArrowRight className=" m-1 w-4 h-4" />
+          )}
         </Link>
       </CardContent>
     </Card>
