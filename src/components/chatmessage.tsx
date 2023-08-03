@@ -113,6 +113,10 @@ const components: Components = {
     );
   },
   p: ({ children, node, ...props }) => {
+    // const firstWord = children[0]?.toString().split(' ')[0];
+    //   if (firstWord && firstWord.startsWith('#')) {
+    //     return <p className="leading-normal [&:not(:first-child)]:mt-6">{children}</p>;
+    //   }
     return (
       <p className="leading-normal [&:not(:first-child)]:mt-6">{children}</p>
     );
