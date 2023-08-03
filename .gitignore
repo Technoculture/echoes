@@ -112,3 +112,6 @@ yarn.lock
 
 # Sentry Auth Token
 .sentryclirc
+
+# Sentry Auth Token
+.sentryclirc
