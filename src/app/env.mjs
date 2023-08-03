@@ -10,13 +10,9 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(10),
     // Upstash Redis
     REDIS_URL: z.string().url(),
-    // Planetscale
-    PLANETSCALE_DB_HOST: z.string().min(1),
-    PLANETSCALE_DB_USERNAME: z.string().min(1),
-    PLANETSCALE_DB_PASSWORD: z.string().min(1),
-    // 
-    // TURSO_DB_URL: z.string().min(),
-    // TURSO_DB_AUTH_TOKEN: z.string().min(1)
+    // Turso db
+    TURSO_DB_URL: z.string().min(1),
+    TURSO_DB_AUTH_TOKEN: z.string().min(1)
   },
 
   client: {
@@ -39,13 +35,9 @@ export const env = createEnv({
     REDIS_URL: process.env.REDIS_URL,
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
-    // Planetscale
-    PLANETSCALE_DB_HOST: process.env.PLANETSCALE_DB_HOST,
-    PLANETSCALE_DB_USERNAME: process.env.PLANETSCALE_DB_USERNAME,
-    PLANETSCALE_DB_PASSWORD: process.env.PLANETSCALE_DB_PASSWORD,
     // turso db
-    // TURSO_DB_URL: process.env.TURSO_DB_URL,
-    // TURSO_DB_AUTH_TOKEN: process.env.TURSO_DB_AUTH_TOKEN
+    TURSO_DB_URL: process.env.TURSO_DB_URL,
+    TURSO_DB_AUTH_TOKEN: process.env.TURSO_DB_AUTH_TOKEN
   },
 });
 
