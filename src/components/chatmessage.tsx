@@ -10,6 +10,7 @@ import { NormalComponents } from "react-markdown/lib/complex-types";
 import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import { Badge } from "@/components/badge";
+import { ScrollArea } from "@/components/scrollarea";
 // import Plugable
 // totally Message with an optional createdBy property
 interface OrganizationChatMessage extends Message {
@@ -148,22 +149,26 @@ const components: Components = {
   },
   code({ node, inline, className, style, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
-    return !inline && match ? (
-      <div style={dark}>
-        <SyntaxHighlighter
-          style={atomDark}
-          language={match[1]}
-          PreTag="div"
-          showLineNumbers
-          {...props}
-        >
-          {String(children).replace(/\n$/, "")}
-        </SyntaxHighlighter>
-      </div>
-    ) : (
-      <code className={className} {...props}>
-        {children}
-      </code>
+    return (
+      <ScrollArea className="w-[90vw]">
+        {!inline && match ? (
+          <div style={dark}>
+            <SyntaxHighlighter
+              style={atomDark}
+              language={match[1]}
+              PreTag="div"
+              showLineNumbers
+              {...props}
+            >
+              {String(children).replace(/\n$/, "")}
+            </SyntaxHighlighter>
+          </div>
+        ) : (
+          <code className={className} {...props}>
+            {children}
+          </code>
+        )}
+      </ScrollArea>
     );
   },
   small: ({ children }) => {
