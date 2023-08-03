@@ -21,6 +21,8 @@
     "@clerk/themes": "^1.7.4",
     "@dqbd/tiktoken": "^1.0.3",
     "@libsql/client": "^0.3.1",
+    "@liveblocks/client": "^1.1.6",
+    "@liveblocks/react": "^1.1.6",
     "@mantine/hooks": "^6.0.17",
     "@phosphor-icons/react": "^2.0.10",
     "@planetscale/database": "^1.7.0",
