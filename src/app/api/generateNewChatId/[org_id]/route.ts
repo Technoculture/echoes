@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { NextResponse } from "next/server";
-
 export async function POST(
   request: Request,
   params: { params: { org_id: string } },
@@ -16,10 +15,15 @@ export async function POST(
     return;
   }
   // console.log("got org_id", org_id)
-  const data = await db.insert(chats).values({
-    user_id: id,
-  });
-  console.log("generated New Chat id", data);
+  const data = await db
+    .insert(chats)
+    .values({
+      user_id: id,
+    })
+    .run();
+  console.log("generated New Chat id", data.toJSON());
 
-  return NextResponse.json({ newChatId: data.insertId });
+  return NextResponse.json({
+    newChatId: Number(data.toJSON().lastInsertRowid),
+  });
 }

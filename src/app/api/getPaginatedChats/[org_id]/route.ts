@@ -28,7 +28,7 @@ export async function GET(
     .where(and(eq(chats.user_id, String(org_id)), ne(chats.messages, "NULL")))
     .orderBy(desc(chats.updatedAt))
     .offset(skip)
-    .limit(4);
-
+    .limit(4)
+    .all();
   return NextResponse.json({ conversations: orgConversations });
 }

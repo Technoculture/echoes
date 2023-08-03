@@ -1,1 +1,0 @@
-ALTER TABLE `chats` MODIFY COLUMN `messages` text;
