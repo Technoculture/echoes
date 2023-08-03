@@ -11,14 +11,16 @@
     "format": "prettier --write \"**/*.(ts|tsx)\"",
     "format-check": "prettier --check \"**/*.(ts|tsx)\"",
     "type-check": "tsc --pretty --noEmit",
-    "migrate:gen": "drizzle-kit generate:mysql --out src/lib/db/migrations --schema src/lib/db/schema.ts",
+    "migrate:gen": "drizzle-kit generate:sqlite --out src/lib/db/migrations --schema src/lib/db/schema.ts",
     "migrate:push": "node -r esbuild-register src/lib/db/migrate.ts",
-    "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts"
+    "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts",
+    "pre-commit" : "yarn format && yarn lint:fix && yarn type-check"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.19.0",
     "@clerk/themes": "^1.7.4",
     "@dqbd/tiktoken": "^1.0.3",
+    "@libsql/client": "^0.3.1",
     "@liveblocks/client": "^1.1.6",
     "@liveblocks/react": "^1.1.6",
     "@mantine/hooks": "^6.0.17",

@@ -5,7 +5,6 @@ import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
-
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import ChatCardWrapper from "@/components/chatcardwrapper";
 // import Uploadzone from "@/components/uploadzone";
@@ -78,6 +77,7 @@ const getConversations = async ({
     .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
     .orderBy(desc(chats.updatedAt))
     .offset(offset)
-    .limit(4);
+    .limit(4)
+    .all();
   return orgConversations;
 };

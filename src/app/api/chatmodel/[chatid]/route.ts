@@ -83,13 +83,18 @@ export async function POST(
               messages: JSON.stringify({ log: _chat } as ChatLog),
               title: title,
             })
-            .where(eq(chats.id, Number(id)));
+            .where(eq(chats.id, Number(id)))
+            .run();
         } else {
           _chat.push(latestReponse);
           await db
             .update(chats)
-            .set({ messages: JSON.stringify({ log: _chat }) })
-            .where(eq(chats.id, Number(id)));
+            .set({
+              messages: JSON.stringify({ log: _chat }),
+              updatedAt: new Date(),
+            })
+            .where(eq(chats.id, Number(id)))
+            .run();
         }
       }
       // handling user's personal chat

@@ -1,4 +1,4 @@
-import { migrate } from "drizzle-orm/planetscale-serverless/migrator";
+import { migrate } from "drizzle-orm/libsql/migrator";
 import { db } from "./";
 import * as schema from "./schema";
 

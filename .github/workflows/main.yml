@@ -19,9 +19,8 @@ jobs:
       - name: Lint and fix
         run: npm run lint:fix
         env:
-          PLANETSCALE_DB_HOST: ${{secrets.PLANETSCALE_DB_HOST}}
-          PLANETSCALE_DB_USERNAME: ${{secrets.PLANETSCALE_DB_USERNAME}}
-          PLANETSCALE_DB_PASSWORD: ${{secrets.PLANETSCALE_DB_PASSWORD}}
+          TURSO_DB_URL: ${{secrets.TURSO_DB_URL}}
+          TURSO_DB_AUTH_TOKEN: ${{secrets.TURSO_DB_AUTH_TOKEN}}
           OPEN_AI_API_KEY: ${{secrets.OPEN_AI_API_KEY}}
           LANGSMITH_API_KEY: ${{secrets.LANGSMITH_API_KEY}}
           REDIS_URL: ${{secrets.REDIS_URL}}
