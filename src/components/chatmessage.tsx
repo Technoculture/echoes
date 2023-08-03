@@ -177,7 +177,11 @@ const components: Components = {
     );
   },
   table: ({ children }) => {
-    return <table className="w-full">{children}</table>;
+    return (
+      <ScrollArea className="w-[90vw]">
+        <table className="w-full">{children}</table>
+      </ScrollArea>
+    );
   },
   tr: ({ children }) => {
     return <tr className="m-0 border-t p-0 even:bg-muted">{children}</tr>;

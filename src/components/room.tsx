@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useMyPresence, useOthers, useStorage } from "../../liveblocks.config";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
@@ -9,6 +9,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Chatusers from "@/components/chatusersavatars";
 import Chat from "@/components/chat";
+import { CircleNotch } from "@phosphor-icons/react";
 // import {useRouter} from 'next/navigation'
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
 }
 
 const RoomWrapper = (props: Props) => {
+  const [showLoading, setShowLoading] = useState(false);
   const others = useOthers();
   const me = useMyPresence();
   // const router = useRouter();
@@ -62,8 +64,12 @@ const RoomWrapper = (props: Props) => {
         <div className="flex space-between mb-2">
           <div className="flex items-center">
             <Button variant="outline" className="mr-2" asChild>
-              <Link href={`/${props.uid}`}>
-                <ArrowLeft className="h-4 w-4" />
+              <Link onClick={() => setShowLoading(true)} href={`/${props.uid}`}>
+                {showLoading ? (
+                  <CircleNotch className="w-4 h-4 animate-spin" />
+                ) : (
+                  <ArrowLeft className="h-4 w-4" />
+                )}
               </Link>
             </Button>
 
