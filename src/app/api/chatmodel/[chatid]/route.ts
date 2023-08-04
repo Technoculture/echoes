@@ -1,10 +1,10 @@
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { StreamingTextResponse, LangChainStream } from "ai";
 import {
-  HumanChatMessage,
-  SystemChatMessage,
-  AIChatMessage,
-  BaseChatMessage,
+  HumanMessage,
+  SystemMessage,
+  AIMessage,
+  BaseMessage,
 } from "langchain/schema";
 import { env } from "@/app/env.mjs";
 import { eq } from "drizzle-orm";
@@ -13,23 +13,25 @@ import { chats } from "@/lib/db/schema";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
 import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
+import { Client } from "langsmith";
+import { LangChainTracer } from "langchain/callbacks";
 export const revalidate = 0; // disable cache
 
 export const jsonToLangchain = (
   chatData: ChatEntry[],
   system?: string,
-): BaseChatMessage[] => {
-  let ret: BaseChatMessage[] = [];
+): BaseMessage[] => {
+  let ret: BaseMessage[] = [];
   if (system) {
-    ret.push(new SystemChatMessage(system));
+    ret.push(new SystemMessage(system));
   }
 
   chatData.forEach((item: ChatEntry) => {
     if (item.hasOwnProperty("role")) {
       if (item.role === "user") {
-        ret.push(new HumanChatMessage(item.content));
+        ret.push(new HumanMessage(item.content));
       } else if (item.role === "assistant") {
-        ret.push(new AIChatMessage(item.content));
+        ret.push(new AIMessage(item.content));
       }
     }
   });
@@ -115,6 +117,16 @@ export async function POST(
     },
   });
 
+  const client = new Client({
+    apiUrl: "https://api.smith.langchain.com",
+    apiKey: env.LANGSMITH_API_KEY,
+  });
+
+  const tracer = new LangChainTracer({
+    projectName: "echoes",
+    client,
+  });
+
   // change model type based on isFast variable and OPEN_AI_API_KEY as well
   const chatmodel: ChatOpenAI = new ChatOpenAI({
     modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
@@ -123,6 +135,6 @@ export async function POST(
     openAIApiKey: env.OPEN_AI_API_KEY,
     streaming: true,
   });
-  chatmodel.call(msgs, {}, [handlers]);
+  chatmodel.call(msgs, {}, [handlers, tracer]);
   return new StreamingTextResponse(stream);
 }

@@ -9,6 +9,8 @@ import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { NormalComponents } from "react-markdown/lib/complex-types";
 import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { PluggableList } from "react-markdown/lib/react-markdown";
+import { Badge } from "@/components/badge";
+import { ScrollArea } from "@/components/scrollarea";
 // import Plugable
 // totally Message with an optional createdBy property
 interface OrganizationChatMessage extends Message {
@@ -113,8 +115,23 @@ const components: Components = {
     );
   },
   p: ({ children, node, ...props }) => {
+    if (children.length === 1 && children.toString().includes("#")) {
+      const str = children.toString();
+      let strChunks = str.split(" ");
+      return (
+        <p className="leading-normal [&:not(:first-child)]:mt-6">
+          {strChunks.map((chunk) =>
+            chunk.match(/([#])\w+/g) ? (
+              <Badge key={chunk}>{chunk.slice(1)}</Badge>
+            ) : (
+              <span key={chunk}>{chunk}</span>
+            ),
+          )}
+        </p>
+      );
+    }
     return (
-      <p className="leading-normal [&:not(:first-child)]:mt-6">{children}</p>
+      <p className="leading-normal [&:not(:first-child)]:my-4">{children}</p>
     );
   },
   blockquote: ({ children, node, ...props }) => {
@@ -132,22 +149,26 @@ const components: Components = {
   },
   code({ node, inline, className, style, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
-    return !inline && match ? (
-      <div style={dark}>
-        <SyntaxHighlighter
-          style={atomDark}
-          language={match[1]}
-          PreTag="div"
-          showLineNumbers
-          {...props}
-        >
-          {String(children).replace(/\n$/, "")}
-        </SyntaxHighlighter>
-      </div>
-    ) : (
-      <code className={className} {...props}>
-        {children}
-      </code>
+    return (
+      <ScrollArea className="w-[90vw]">
+        {!inline && match ? (
+          <div style={dark}>
+            <SyntaxHighlighter
+              style={atomDark}
+              language={match[1]}
+              PreTag="div"
+              showLineNumbers
+              {...props}
+            >
+              {String(children).replace(/\n$/, "")}
+            </SyntaxHighlighter>
+          </div>
+        ) : (
+          <code className={className} {...props}>
+            {children}
+          </code>
+        )}
+      </ScrollArea>
     );
   },
   small: ({ children }) => {
@@ -156,7 +177,11 @@ const components: Components = {
     );
   },
   table: ({ children }) => {
-    return <table className="w-full">{children}</table>;
+    return (
+      <ScrollArea className="w-[90vw]">
+        <table className="w-full">{children}</table>
+      </ScrollArea>
+    );
   },
   tr: ({ children }) => {
     return <tr className="m-0 border-t p-0 even:bg-muted">{children}</tr>;
