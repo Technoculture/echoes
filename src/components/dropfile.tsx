@@ -3,7 +3,6 @@ import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 // import Card from 'shad-cn-card';
 import { Card } from "@/components/card";
-import Image from "next/image";
 import {
   Dialog,
   DialogTrigger,
@@ -14,6 +13,7 @@ import {
 import { Button } from "./button";
 import { DialogHeader, DialogFooter } from "./dialog";
 import { CircleNotch, XCircle } from "@phosphor-icons/react";
+import { FilePdf } from "@phosphor-icons/react";
 
 interface DropFileProps {}
 
@@ -93,11 +93,7 @@ const DropFile: React.FC<DropFileProps> = () => {
             )} */}
           <div className="h-32 w-32 py-2 mx-auto">
             {!file ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                // className="ut-mx-auto ut-block ut-h-12 ut-w-12 ut-align-middle ut-text-gray-400"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                 <path
                   fill="currentColor"
                   fillRule="evenodd"
@@ -107,32 +103,20 @@ const DropFile: React.FC<DropFileProps> = () => {
               </svg>
             ) : (
               <div className=" w-full h-full flex flex-col items-center justify-center">
-                <div className="realtive">
-                  <button className="absolute " onClick={removeFile}>
-                    <XCircle size={20} color="#000000" weight="bold" />
+                <div className="relative">
+                  <button
+                    className="absolute right-0 top-0"
+                    onClick={removeFile}
+                  >
+                    <XCircle size={28} color="#ffffff" weight="bold" />
                   </button>
-                  <Image
-                    width={52}
-                    height={52}
-                    // objectFit="contain"
-                    // layout="fill"
-                    src="/pdf-icon.png"
-                    alt="PDF Thumbnail"
-                  />
+                  <FilePdf size={96} color="#fafafa" weight="bold" />
                 </div>
               </div>
             )}
           </div>
-          {file && (
-            <p className="text-sm">
-              {file.name}
-              {/* {file.name.split(" ").length > 5
-                ? file.name.split(" ").slice(0, 5).join(" ")
-                : file.name} */}
-            </p>
-          )}
+          {file && <p className="text-sm text-center">{file.name}</p>}
         </Card>
-        {/* </div> */}
         <DialogFooter>
           <Button disabled={!file} onClick={startUploading} type="submit">
             {isUploading ? (
