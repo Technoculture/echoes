@@ -1,0 +1,157 @@
+"use client";
+import React, { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
+// import Card from 'shad-cn-card';
+import { Card } from "@/components/card";
+import Image from "next/image";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/dialog";
+import { Button } from "./button";
+import { DialogHeader, DialogFooter } from "./dialog";
+import { CircleNotch, XCircle } from "@phosphor-icons/react";
+
+interface DropFileProps {}
+
+const DropFile: React.FC<DropFileProps> = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFile(acceptedFiles[0]);
+  }, []);
+
+  const removeFile = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation();
+      setFile(null);
+    },
+    [],
+  );
+
+  const onDropCallback = useCallback(
+    (acceptedFiles: File[]) => {
+      onDrop(acceptedFiles);
+    },
+    [onDrop],
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: onDropCallback,
+    accept: { "application/pdf": [".pdf"] },
+  });
+
+  const startUploading = async () => {
+    setIsUploading(true);
+    console.log("uploading");
+
+    // const f = new FormData();
+    // f.append("pdf", file as Blob);
+    // f.append("name", file ? file.name : "random");
+    // const response = await fetch("/api/postPdf", {
+    //   method: "POST",
+    //   // headers: {
+    //   //   'Content-Type': 'multipart/form-data'
+    //   // },
+    //   body: f,
+    // });
+    // console.log("response", await response.json());
+    setIsUploading(false);
+    setFile(null);
+  };
+  return (
+    <Dialog
+      onOpenChange={() => {
+        setFile(null);
+        setIsUploading(false);
+      }}
+    >
+      <DialogTrigger>
+        <Button variant="ghost">Chat with pdf</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Choose PDF</DialogTitle>
+          <DialogDescription>
+            Drop or select pdf. Click upload when you&apos;re done.
+          </DialogDescription>
+        </DialogHeader>
+        {/* <div className="grid gap-4 py-4"> */}
+        <Card
+          className="flex-row px-4 items-center justify-center"
+          {...getRootProps()}
+        >
+          <input {...getInputProps()} />
+          {/* {isDragActive ? (
+              <p>Drop the files here ...</p>
+            ) : (
+              <p>Drag n drop some files here, or click to select files</p>
+            )} */}
+          <div className="h-32 w-32 py-2 mx-auto">
+            {!file ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                // className="ut-mx-auto ut-block ut-h-12 ut-w-12 ut-align-middle ut-text-gray-400"
+              >
+                <path
+                  fill="currentColor"
+                  fillRule="evenodd"
+                  d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
+            ) : (
+              <div className=" w-full h-full flex flex-col items-center justify-center">
+                <div className="realtive">
+                  <button className="absolute " onClick={removeFile}>
+                    <XCircle size={20} color="#000000" weight="bold" />
+                  </button>
+                  <Image
+                    width={52}
+                    height={52}
+                    // objectFit="contain"
+                    // layout="fill"
+                    src="/pdf-icon.png"
+                    alt="PDF Thumbnail"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+          {file && (
+            <p className="text-sm">
+              {file.name}
+              {/* {file.name.split(" ").length > 5
+                ? file.name.split(" ").slice(0, 5).join(" ")
+                : file.name} */}
+            </p>
+          )}
+        </Card>
+        {/* </div> */}
+        <DialogFooter>
+          <Button disabled={!file} onClick={startUploading} type="submit">
+            {isUploading ? (
+              <>
+                Uploading...
+                <CircleNotch className="animate-spin" />
+              </>
+            ) : (
+              "Upload"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default DropFile;
+
+export const classNames = (...classes: Array<string | boolean>) => {
+  return classes.filter(Boolean).join(" ");
+};

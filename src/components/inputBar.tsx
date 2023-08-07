@@ -5,6 +5,9 @@ import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { Toggle } from "@/components/toogle";
 import { Brain, Lightning } from "@phosphor-icons/react";
+import { CaretCircleUp } from "@phosphor-icons/react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
+import DropFile from "./dropfile";
 
 interface InputBarProps {
   value: string;
@@ -44,15 +47,27 @@ const InputBar = (props: InputBarProps) => {
         >
           {props.isFast ? <Brain /> : <Lightning />}
         </Toggle>
-
-        <TextareaAutosize
-          maxRows={10}
-          placeholder="Type your message here..."
-          autoFocus
-          value={props.value}
-          onChange={props.onChange}
-          className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm"
-        />
+        <div className="w-full relative">
+          <TextareaAutosize
+            maxRows={10}
+            placeholder="Type your message here..."
+            autoFocus
+            value={props.value}
+            onChange={props.onChange}
+            className=" w-full flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm"
+          />
+          <button type="button" className="absolute right-4 top-2">
+            {/* <CaretCircleUp /> */}
+            <Popover>
+              <PopoverTrigger>
+                <CaretCircleUp size={24} />
+              </PopoverTrigger>
+              <PopoverContent>
+                <DropFile />
+              </PopoverContent>
+            </Popover>
+          </button>
+        </div>
         <button
           type="submit"
           className="p-2 text-green-400 hover:text-green-100 flex justify-end"

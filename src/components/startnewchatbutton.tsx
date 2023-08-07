@@ -33,7 +33,7 @@ const Startnewchatbutton = (props: Props) => {
       {showLoading ? (
         <>
           <CircleNotch className="w-4 h-4 mr-4 animate-spin" />
-          Generating id
+          Starting Chat
         </>
       ) : (
         <>

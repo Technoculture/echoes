@@ -6,6 +6,8 @@ import { Chat, chats } from "@/lib/db/schema";
 import { jsonToLangchain } from "@/app/api/chatmodel/[chatid]/route";
 import { NextResponse } from "next/server";
 import { ChatEntry } from "@/lib/types";
+import { LangChainTracer } from "langchain/callbacks";
+import { Client } from "langsmith";
 export const revalidate = 0; // disable cache
 
 export async function POST(
@@ -32,7 +34,8 @@ export async function POST(
   await db
     .update(chats)
     .set({ title: fullResponse })
-    .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))));
+    .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))))
+    .run();
   return new NextResponse(fullResponse);
 }
 
@@ -48,7 +51,16 @@ export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
     temperature: 0,
     openAIApiKey: env.OPEN_AI_API_KEY,
   });
+  const client = new Client({
+    apiUrl: "https://api.smith.langchain.com",
+    apiKey: env.LANGSMITH_API_KEY,
+  });
 
-  const res = await chatmodel.call(msgs);
+  const tracer = new LangChainTracer({
+    projectName: "echoes",
+    client,
+  });
+
+  const res = await chatmodel.call(msgs, { callbacks: [tracer] });
   return res.text;
 };
