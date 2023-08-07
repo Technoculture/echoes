@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { Chat } from "@/lib/db/schema";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+// import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { buttonVariants } from "@/components/button";
 import {
   Card,
