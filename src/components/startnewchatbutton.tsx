@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 // import { PlusIcon } from "lucide-react";
-import { Plus } from '@phosphor-icons/react'
+import { Plus } from "@phosphor-icons/react";
 // import Link from 'next/link';
 import { buttonVariants } from "@/components/button";
 import { useRouter } from "next/navigation";
