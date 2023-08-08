@@ -21,6 +21,7 @@ export default function Chat(props: ChatProps) {
   }, []);
 
   const [isFast, setIsFast] = useState<boolean>(true);
+  const [collectionName, setCollectionName] = useState<string>("");
   const {
     messages,
     input,
@@ -30,6 +31,7 @@ export default function Chat(props: ChatProps) {
     append,
     setMessages,
   } = useChat({
+    // when want to chat with pdf-data have to include collection name with this call
     api: `/api/chatmodel/${props.chatId}`,
     // initialMessages: props.chat.log as Message[],
     initialMessages:
@@ -77,6 +79,7 @@ export default function Chat(props: ChatProps) {
             }
           })}
       <InputBar
+        setCollectionName={setCollectionName}
         username={props.username}
         userId={props.uid}
         isFast={isFast}

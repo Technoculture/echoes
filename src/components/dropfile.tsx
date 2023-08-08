@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 // import Card from 'shad-cn-card';
 import { Card } from "@/components/card";
@@ -15,12 +15,14 @@ import { DialogHeader, DialogFooter } from "./dialog";
 import { CircleNotch, XCircle } from "@phosphor-icons/react";
 import { FilePdf } from "@phosphor-icons/react";
 
-interface DropFileProps {}
+interface DropFileProps {
+  setCollectionName: Dispatch<SetStateAction<string>>;
+}
 
-const DropFile: React.FC<DropFileProps> = () => {
+const DropFile: React.FC<DropFileProps> = (props) => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
-
+  // const [open, setOpen] = useState(false)
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFile(acceptedFiles[0]);
   }, []);
@@ -49,26 +51,32 @@ const DropFile: React.FC<DropFileProps> = () => {
     setIsUploading(true);
     console.log("uploading");
 
-    // const f = new FormData();
-    // f.append("pdf", file as Blob);
-    // f.append("name", file ? file.name : "random");
-    // const response = await fetch("/api/postPdf", {
-    //   method: "POST",
-    //   // headers: {
-    //   //   'Content-Type': 'multipart/form-data'
-    //   // },
-    //   body: f,
-    // });
+    const f = new FormData();
+    f.append("pdf", file as Blob);
+    f.append("name", file ? file.name : "random");
+    const response = await fetch("/api/postPdf", {
+      method: "POST",
+      // headers: {
+      //   'Content-Type': 'multipart/form-data'
+      // },
+      body: f,
+    });
+    const data = await response.json();
+    console.log("collectionData", data);
+    props.setCollectionName(data.collectionName);
     // console.log("response", await response.json());
     setIsUploading(false);
     setFile(null);
+    // setOpen(false)
   };
   return (
     <Dialog
       onOpenChange={() => {
         setFile(null);
         setIsUploading(false);
+        // setOpen(false)
       }}
+      // open={open}
     >
       <DialogTrigger>
         <Button variant="ghost">Chat with pdf</Button>

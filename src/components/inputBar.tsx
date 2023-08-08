@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import DropFile from "./dropfile";
 
 interface InputBarProps {
+  setCollectionName: Dispatch<SetStateAction<string>>;
   value: string;
   onChange: (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
@@ -63,7 +64,7 @@ const InputBar = (props: InputBarProps) => {
                 <CaretCircleUp size={24} />
               </PopoverTrigger>
               <PopoverContent>
-                <DropFile />
+                <DropFile setCollectionName={props.setCollectionName} />
               </PopoverContent>
             </Popover>
           </button>
