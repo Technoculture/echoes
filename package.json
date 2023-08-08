@@ -14,7 +14,7 @@
     "migrate:gen": "drizzle-kit generate:sqlite --out src/lib/db/migrations --schema src/lib/db/schema.ts",
     "migrate:push": "node -r esbuild-register src/lib/db/migrate.ts",
     "migrations:drop": "drizzle-kit drop --config=drizzle.config.ts",
-    "pre-commit" : "yarn format && yarn lint:fix && yarn type-check"
+    "pre-commit": "yarn format && yarn lint:fix && yarn type-check"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.19.0",
@@ -45,6 +45,7 @@
     "@uploadthing/react": "^5.2.0",
     "@upstash/redis": "^1.20.2",
     "ai": "^2.1.13",
+    "chromadb": "^1.5.6",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "drizzle-orm": "^0.26.5",
