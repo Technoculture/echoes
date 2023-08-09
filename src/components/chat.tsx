@@ -20,8 +20,14 @@ export default function Chat(props: ChatProps) {
     storage.set("chat", data);
   }, []);
 
+  const updateRoomAsCompleted = useMutation(({ storage }, newMessage) => {
+    const list = storage.get("chat");
+    list.push(JSON.parse(newMessage));
+  }, []);
+
   const [isFast, setIsFast] = useState<boolean>(true);
   const [collectionName, setCollectionName] = useState<string>("");
+  const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const {
     messages,
     input,
@@ -43,6 +49,11 @@ export default function Chat(props: ChatProps) {
       isFast: isFast,
       name: props.username,
     }, // some conflicts in role
+    onError: (error) => {
+      console.log("got the error", error);
+      updateRoomAsCompleted(error.message);
+      setIsChatCompleted(true);
+    },
   });
 
   useEffect(() => {
@@ -67,7 +78,15 @@ export default function Chat(props: ChatProps) {
             }
           })
         : messages.map((entry, index) => {
+            // while rendering messages look at the last message to identify if the chat is completed or not
             if (entry.role !== "system") {
+              if (index === messages.length - 1 && !isChatCompleted) {
+                // track a state to disable all the fields
+                if (messages[index].content === "THIS CHAT IS COMPLETED") {
+                  setIsChatCompleted(true);
+                  console.log("got in the complete if");
+                }
+              }
               return (
                 <ChatMessage
                   uid={props.uid}
@@ -79,6 +98,7 @@ export default function Chat(props: ChatProps) {
             }
           })}
       <InputBar
+        isChatCompleted={isChatCompleted}
         setCollectionName={setCollectionName}
         username={props.username}
         userId={props.uid}

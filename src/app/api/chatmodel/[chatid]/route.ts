@@ -16,6 +16,8 @@ import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
 import { Client } from "langsmith";
 import { LangChainTracer } from "langchain/callbacks";
 export const revalidate = 0; // disable cache
+import { get_encoding, encoding_for_model } from "tiktoken";
+import { NextResponse } from "next/server";
 
 export const jsonToLangchain = (
   chatData: ChatEntry[],
@@ -58,11 +60,46 @@ export async function POST(
     );
     return;
   }
-  const msgs = jsonToLangchain(
-    _chat,
-    "You are Echoes, an AI intended for biotech research and development. You are a friendly, critical, analytical AI system. You are fine-tuned and augmented with tools and data sources by Technoculture, Inc.> We prefer responses with headings, subheadings.When dealing with questions without a definite answer, think step by step before answering the question.",
-  );
+  const systemPrompt =
+    "You are Echoes, an AI intended for biotech research and development. You are a friendly, critical, analytical AI system. You are fine-tuned and augmented with tools and data sources by Technoculture, Inc.> We prefer responses with headings, subheadings.When dealing with questions without a definite answer, think step by step before answering the question.";
+  const msgs = jsonToLangchain(_chat, systemPrompt);
   console.log("msgs", msgs[0]);
+  const encoding = get_encoding("cl100k_base");
+  const enc = encoding_for_model("gpt-4");
+  const txt = enc.encode(
+    msgs.reduce((initial, msg) => initial + msg.content, systemPrompt),
+    "all",
+  );
+  console.log("txt legth", txt.length);
+
+  if (txt.length > 8000) {
+    // _chat.push(latestReponse);
+    // const msg = new AIMessage("THIS CHAT IS COMPLETED");
+    const popped = _chat.pop(); // removing the latest prompt from conversation
+    const msg = {
+      content: "THIS CHAT IS COMPLETED",
+      name: popped.name,
+      role: "user",
+    };
+    console.log("popped", popped);
+    _chat.push(msg); // pushing the final message to identify that the chat is completed
+    console.log("pushed", msg);
+    await db
+      .update(chats)
+      .set({
+        messages: JSON.stringify({ log: _chat }),
+        updatedAt: new Date(),
+      })
+      .where(eq(chats.id, Number(id)))
+      .run();
+    console.log("db updated");
+    return NextResponse.json(
+      { ...msg },
+      {
+        status: 400,
+      },
+    );
+  }
 
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {

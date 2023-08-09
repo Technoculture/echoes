@@ -54,16 +54,16 @@ const DropFile: React.FC<DropFileProps> = (props) => {
     const f = new FormData();
     f.append("pdf", file as Blob);
     f.append("name", file ? file.name : "random");
-    const response = await fetch("/api/postPdf", {
-      method: "POST",
-      // headers: {
-      //   'Content-Type': 'multipart/form-data'
-      // },
-      body: f,
-    });
-    const data = await response.json();
-    console.log("collectionData", data);
-    props.setCollectionName(data.collectionName);
+    // const response = await fetch("/api/postPdf", {
+    //   method: "POST",
+    //   // headers: {
+    //   //   'Content-Type': 'multipart/form-data'
+    //   // },
+    //   body: f,
+    // });
+    // const data = await response.json();
+    // console.log("collectionData", data);
+    // props.setCollectionName(data.collectionName);
     // console.log("response", await response.json());
     setIsUploading(false);
     setFile(null);
