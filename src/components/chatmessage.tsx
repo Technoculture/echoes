@@ -11,6 +11,9 @@ import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import { Badge } from "@/components/badge";
 import { ScrollArea } from "@/components/scrollarea";
+import { useEffect, useRef } from "react";
+// import { useEffect, useRef } from "react";
+import * as fornac from "fornac";
 // import Plugable
 // totally Message with an optional createdBy property
 interface OrganizationChatMessage extends Message {
@@ -41,6 +44,75 @@ const ChatMessage = (props: ChatMessageProps) => {
     }
   }
 
+  // if(props.chat.role === "user"){
+  //    (
+  //     <ReactMarkdown
+  //       className="text-primary text-sm group-hover:text-gray-100"
+  //       remarkPlugins={[remarkGfm]}
+  //       rehypePlugins={[remarkRehype] as PluggableList}
+  //       remarkRehypeOptions={{}}
+  //       components={components}
+  //     >
+  //       {props.chat.content}
+  //     </ReactMarkdown>
+  //   )
+  // } else if(props.chat.role === "assistant" && props.chat.content !== null){
+  //    (
+  //     <ReactMarkdown
+  //       className="text-primary text-sm max-w-full p-4 overflow-x-auto "
+  //       remarkPlugins={[remarkGfm]}
+  //       rehypePlugins={[remarkRehype] as PluggableList}
+  //       components={components}
+  //     >
+  //       {props.chat.content}
+  //     </ReactMarkdown>
+  //   )
+  // } else if(props.chat.role === "assistant" && props.chat.content === null){
+  //   if(props.chat.function_call){
+  //     if(typeof props.chat.function_call === "string"){
+  //       <p>{props.chat.function_call}</p>
+  //     } else{
+  //       <div>
+  //         <p>{props.chat.function_call.name}</p>
+  //         <p>{props.chat.function_call.arguments}</p>
+  //       </div>
+  //     }
+  //   }
+  // } else if(props.chat.role === 'function'){
+  //   const fuctionName = props.chat.name
+  //   const fuctionResultJson = JSON.parse(props.chat.content)
+  // }
+
+  const divRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = divRef.current as Element;
+    const Forna = new fornac.FornaContainer(element, {
+      animation: true,
+      initialSize: [800, 600],
+    });
+    console.log("content", typeof props.chat.content);
+    let structure = null;
+    let sequence = null;
+    if (props.chat.role === ("function" as const)) {
+      console.log(JSON.parse(props.chat.content));
+      console.log("parsable");
+      let json = JSON.parse(props.chat.content);
+      structure = json.structure;
+      sequence = json.sequence;
+    }
+    // const d = JSON.parse(props.chat.content)
+    let options = {
+      structure: structure ? structure : "..((..((...[)).(((..].))).))..",
+      sequence: sequence ? sequence : "AACGCUUCAUAUAAUCCUAAUGACCUAUAA",
+      // structure: d.structure,
+      // sequence: d.sequence
+    };
+    Forna.addRNA(options.structure, options);
+    // element.appendChild(el)
+  }, [divRef.current]);
+  // console.log("typeof fornac",  fornac)
+
   return (
     <div
       className={
@@ -69,7 +141,8 @@ const ChatMessage = (props: ChatMessageProps) => {
         >
           {props.chat.content}
         </ReactMarkdown>
-      ) : (
+      ) : // ) : props.chat.role === 'assistant' && props.chat.content !== null ? (
+      props.chat.role === "assistant" ? (
         <ReactMarkdown
           className="text-primary text-sm max-w-full p-4 overflow-x-auto "
           remarkPlugins={[remarkGfm]}
@@ -78,7 +151,20 @@ const ChatMessage = (props: ChatMessageProps) => {
         >
           {props.chat.content}
         </ReactMarkdown>
+      ) : (
+        //   <ReactMarkdown
+        //   className="text-primary text-sm max-w-full p-4 overflow-x-auto "
+        //   remarkPlugins={[remarkGfm]}
+        //   rehypePlugins={[remarkRehype] as PluggableList}
+        //   components={components}
+        // >
+        //   {JSON.parse(props.chat.content)}
+        // </ReactMarkdown>
+        <div id="#forna" ref={divRef}>
+          {props.chat.content}
+        </div>
       )}
+      {/* <div id="#forna" ref={divRef} ></div> */}
     </div>
   );
 };

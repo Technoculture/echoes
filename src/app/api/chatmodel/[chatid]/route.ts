@@ -14,7 +14,6 @@ import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
 import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
 import { Client } from "langsmith";
-import { LangChainTracer } from "langchain/callbacks";
 export const revalidate = 0; // disable cache
 
 export const jsonToLangchain = (
@@ -122,10 +121,10 @@ export async function POST(
     apiKey: env.LANGSMITH_API_KEY,
   });
 
-  const tracer = new LangChainTracer({
-    projectName: "echoes",
-    client,
-  });
+  // const tracer = new LangChainTracer({
+  //   projectName: "echoes",
+  //   client,
+  // });
 
   // change model type based on isFast variable and OPEN_AI_API_KEY as well
   const chatmodel: ChatOpenAI = new ChatOpenAI({
@@ -135,6 +134,7 @@ export async function POST(
     openAIApiKey: env.OPEN_AI_API_KEY,
     streaming: true,
   });
-  chatmodel.call(msgs, {}, [handlers, tracer]);
+  // chatmodel.call(msgs, {}, [handlers, tracer]);
+  chatmodel.call(msgs, {}, [handlers]);
   return new StreamingTextResponse(stream);
 }

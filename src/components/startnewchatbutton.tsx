@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { PlusIcon } from "lucide-react";
+// import { PlusIcon } from "lucide-react";
+import { Plus } from "@phosphor-icons/react";
 // import Link from 'next/link';
 import { buttonVariants } from "@/components/button";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,8 @@ const Startnewchatbutton = (props: Props) => {
         </>
       ) : (
         <>
-          <PlusIcon className="w-4 h-4 mr-4" />
+          {/* <PlusIcon className="w-4 h-4 mr-4" /> */}
+          <Plus className="w-4 h-4 mr-4" />
           Start a new Chat
         </>
       )}

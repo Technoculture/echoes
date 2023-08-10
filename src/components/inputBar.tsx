@@ -2,7 +2,7 @@
 
 import TextareaAutosize from "react-textarea-autosize";
 import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
-import { ChatRequestOptions, CreateMessage, Message } from "ai";
+import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
 import { Toggle } from "@/components/toogle";
 import { Brain, Lightning } from "@phosphor-icons/react";
 
@@ -20,17 +20,44 @@ interface InputBarProps {
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
+  messages: Message[];
+  setMessages: (messages: Message[]) => void;
 }
 
 const InputBar = (props: InputBarProps) => {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const message = {
-      role: "user",
+      role: "user" as const,
       content: props.value,
       name: `${props.username},${props.userId}`,
     };
-    props.append(message as Message);
+    if (props.isFast) {
+      console.log("appendin");
+      props.append(message as Message);
+    } else {
+      props.setMessages([...props.messages, { ...message, id: nanoid() }]);
+      console.log("setting");
+      const res = await fetch(
+        `https://technoculture-echoes--bioinformatics-ai-web.modal.run?prompt=${props.value}`,
+      );
+      const data = await res.json();
+      const structure = "........";
+      const sequence = "ATGCGCGC";
+      const minFreeEnergy = 0.0;
+      const rna = {
+        structure,
+        sequence,
+        minFreeEnergy,
+      };
+      const newMessage = {
+        id: nanoid(),
+        role: "function" as const,
+        content: JSON.stringify(data),
+      };
+      props.setMessages([...props.messages, newMessage]);
+      console.log("data", data);
+    }
     props.setInput("");
   };
 
