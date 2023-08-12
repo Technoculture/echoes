@@ -19,7 +19,6 @@
   "dependencies": {
     "@clerk/nextjs": "^4.19.0",
     "@clerk/themes": "^1.7.4",
-    "@dqbd/tiktoken": "^1.0.7",
     "@libsql/client": "^0.3.1",
     "@liveblocks/client": "^1.1.6",
     "@liveblocks/react": "^1.1.6",
@@ -54,6 +53,7 @@
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "iconoir-react": "^6.8.0",
+    "js-tiktoken": "^1.0.7",
     "langchain": "^0.0.124",
     "langsmith": "^0.0.19",
     "lucide-react": "^0.224.0",

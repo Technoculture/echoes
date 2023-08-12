@@ -14,7 +14,7 @@ import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
 import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
 export const revalidate = 0; // disable cache
-import { get_encoding, encoding_for_model } from "@dqbd/tiktoken";
+import { getEncoding, encodingForModel } from "js-tiktoken";
 import { NextResponse } from "next/server";
 
 export const jsonToLangchain = (
@@ -62,8 +62,8 @@ export async function POST(
     "You are Echoes, an AI intended for biotech research and development. You are a friendly, critical, analytical AI system. You are fine-tuned and augmented with tools and data sources by Technoculture, Inc.> We prefer responses with headings, subheadings.When dealing with questions without a definite answer, think step by step before answering the question.";
   const msgs = jsonToLangchain(_chat, systemPrompt);
   console.log("msgs", msgs[0]);
-  const encoding = get_encoding("cl100k_base");
-  const enc = encoding_for_model("gpt-4");
+  const encoding = getEncoding("cl100k_base");
+  const enc = encodingForModel("gpt-4");
   const txt = enc.encode(
     msgs.reduce((initial, msg) => initial + msg.content, systemPrompt),
     "all",
