@@ -19,7 +19,7 @@
   "dependencies": {
     "@clerk/nextjs": "^4.19.0",
     "@clerk/themes": "^1.7.4",
-    "@dqbd/tiktoken": "^1.0.3",
+    "@dqbd/tiktoken": "^1.0.7",
     "@libsql/client": "^0.3.1",
     "@liveblocks/client": "^1.1.6",
     "@liveblocks/react": "^1.1.6",
@@ -71,7 +71,6 @@
     "remark-rehype": "^10.1.0",
     "tailwind-merge": "^1.12.0",
     "tailwindcss-animate": "^1.0.5",
-    "tiktoken": "^1.0.10",
     "typescript": "5.0.3",
     "uploadthing": "^5.2.0",
     "zod": "^3.21.4"

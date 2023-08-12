@@ -14,7 +14,7 @@ import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
 import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
 export const revalidate = 0; // disable cache
-import { get_encoding, encoding_for_model } from "tiktoken";
+import { get_encoding, encoding_for_model } from "@dqbd/tiktoken";
 import { NextResponse } from "next/server";
 
 export const jsonToLangchain = (
