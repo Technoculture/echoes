@@ -5,6 +5,7 @@ import { ChatEntry, ChatLog } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
+import Startnewchatbutton from "./startnewchatbutton";
 
 interface ChatProps {
   orgId: string;
@@ -13,6 +14,7 @@ interface ChatProps {
   liveChat?: readonly ChatEntry[] | null;
   chatId: string;
   username: string;
+  org_slug: string;
 }
 
 export default function Chat(props: ChatProps) {
@@ -97,6 +99,11 @@ export default function Chat(props: ChatProps) {
               );
             }
           })}
+      {isChatCompleted && (
+        <div>
+          <Startnewchatbutton org_slug={props.org_slug} org_id={props.orgId} />
+        </div>
+      )}
       <InputBar
         isChatCompleted={isChatCompleted}
         setCollectionName={setCollectionName}
