@@ -70,7 +70,8 @@ export async function POST(
   );
   console.log("txt legth", txt.length);
 
-  if (txt.length > 8000) {
+  let model = isFast ? "gpt-4" : "gpt-3.5-turbo";
+  if (txt.length > 16200) {
     // _chat.push(latestReponse);
     // const msg = new AIMessage("THIS CHAT IS COMPLETED");
     const popped = _chat.pop(); // removing the latest prompt from conversation
@@ -97,6 +98,10 @@ export async function POST(
         status: 400,
       },
     );
+  } else if (txt.length > 8000) {
+    model = "gpt-3.5-turbo-16k";
+  } else if (txt.length > 4000 && model === "gpt-3.5-turbo") {
+    model = "gpt-4";
   }
 
   const { stream, handlers } = LangChainStream({
@@ -154,7 +159,7 @@ export async function POST(
 
   // change model type based on isFast variable and OPEN_AI_API_KEY as well
   const chatmodel: ChatOpenAI = new ChatOpenAI({
-    modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
+    modelName: model,
     temperature: 0.5,
     topP: 0.5,
     openAIApiKey: env.OPEN_AI_API_KEY,
