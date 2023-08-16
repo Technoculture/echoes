@@ -18,6 +18,7 @@ interface OrganizationChatMessage extends Message {
 }
 
 interface ChatMessageProps {
+  id: number | string
   name: string;
   chat: OrganizationChatMessage;
   uid: string;
@@ -46,6 +47,7 @@ const ChatMessage = (props: ChatMessageProps) => {
       className={
         "flex-col p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
       }
+      id={String(props.id)}
     >
       <div className="grow flex justify-between">
         <p
