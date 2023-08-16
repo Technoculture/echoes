@@ -50,21 +50,32 @@ const DropFile: React.FC<DropFileProps> = (props) => {
   const startUploading = async () => {
     setIsUploading(true);
     console.log("uploading");
+    if (file) {
+      const response = await fetch(`/api/postPdf`, {
+        method: "POST",
+        body: JSON.stringify({ fileName: file?.name, fileType: file?.type }),
+      });
+      const data = await response.json();
+      const { postUrl, getUrl } = data;
+      const upload = await fetch(postUrl, {
+        method: "PUT",
+        body: file,
+      });
 
-    const f = new FormData();
-    f.append("pdf", file as Blob);
-    f.append("name", file ? file.name : "random");
-    // const response = await fetch("/api/postPdf", {
-    //   method: "POST",
-    //   // headers: {
-    //   //   'Content-Type': 'multipart/form-data'
-    //   // },
-    //   body: f,
-    // });
-    // const data = await response.json();
-    // console.log("collectionData", data);
-    // props.setCollectionName(data.collectionName);
-    // console.log("response", await response.json());
+      // testing the get url
+      // try{
+      //   let file = await fetch(getUrl);
+      //   console.log("file", await file.json())
+      // } catch(err) {
+      //   console.log("jsonn error", err)
+      // }
+
+      if (upload.ok) {
+        console.log("Uploaded successfully!");
+      } else {
+        console.error("Upload failed.");
+      }
+    }
     setIsUploading(false);
     setFile(null);
     // setOpen(false)
