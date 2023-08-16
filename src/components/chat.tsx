@@ -6,6 +6,7 @@ import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
 import Startnewchatbutton from "./startnewchatbutton";
+import { CHAT_COMPLETION_CONTENT } from "@/lib/types";
 
 interface ChatProps {
   orgId: string;
@@ -65,7 +66,7 @@ export default function Chat(props: ChatProps) {
   }, [messages]);
 
   return (
-    <div className="grid grig-cols-1 gap-1">
+    <div className="grid grid-cols-1 gap-1">
       {props.liveChat
         ? props.liveChat.map((entry, index) => {
             if (entry.role !== "system") {
@@ -84,9 +85,8 @@ export default function Chat(props: ChatProps) {
             if (entry.role !== "system") {
               if (index === messages.length - 1 && !isChatCompleted) {
                 // track a state to disable all the fields
-                if (messages[index].content === "THIS CHAT IS COMPLETED") {
+                if (messages[index].content === CHAT_COMPLETION_CONTENT) {
                   setIsChatCompleted(true);
-                  console.log("got in the complete if");
                 }
               }
               return (

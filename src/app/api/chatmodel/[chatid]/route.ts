@@ -12,10 +12,12 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
-import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
+import { generateTitle } from "@/app/api/generateTitle/[chatid]/[orgid]/route";
 export const revalidate = 0; // disable cache
 import { getEncoding, encodingForModel } from "js-tiktoken";
 import { NextResponse } from "next/server";
+import { CHAT_COMPLETION_CONTENT } from "@/lib/types";
+import { Model } from "@/lib/types";
 
 export const jsonToLangchain = (
   chatData: ChatEntry[],
@@ -38,6 +40,18 @@ export const jsonToLangchain = (
   return ret;
 };
 
+const OPEN_AI_MODELS = {
+  gpt4: "gpt-4" as const,
+  gptTurbo: "gpt-3.5-turbo" as const,
+  gptTurbo16k: "gpt-3.5-turbo-16k" as const,
+};
+
+const TOKEN_SIZE = {
+  gptTurbo: 4000 as const,
+  gpt4: 8000 as const,
+  gptTurbo16k: 16200 as const,
+};
+
 export async function POST(
   request: Request,
   params: { params: { chatid: string } },
@@ -46,7 +60,7 @@ export async function POST(
   const { userId } = auth();
 
   const _chat = body.messages;
-  const isFast = body.isFast;
+  const isFast: boolean = body.isFast;
   let orgId = "";
   orgId = body.orgId;
 
@@ -59,7 +73,7 @@ export async function POST(
     return;
   }
   const systemPrompt =
-    "You are Echoes, an AI intended for biotech research and development. You are a friendly, critical, analytical AI system. You are fine-tuned and augmented with tools and data sources by Technoculture, Inc.> We prefer responses with headings, subheadings.When dealing with questions without a definite answer, think step by step before answering the question.";
+    "You are Echoes, an AI intended for biotech research and development. You are a friendly, critical, analytical AI system. You are fine-tuned and augmented with tools and data sources by Technoculture, Inc.\n> We prefer responses with headings, subheadings.\nWhen dealing with questions without a definite answer, think step by step before answering the question.";
   const msgs = jsonToLangchain(_chat, systemPrompt);
   console.log("msgs", msgs[0]);
   const encoding = getEncoding("cl100k_base");
@@ -68,21 +82,16 @@ export async function POST(
     msgs.reduce((initial, msg) => initial + msg.content, systemPrompt),
     "all",
   );
-  console.log("txt legth", txt.length);
+  const contextSize = txt.length;
 
-  let model = isFast ? "gpt-4" : "gpt-3.5-turbo";
-  if (txt.length > 16200) {
-    // _chat.push(latestReponse);
-    // const msg = new AIMessage("THIS CHAT IS COMPLETED");
-    const popped = _chat.pop(); // removing the latest prompt from conversation
+  let model: Model = isFast ? OPEN_AI_MODELS.gpt4 : OPEN_AI_MODELS.gptTurbo;
+
+  if (contextSize > TOKEN_SIZE.gptTurbo16k) {
     const msg = {
-      content: "THIS CHAT IS COMPLETED",
-      name: popped.name,
-      role: "user",
+      content: CHAT_COMPLETION_CONTENT,
+      role: "assistant",
     };
-    console.log("popped", popped);
     _chat.push(msg); // pushing the final message to identify that the chat is completed
-    console.log("pushed", msg);
     await db
       .update(chats)
       .set({
@@ -91,17 +100,19 @@ export async function POST(
       })
       .where(eq(chats.id, Number(id)))
       .run();
-    console.log("db updated");
     return NextResponse.json(
       { ...msg },
       {
         status: 400,
       },
     );
-  } else if (txt.length > 8000) {
-    model = "gpt-3.5-turbo-16k";
-  } else if (txt.length > 4000 && model === "gpt-3.5-turbo") {
-    model = "gpt-4";
+  } else if (contextSize > TOKEN_SIZE.gpt4) {
+    model = OPEN_AI_MODELS.gptTurbo16k;
+  } else if (
+    contextSize > TOKEN_SIZE.gptTurbo &&
+    model === OPEN_AI_MODELS.gptTurbo
+  ) {
+    model = OPEN_AI_MODELS.gpt4;
   }
 
   const { stream, handlers } = LangChainStream({
