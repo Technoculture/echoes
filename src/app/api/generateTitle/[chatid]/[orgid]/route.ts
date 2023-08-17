@@ -1,11 +1,8 @@
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { env } from "@/app/env.mjs";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { Chat, chats } from "@/lib/db/schema";
-import { jsonToLangchain } from "@/app/api/chatmodel/[chatid]/route";
+import { generateTitle } from "@/utils/apiHelpers";
 import { NextResponse } from "next/server";
-import { ChatEntry } from "@/lib/types";
 export const revalidate = 0; // disable cache
 
 export async function POST(
@@ -36,20 +33,3 @@ export async function POST(
     .run();
   return new NextResponse(fullResponse);
 }
-
-export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
-  console.log;
-  const FIXED = {
-    role: "user",
-    content: "GENERATE A TITLE ON THE BASIS OF ABOVE CONVERSATION",
-  };
-  chat.push(FIXED as ChatEntry);
-  const msgs = jsonToLangchain(chat);
-  const chatmodel: ChatOpenAI = new ChatOpenAI({
-    temperature: 0,
-    openAIApiKey: env.OPEN_AI_API_KEY,
-  });
-
-  const res = await chatmodel.call(msgs);
-  return res.content;
-};
