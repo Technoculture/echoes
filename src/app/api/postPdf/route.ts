@@ -4,9 +4,7 @@ import {
   GetObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import {
-  getSignedUrl,
-} from "@aws-sdk/s3-request-presigner";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 interface PostPdfody {
   fileName: string;
