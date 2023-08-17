@@ -109,6 +109,9 @@ export default function Chat(props: ChatProps) {
         setCollectionName={setCollectionName}
         username={props.username}
         userId={props.uid}
+        orgSlug={props.org_slug}
+        orgId={props.orgId}
+        chatId={props.chatId}
         isFast={isFast}
         setIsFast={setIsFast}
         value={input}

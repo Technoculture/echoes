@@ -19,6 +19,9 @@ interface InputBarProps {
   setIsFast: (arg0: boolean) => void;
   username: string;
   userId: string;
+  chatId: string;
+  orgSlug: string;
+  orgId: string;
   append: (
     message: Message | CreateMessage,
     chatRequestOptions?: ChatRequestOptions | undefined,
@@ -74,7 +77,14 @@ const InputBar = (props: InputBarProps) => {
                 />
               </PopoverTrigger>
               <PopoverContent>
-                <DropFile setCollectionName={props.setCollectionName} />
+                <DropFile
+                  setCollectionName={props.setCollectionName}
+                  username={props.username}
+                  userId={props.userId}
+                  chatId={props.chatId}
+                  orgSlug={props.orgSlug}
+                  orgId={props.orgId}
+                />
               </PopoverContent>
             </Popover>
           </button>

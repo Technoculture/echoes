@@ -17,6 +17,11 @@ import { FilePdf } from "@phosphor-icons/react";
 
 interface DropFileProps {
   setCollectionName: Dispatch<SetStateAction<string>>;
+  username: string;
+  userId: string;
+  chatId: string;
+  orgSlug: string;
+  orgId: string;
 }
 
 const DropFile: React.FC<DropFileProps> = (props) => {
@@ -53,7 +58,15 @@ const DropFile: React.FC<DropFileProps> = (props) => {
     if (file) {
       const response = await fetch(`/api/postPdf`, {
         method: "POST",
-        body: JSON.stringify({ fileName: file?.name, fileType: file?.type }),
+        body: JSON.stringify({
+          fileName: file?.name,
+          fileType: file?.type,
+          username: props.username,
+          userId: props.userId,
+          chatId: props.chatId,
+          orgSlug: props.orgSlug,
+          orgId: props.orgId,
+        }),
       });
       const data = await response.json();
       const { postUrl, getUrl } = data;
