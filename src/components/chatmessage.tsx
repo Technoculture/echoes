@@ -11,18 +11,11 @@ import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import { Badge } from "@/components/badge";
 import { ScrollArea } from "@/components/scrollarea";
-import { useEffect, useRef } from "react";
-// import { useEffect, useRef } from "react";
-import * as fornac from "fornac";
-// import Plugable
-// totally Message with an optional createdBy property
-interface OrganizationChatMessage extends Message {
-  createdBy?: string;
-}
+import RenderRNA from "./functionUI/renderrna";
 
 interface ChatMessageProps {
   name: string;
-  chat: OrganizationChatMessage;
+  chat: Message;
   uid: string;
 }
 
@@ -83,36 +76,6 @@ const ChatMessage = (props: ChatMessageProps) => {
   //   const fuctionResultJson = JSON.parse(props.chat.content)
   // }
 
-  const divRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const element = divRef.current as Element;
-    const Forna = new fornac.FornaContainer(element, {
-      animation: true,
-      initialSize: [800, 600],
-    });
-    console.log("content", typeof props.chat.content);
-    let structure = null;
-    let sequence = null;
-    if (props.chat.role === ("function" as const)) {
-      console.log(JSON.parse(props.chat.content));
-      console.log("parsable");
-      let json = JSON.parse(props.chat.content);
-      structure = json.structure;
-      sequence = json.sequence;
-    }
-    // const d = JSON.parse(props.chat.content)
-    let options = {
-      structure: structure ? structure : "..((..((...[)).(((..].))).))..",
-      sequence: sequence ? sequence : "AACGCUUCAUAUAAUCCUAAUGACCUAUAA",
-      // structure: d.structure,
-      // sequence: d.sequence
-    };
-    Forna.addRNA(options.structure, options);
-    // element.appendChild(el)
-  }, [divRef.current]);
-  // console.log("typeof fornac",  fornac)
-
   return (
     <div
       className={
@@ -141,8 +104,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         >
           {props.chat.content}
         </ReactMarkdown>
-      ) : // ) : props.chat.role === 'assistant' && props.chat.content !== null ? (
-      props.chat.role === "assistant" ? (
+      ) : props.chat.role === "assistant" ? (
         <ReactMarkdown
           className="text-primary text-sm max-w-full p-4 overflow-x-auto "
           remarkPlugins={[remarkGfm]}
@@ -152,19 +114,8 @@ const ChatMessage = (props: ChatMessageProps) => {
           {props.chat.content}
         </ReactMarkdown>
       ) : (
-        //   <ReactMarkdown
-        //   className="text-primary text-sm max-w-full p-4 overflow-x-auto "
-        //   remarkPlugins={[remarkGfm]}
-        //   rehypePlugins={[remarkRehype] as PluggableList}
-        //   components={components}
-        // >
-        //   {JSON.parse(props.chat.content)}
-        // </ReactMarkdown>
-        <div id="#forna" ref={divRef}>
-          {props.chat.content}
-        </div>
+        <RenderRNA chat={props.chat} />
       )}
-      {/* <div id="#forna" ref={divRef} ></div> */}
     </div>
   );
 };
