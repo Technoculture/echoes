@@ -22,7 +22,6 @@ jobs:
           TURSO_DB_URL: ${{secrets.TURSO_DB_URL}}
           TURSO_DB_AUTH_TOKEN: ${{secrets.TURSO_DB_AUTH_TOKEN}}
           OPEN_AI_API_KEY: ${{secrets.OPEN_AI_API_KEY}}
-          LANGSMITH_API_KEY: ${{secrets.LANGSMITH_API_KEY}}
           SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
           SENTRY_ORG: ${{secrets.SENTRY_ORG}}
           SENTRY_PROJECT: ${{secrets.SENTRY_PROJECT}}

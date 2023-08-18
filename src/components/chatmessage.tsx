@@ -11,15 +11,11 @@ import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import { Badge } from "@/components/badge";
 import { ScrollArea } from "@/components/scrollarea";
-// import Plugable
-// totally Message with an optional createdBy property
-interface OrganizationChatMessage extends Message {
-  createdBy?: string;
-}
+import RenderRNA from "./functionUI/renderrna";
 
 interface ChatMessageProps {
   name: string;
-  chat: OrganizationChatMessage;
+  chat: Message;
   uid: string;
 }
 
@@ -40,6 +36,45 @@ const ChatMessage = (props: ChatMessageProps) => {
       userName = props.chat.role;
     }
   }
+
+  // if(props.chat.role === "user"){
+  //    (
+  //     <ReactMarkdown
+  //       className="text-primary text-sm group-hover:text-gray-100"
+  //       remarkPlugins={[remarkGfm]}
+  //       rehypePlugins={[remarkRehype] as PluggableList}
+  //       remarkRehypeOptions={{}}
+  //       components={components}
+  //     >
+  //       {props.chat.content}
+  //     </ReactMarkdown>
+  //   )
+  // } else if(props.chat.role === "assistant" && props.chat.content !== null){
+  //    (
+  //     <ReactMarkdown
+  //       className="text-primary text-sm max-w-full p-4 overflow-x-auto "
+  //       remarkPlugins={[remarkGfm]}
+  //       rehypePlugins={[remarkRehype] as PluggableList}
+  //       components={components}
+  //     >
+  //       {props.chat.content}
+  //     </ReactMarkdown>
+  //   )
+  // } else if(props.chat.role === "assistant" && props.chat.content === null){
+  //   if(props.chat.function_call){
+  //     if(typeof props.chat.function_call === "string"){
+  //       <p>{props.chat.function_call}</p>
+  //     } else{
+  //       <div>
+  //         <p>{props.chat.function_call.name}</p>
+  //         <p>{props.chat.function_call.arguments}</p>
+  //       </div>
+  //     }
+  //   }
+  // } else if(props.chat.role === 'function'){
+  //   const fuctionName = props.chat.name
+  //   const fuctionResultJson = JSON.parse(props.chat.content)
+  // }
 
   return (
     <div
@@ -69,7 +104,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         >
           {props.chat.content}
         </ReactMarkdown>
-      ) : (
+      ) : props.chat.role === "assistant" ? (
         <ReactMarkdown
           className="text-primary text-sm max-w-full p-4 overflow-x-auto "
           remarkPlugins={[remarkGfm]}
@@ -78,6 +113,8 @@ const ChatMessage = (props: ChatMessageProps) => {
         >
           {props.chat.content}
         </ReactMarkdown>
+      ) : (
+        <RenderRNA chat={props.chat} />
       )}
     </div>
   );

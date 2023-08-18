@@ -5,7 +5,6 @@ export const env = createEnv({
   server: {
     // OpenAI
     OPEN_AI_API_KEY: z.string().min(10),
-    LANGSMITH_API_KEY: z.string().min(10),
     // Clerk
     CLERK_SECRET_KEY: z.string().min(10),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(10),
@@ -40,7 +39,6 @@ export const env = createEnv({
     REDIS_URL: process.env.REDIS_URL,
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
-    LANGSMITH_API_KEY: process.env.LANGSMITH_API_KEY,
     // turso db
     TURSO_DB_URL: process.env.TURSO_DB_URL,
     TURSO_DB_AUTH_TOKEN: process.env.TURSO_DB_AUTH_TOKEN,
