@@ -18,7 +18,7 @@ interface OrganizationChatMessage extends Message {
 }
 
 interface ChatMessageProps {
-  id: number | string
+  id: number | string;
   name: string;
   chat: OrganizationChatMessage;
   uid: string;

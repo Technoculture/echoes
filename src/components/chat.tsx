@@ -23,7 +23,9 @@ export default function Chat(props: ChatProps) {
   }, []);
 
   const [mouseDownTime, setMouseDownTime] = useState<number | null>(null);
-  const [showScrollButton, setShowScrollButton] = useState<"top" | "bottom" | "both">("top");
+  const [showScrollButton, setShowScrollButton] = useState<
+    "top" | "bottom" | "both"
+  >("top");
   const [isFast, setIsFast] = useState<boolean>(true);
   const {
     messages,
@@ -62,12 +64,16 @@ export default function Chat(props: ChatProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 100 && window.scrollY < (document.body.scrollHeight - 800) ) { // have to think about this
+      if (
+        window.scrollY > 100 &&
+        window.scrollY < document.body.scrollHeight - 800
+      ) {
+        // have to think about this
         setShowScrollButton(() => "both");
-      } else if(window.scrollY < 100) {
+      } else if (window.scrollY < 100) {
         setShowScrollButton(() => "bottom");
       } else {
-        setShowScrollButton(() => "top")
+        setShowScrollButton(() => "top");
       }
     };
     window?.addEventListener("scroll", handleScroll);
@@ -87,21 +93,28 @@ export default function Chat(props: ChatProps) {
       setMouseDownTime(null); // Reset the mouseDownTime
       if (timeHeld > 1000) {
         goto === "top" ? scrollToTop() : scrollToBottom();
-      } else {
-        let currEl = currentVisibleQuestionIndex === -1 ? 0 : currentVisibleQuestionIndex;
-        let idToGo = goto === "top" ? `${currEl - 2}` : `${currEl + 2}`
-        let el = document.getElementById(idToGo);
-        console.log("inelse", el)
-        el?.scrollIntoView()
-        setCurrentVisibleQuestionIndex(prev => Number(idToGo)) // need to change this
       }
+      // else {
+      //   let currEl =
+      //     currentVisibleQuestionIndex === -1 ? 0 : currentVisibleQuestionIndex;
+      //   let idToGo = goto === "top" ? `${currEl - 2}` : `${currEl + 2}`;
+      //   let el = document.getElementById(idToGo);
+      //   console.log("inelse", el);
+      //   el?.scrollIntoView();
+      //   setCurrentVisibleQuestionIndex((prev) => Number(idToGo)); // need to change this
+      // }
       console.log(`The button was held for ${timeHeld} milliseconds.`);
     }
   };
 
-  const [currentVisibleQuestionIndex, setCurrentVisibleQuestionIndex] = useState(-1);
+  // const [currentVisibleQuestionIndex, setCurrentVisibleQuestionIndex] =
+  //   useState(-1);
   // let ids = messages?.filter(message => message.role === "user" ).map(message => message.id);
-  let ids = messages?.map((message, index) => message.role === "user" ? message.id ? message.id : index : -1 ).filter(num => num !== -1);
+  // let ids = messages
+  //   ?.map((message, index) =>
+  //     message.role === "user" ? (message.id ? message.id : index) : -1,
+  //   )
+  //   .filter((num) => num !== -1);
 
   return (
     <div className="grid grig-cols-1 gap-1">
@@ -146,7 +159,7 @@ export default function Chat(props: ChatProps) {
         onMouseDown={() => onmousedown()}
         onMouseUp={() => onmouseup("top")}
         className={`${
-          ["top","both"].includes(showScrollButton) ? "fixed" : "hidden"
+          ["top", "both"].includes(showScrollButton) ? "fixed" : "hidden"
         } w-12 p-0  rounded-full right-4 bottom-16  `}
         variant={"ghost"}
       >

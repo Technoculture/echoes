@@ -5,7 +5,7 @@ import { ChatEntry, ChatLog } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 
 import { Button } from "@/components/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@phosphor-icons/react";
 import Link from "next/link";
 import Chatusers from "@/components/chatusersavatars";
 import Chat from "@/components/chat";
