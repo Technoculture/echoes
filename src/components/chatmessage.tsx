@@ -11,7 +11,6 @@ import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import { Badge } from "@/components/badge";
 import { ScrollArea } from "@/components/scrollarea";
-import { ContextWrapper } from "@/components/contextwrapper";
 interface OrganizationChatMessage extends Message {
   createdBy?: string;
 }
@@ -41,46 +40,44 @@ const ChatMessage = (props: ChatMessageProps) => {
   }
 
   return (
-    <ContextWrapper>
-      <div
-        className={
-          "flex-col p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
-        }
-      >
-        <div className="grow flex justify-between">
-          <p
-            className={
-              props.chat.role === "user"
-                ? "text-slate-600 group-hover:text-gray-400 select-none"
-                : "text-green-300 group-hover:text-green-200 select-none"
-            }
-          >
-            {userName}
-          </p>
-          <CopyToClipboard content={props.chat.content} />
-        </div>
-        {props.chat.role === "user" ? (
-          <ReactMarkdown
-            className="text-primary text-sm group-hover:text-gray-100"
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[remarkRehype] as PluggableList}
-            remarkRehypeOptions={{}}
-            components={components}
-          >
-            {props.chat.content}
-          </ReactMarkdown>
-        ) : (
-          <ReactMarkdown
-            className="text-primary text-sm max-w-full p-4 overflow-x-auto "
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[remarkRehype] as PluggableList}
-            components={components}
-          >
-            {props.chat.content}
-          </ReactMarkdown>
-        )}
+    <div
+      className={
+        "flex-col p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
+      }
+    >
+      <div className="grow flex justify-between">
+        <p
+          className={
+            props.chat.role === "user"
+              ? "text-slate-600 group-hover:text-gray-400 select-none"
+              : "text-green-300 group-hover:text-green-200 select-none"
+          }
+        >
+          {userName}
+        </p>
+        <CopyToClipboard content={props.chat.content} />
       </div>
-    </ContextWrapper>
+      {props.chat.role === "user" ? (
+        <ReactMarkdown
+          className="text-primary text-sm group-hover:text-gray-100"
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[remarkRehype] as PluggableList}
+          remarkRehypeOptions={{}}
+          components={components}
+        >
+          {props.chat.content}
+        </ReactMarkdown>
+      ) : (
+        <ReactMarkdown
+          className="text-primary text-sm max-w-full p-4 overflow-x-auto "
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[remarkRehype] as PluggableList}
+          components={components}
+        >
+          {props.chat.content}
+        </ReactMarkdown>
+      )}
+    </div>
   );
 };
 
