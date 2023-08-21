@@ -32,7 +32,8 @@ export async function POST(
   await db
     .update(chats)
     .set({ title: fullResponse })
-    .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))));
+    .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))))
+    .run();
   return new NextResponse(fullResponse);
 }
 

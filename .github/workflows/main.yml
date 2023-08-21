@@ -22,7 +22,10 @@ jobs:
           TURSO_DB_URL: ${{secrets.TURSO_DB_URL}}
           TURSO_DB_AUTH_TOKEN: ${{secrets.TURSO_DB_AUTH_TOKEN}}
           OPEN_AI_API_KEY: ${{secrets.OPEN_AI_API_KEY}}
-          LANGSMITH_API_KEY: ${{secrets.LANGSMITH_API_KEY}}
+          LANGCHAIN_TRACING_V2: ${{secrets.LANGCHAIN_TRACING_V2}}
+          LANGCHAIN_ENDPOINT: ${{secrets.LANGCHAIN_ENDPOINT}}
+          LANGCHAIN_API_KEY: ${{secrets.LANGCHAIN_API_KEY}}
+          LANGCHAIN_PROJECT: ${{secrets.LANGCHAIN_PROJECT}}
           SENTRY_AUTH_TOKEN: ${{secrets.SENTRY_AUTH_TOKEN}}
           SENTRY_ORG: ${{secrets.SENTRY_ORG}}
           SENTRY_PROJECT: ${{secrets.SENTRY_PROJECT}}
