@@ -41,4 +41,5 @@ export type PromptTypes =
   | "explain"
   | "elaborate"
   | "criticise"
-  | "examples";
+  | "examples"
+  | "references";

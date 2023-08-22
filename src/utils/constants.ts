@@ -6,4 +6,5 @@ export const predefinedPrompts = {
   criticise:
     "Criticise this viewpoint by presenting facts. Criticism presented should be scientific in nature and spirit. Statement: " as const,
   examples: "Present some examples of: " as const,
+  references: "Provide some references for this: " as const,
 };

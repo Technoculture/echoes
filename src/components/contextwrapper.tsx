@@ -3,10 +3,11 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
+  ContextMenuShortcut,
 } from "@/components/contextmenu";
 import { useTextSelection } from "@mantine/hooks";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 import { PromptTemplate } from "langchain/prompts";
 import { predefinedPrompts } from "@/utils/constants";
@@ -24,14 +25,26 @@ type Props = {
 };
 
 export function ContextWrapper(props: Props) {
+  const [selectionText, setSelectionText] = useState("");
   const selection = useTextSelection();
 
+  useEffect(() => {
+    if (selection && selection.toString().trim().length > 0) {
+      setSelectionText(selection.toString().trim());
+    }
+    if (selection?.toString().length === 0) {
+      setTimeout(() => {
+        setSelectionText("");
+      }, 300);
+    }
+  }, [selection?.toString()]);
+
   const handleSubmit = async (e: any, promptType: PromptTypes) => {
-    if (selection && selection.toString().length > 0) {
+    if (selectionText) {
       let template = PromptTemplate.fromTemplate(`{prompt}"{selection}"`);
       let prompt = await template.format({
         prompt: predefinedPrompts[promptType],
-        selection: selection.toString(),
+        selection: selectionText.toString(),
       });
 
       const message = {
@@ -53,18 +66,27 @@ export function ContextWrapper(props: Props) {
       <ContextMenuContent className={`w-64`}>
         <ContextMenuItem onClick={(e) => handleSubmit(e, "factCheck")} inset>
           Is this true?
+          <ContextMenuShortcut>⇧⌘s</ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem onClick={(e) => handleSubmit(e, "explain")} inset>
-          Explain this
+          Explain This
+          <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem onClick={(e) => handleSubmit(e, "elaborate")} inset>
           Elaborate
+          <ContextMenuShortcut>⇧⌘E</ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem onClick={(e) => handleSubmit(e, "criticise")} inset>
-          Criticise
+          Analyse this Critically
+          <ContextMenuShortcut>⇧⌘C</ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem onClick={(e) => handleSubmit(e, "examples")} inset>
-          Examples
+          I need Examples
+          <ContextMenuShortcut>⇧⌘E</ContextMenuShortcut>
+        </ContextMenuItem>
+        <ContextMenuItem onClick={(e) => handleSubmit(e, "references")} inset>
+          I need References
+          <ContextMenuShortcut>⇧⌘R</ContextMenuShortcut>
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
