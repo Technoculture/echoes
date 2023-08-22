@@ -116,13 +116,29 @@ export async function POST(
   });
 
   // change model type based on isFast variable and OPEN_AI_API_KEY as well
+  const chatmodelazure: ChatOpenAI = new ChatOpenAI({
+    modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
+    temperature: 0.5,
+    azureOpenAIApiKey: env.AZURE_OPENAI_API_KEY,
+    azureOpenAIApiVersion: env.AZURE_OPENAI_API_VERSION,
+    azureOpenAIApiInstanceName: env.AZURE_OPENAI_API_INSTANCE_NAME,
+    azureOpenAIApiDeploymentName: env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
+    topP: 0.5,
+    streaming: true,
+    callbacks: [handlers],
+  });
   const chatmodel: ChatOpenAI = new ChatOpenAI({
     modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
     temperature: 0.5,
     topP: 0.5,
     openAIApiKey: env.OPEN_AI_API_KEY,
     streaming: true,
+    maxRetries: 0,
+    callbacks: [handlers],
   });
-  chatmodel.call(msgs, {}, [handlers]);
+  const modelWithFallback = chatmodel.withFallbacks({
+    fallbacks: [chatmodelazure],
+  });
+  modelWithFallback.invoke(msgs);
   return new StreamingTextResponse(stream);
 }

@@ -5,6 +5,11 @@ export const env = createEnv({
   server: {
     // OpenAI
     OPEN_AI_API_KEY: z.string().min(10),
+    // Azure OpenAI
+    AZURE_OPENAI_API_KEY: z.string().min(1),
+    AZURE_OPENAI_API_VERSION: z.string().min(1),
+    AZURE_OPENAI_API_INSTANCE_NAME: z.string().min(1),
+    AZURE_OPENAI_API_DEPLOYMENT_NAME: z.string().min(1),
     // langsmith
     LANGCHAIN_TRACING_V2: z.string().min(1),
     LANGCHAIN_ENDPOINT: z.string().min(1),
@@ -44,6 +49,11 @@ export const env = createEnv({
     REDIS_URL: process.env.REDIS_URL,
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
+    // Azure OpenAI
+    AZURE_OPENAI_API_KEY: process.env.AZURE_OPENAI_API_KEY,
+    AZURE_OPENAI_API_VERSION: process.env.AZURE_OPENAI_API_VERSION,
+    AZURE_OPENAI_API_INSTANCE_NAME: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+    AZURE_OPENAI_API_DEPLOYMENT_NAME: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
     // langsmith
     LANGCHAIN_TRACING_V2: process.env.LANGCHAIN_TRACING_V2,
     LANGCHAIN_ENDPOINT: process.env.LANGCHAIN_ENDPOINT,
