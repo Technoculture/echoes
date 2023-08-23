@@ -53,6 +53,11 @@ export function ContextWrapper(props: Props) {
         name: `${props.username},${props.userId}`,
       };
       props.append(message as Message);
+      selection?.deleteFromDocument();
+      window.scrollTo({
+        top: document.body.scrollHeight + 200,
+        behavior: "smooth",
+      });
     }
   };
   const divRef = useRef<HTMLDivElement>(null);
@@ -63,7 +68,7 @@ export function ContextWrapper(props: Props) {
     const handleMouseUp = (e: any) => {
       console.log("running handle mouse up", e);
       timeout = setTimeout(() => {
-        console.log("log from timeout", selection?.toString());
+        console.log("log from timeout", selection);
         // if(selection && selection?.toString().length > 0){
         const event = new Event("contextmenu", {
           bubbles: true,
