@@ -32,7 +32,8 @@ export async function POST(
   await db
     .update(chats)
     .set({ title: fullResponse })
-    .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))));
+    .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))))
+    .run();
   return new NextResponse(fullResponse);
 }
 
@@ -44,11 +45,22 @@ export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
   };
   chat.push(FIXED as ChatEntry);
   const msgs = jsonToLangchain(chat);
+
+  const chatmodelazure: ChatOpenAI = new ChatOpenAI({
+    temperature: 0.5,
+    azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+    azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
+    azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+    azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
+  });
   const chatmodel: ChatOpenAI = new ChatOpenAI({
     temperature: 0,
     openAIApiKey: env.OPEN_AI_API_KEY,
   });
+  const modelWithFallback = chatmodel.withFallbacks({
+    fallbacks: [chatmodelazure],
+  });
 
-  const res = await chatmodel.call(msgs);
-  return res.text;
+  const res = await modelWithFallback.invoke(msgs);
+  return res.content;
 };
