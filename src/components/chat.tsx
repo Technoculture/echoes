@@ -56,10 +56,15 @@ export default function Chat(props: ChatProps) {
             if (entry.role !== "system") {
               return (
                 <ChatMessage
+                  messageIndex={index}
+                  chatId={props.chatId}
+                  orgId={props.orgId}
                   uid={props.uid}
                   name={props.username}
                   chat={entry as Message}
                   key={entry.id || index}
+                  messages={messages}
+                  setMessages={setMessages}
                 />
               );
             }
@@ -68,10 +73,15 @@ export default function Chat(props: ChatProps) {
             if (entry.role !== "system") {
               return (
                 <ChatMessage
+                  messageIndex={index}
+                  chatId={props.chatId}
+                  orgId={props.orgId}
                   uid={props.uid}
                   name={props.username}
                   chat={entry as Message}
                   key={entry.id || index}
+                  messages={messages}
+                  setMessages={setMessages}
                 />
               );
             }
