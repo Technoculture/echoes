@@ -52,6 +52,7 @@
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "iconoir-react": "^6.8.0",
+    "js-tiktoken": "^1.0.7",
     "langchain": "^0.0.130",
     "langsmith": "^0.0.17",
     "lucide-react": "^0.224.0",
