@@ -21,7 +21,7 @@ const CopyToClipboard = (props: CopyToClipboardProps) => {
       <Tooltip>
         <TooltipTrigger
           onClick={() => copyToClipboard(props.content)}
-          className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit"
+          className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-1"
         >
           {copied ? (
             <Check className="hover:text-primary" height={14} width={14} />
