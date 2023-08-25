@@ -46,19 +46,19 @@ export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
   chat.push(FIXED as ChatEntry);
   const msgs = jsonToLangchain(chat);
 
-  const chatmodelazure: ChatOpenAI = new ChatOpenAI({
+  const azure_chat_model: ChatOpenAI = new ChatOpenAI({
     temperature: 0.5,
     azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
     azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
     azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
     azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
   });
-  const chatmodel: ChatOpenAI = new ChatOpenAI({
+  const openai_chat_model: ChatOpenAI = new ChatOpenAI({
     temperature: 0,
     openAIApiKey: env.OPEN_AI_API_KEY,
   });
-  const modelWithFallback = chatmodel.withFallbacks({
-    fallbacks: [chatmodelazure],
+  const modelWithFallback = openai_chat_model.withFallbacks({
+    fallbacks: [azure_chat_model],
   });
 
   const res = await modelWithFallback.invoke(msgs);

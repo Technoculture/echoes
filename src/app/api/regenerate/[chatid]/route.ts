@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import { jsonToLangchain } from "@/utils/apiHelper";
+import { systemPrompt } from "@/utils/prompts";
 import { Message } from "ai";
 import { eq } from "drizzle-orm";
 import { ChatOpenAI } from "langchain/chat_models/openai";
@@ -24,9 +25,9 @@ export async function POST(
   console.log("preMessages", preMessages);
   console.log("postMessages", postMessages);
 
-  const msgs = jsonToLangchain(preMessages as ChatEntry[]);
+  const msgs = jsonToLangchain(preMessages as ChatEntry[], systemPrompt);
 
-  const chatmodelazure: ChatOpenAI = new ChatOpenAI({
+  const azure_chat_model: ChatOpenAI = new ChatOpenAI({
     modelName: "gpt-3.5-turbo-16k",
     temperature: 0.5,
     azureOpenAIApiKey: env.AZURE_OPENAI_API_KEY,
@@ -36,7 +37,7 @@ export async function POST(
     topP: 0.5,
   });
   // change model type based on isFast variable and OPEN_AI_API_KEY as well
-  const chatmodel: ChatOpenAI = new ChatOpenAI({
+  const openai_chat_model: ChatOpenAI = new ChatOpenAI({
     modelName: "gpt-3.5-turbo-16k",
     temperature: 0.5,
     topP: 0.5,
@@ -44,8 +45,8 @@ export async function POST(
     streaming: true,
     maxRetries: 0,
   });
-  const modelWithFallback = chatmodel.withFallbacks({
-    fallbacks: [chatmodelazure],
+  const modelWithFallback = openai_chat_model.withFallbacks({
+    fallbacks: [azure_chat_model],
   });
 
   const answer = await modelWithFallback.invoke(msgs);

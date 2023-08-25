@@ -13,6 +13,7 @@ import { chats } from "@/lib/db/schema";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import { auth } from "@clerk/nextjs";
 import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
+import { systemPrompt } from "@/utils/prompts";
 export const revalidate = 0; // disable cache
 
 export const jsonToLangchain = (
@@ -56,10 +57,7 @@ export async function POST(
     );
     return;
   }
-  const msgs = jsonToLangchain(
-    _chat,
-    "You are Echoes, an AI intended for biotech research and development. You are a friendly, critical, analytical AI system. You are fine-tuned and augmented with tools and data sources by Technoculture, Inc.> We prefer responses with headings, subheadings.When dealing with questions without a definite answer, think step by step before answering the question.",
-  );
+  const msgs = jsonToLangchain(_chat, systemPrompt);
   console.log("msgs", msgs[0]);
 
   const { stream, handlers } = LangChainStream({
@@ -115,8 +113,8 @@ export async function POST(
     },
   });
 
-  const chatmodelazure: ChatOpenAI = new ChatOpenAI({
-    modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
+  const azure_chat_model: ChatOpenAI = new ChatOpenAI({
+    modelName: "gpt-3.5-turbo-16k",
     temperature: 0.5,
     azureOpenAIApiKey: env.AZURE_OPENAI_API_KEY,
     azureOpenAIApiVersion: env.AZURE_OPENAI_API_VERSION,
@@ -127,7 +125,7 @@ export async function POST(
     callbacks: [handlers],
   });
   // change model type based on isFast variable and OPEN_AI_API_KEY as well
-  const chatmodel: ChatOpenAI = new ChatOpenAI({
+  const openai_chat_model: ChatOpenAI = new ChatOpenAI({
     modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
     temperature: 0.5,
     topP: 0.5,
@@ -136,8 +134,8 @@ export async function POST(
     maxRetries: 0,
     callbacks: [handlers],
   });
-  const modelWithFallback = chatmodel.withFallbacks({
-    fallbacks: [chatmodelazure],
+  const modelWithFallback = openai_chat_model.withFallbacks({
+    fallbacks: [azure_chat_model],
   });
   modelWithFallback.invoke(msgs);
   return new StreamingTextResponse(stream);

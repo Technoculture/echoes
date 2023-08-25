@@ -22,6 +22,8 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editText, setEditText] = useState<string>(props.chat.content);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
+  const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
 
   let userName = "";
   if (props?.chat.name) {
@@ -105,7 +107,11 @@ const ChatMessage = (props: ChatMessageProps) => {
     setEditText(props.chat.content);
   };
 
-  const handleRegenerate = async () => {
+  const handleRegenerate = async (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
+    // e.preventDefault();
+    setIsRegenerating(true);
     const id = props.messageIndex; // id of the response to be regenerated
 
     const tempMessages = structuredClone(props.messages);
@@ -136,6 +142,8 @@ const ChatMessage = (props: ChatMessageProps) => {
     }
 
     console.log("regenerating", id);
+    setIsRegenerating(false);
+    setIsActionsOpen(false);
   };
 
   return (
@@ -159,10 +167,31 @@ const ChatMessage = (props: ChatMessageProps) => {
           role={props.chat.role}
           content={props.chat.content}
           handleRegenerate={handleRegenerate}
+          isRegenerating={isRegenerating}
+          open={isActionsOpen}
+          setOpen={setIsActionsOpen}
         />
       </div>
       {!isEditing ? (
-        <RenderMarkdown content={props.chat.content} role={props.chat.role} />
+        isRegenerating ? (
+          // <div className="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+          <div className="animate-pulse flex space-x-4">
+            <div className="rounded-full bg-slate-700 h-10 w-10"></div>
+            <div className="flex-1 space-y-6 py-1">
+              <div className="h-2 bg-slate-700 rounded"></div>
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="h-2 bg-slate-700 rounded col-span-2"></div>
+                  <div className="h-2 bg-slate-700 rounded col-span-1"></div>
+                </div>
+                <div className="h-2 bg-slate-700 rounded"></div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          // </div>
+          <RenderMarkdown content={props.chat.content} role={props.chat.role} />
+        )
       ) : (
         <div className="grid gap-2">
           <TextareaAutosize
