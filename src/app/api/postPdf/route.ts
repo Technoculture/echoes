@@ -60,20 +60,22 @@ export async function POST(request: Request) {
     Key: `${orgSlug}/${fileName}`,
     ContentType: fileType,
     Metadata: {
-      chatId,
-      orgId,
-      orgSlug,
-      userId,
-      username,
+      "chat-id": chatId,
+      "org-id": orgId,
+      "org-slug": orgSlug,
+      "user-id": userId,
+      "user-name": username,
     },
   });
   const post = await getSignedUrl(client, putCommand, { expiresIn: 3600 });
+  console.log("post", post);
 
   const getCommand = new GetObjectCommand({
     Bucket: process.env.BUCKET_NAME,
     Key: fileName,
   });
   const get = await getSignedUrl(client, getCommand, { expiresIn: 3600 });
+  console.log("get", get);
 
   return new NextResponse(JSON.stringify({ postUrl: post, getUrl: get }));
 }

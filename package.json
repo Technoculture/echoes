@@ -17,8 +17,8 @@
     "pre-commit": "yarn format && yarn lint:fix && yarn type-check"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.391.0",
-    "@aws-sdk/s3-request-presigner": "^3.391.0",
+    "@aws-sdk/client-s3": "3.391.0",
+    "@aws-sdk/s3-request-presigner": "3.391.0",
     "@clerk/nextjs": "^4.19.0",
     "@clerk/themes": "^1.7.4",
     "@libsql/client": "^0.3.1",
