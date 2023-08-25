@@ -173,30 +173,17 @@ const ChatMessage = (props: ChatMessageProps) => {
         />
       </div>
       {!isEditing ? (
-        isRegenerating ? (
-          // <div className="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-          <div className="animate-pulse flex space-x-4">
-            <div className="rounded-full bg-slate-700 h-10 w-10"></div>
-            <div className="flex-1 space-y-6 py-1">
-              <div className="h-2 bg-slate-700 rounded"></div>
-              <div className="space-y-3">
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="h-2 bg-slate-700 rounded col-span-2"></div>
-                  <div className="h-2 bg-slate-700 rounded col-span-1"></div>
-                </div>
-                <div className="h-2 bg-slate-700 rounded"></div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          // </div>
+        <div
+          className={
+            isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
+          }
+        >
           <RenderMarkdown content={props.chat.content} role={props.chat.role} />
-        )
+        </div>
       ) : (
         <div className="grid gap-2">
           <TextareaAutosize
             autoFocus={true}
-            // defaultValue={props.chat.content}
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
