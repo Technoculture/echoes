@@ -9,7 +9,7 @@ import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { ReactNode } from "react";
 
 import { PromptTemplate } from "langchain/prompts";
-import { predefinedPrompts } from "@/utils/constants";
+import { predefinedPrompts } from "@/utils/prompts";
 import { PromptTypes } from "@/lib/types";
 // import { Dispatch, SetStateAction } from "react";
 
