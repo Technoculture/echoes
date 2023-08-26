@@ -6,8 +6,12 @@ import {
   SystemMessage,
 } from "langchain/schema";
 import { ChatEntry, Model } from "@/lib/types";
+import { ChatOpenAI } from "langchain/chat_models/openai";
+import { env } from "@/app/env.mjs";
 
-const OPEN_AI_MODELS = {
+// import { BaseCallbackHandler } from "langchain/dist/callbacks/base";
+
+export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
   gptTurbo: "gpt-3.5-turbo" as const,
   gptTurbo16k: "gpt-3.5-turbo-16k" as const,
@@ -70,4 +74,57 @@ export const jsonToLangchain = (
     }
   });
   return ret;
+};
+
+export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
+  console.log;
+  const FIXED = {
+    role: "user",
+    content: "GENERATE A TITLE ON THE BASIS OF ABOVE CONVERSATION",
+  };
+  chat.push(FIXED as ChatEntry);
+  const msgs = jsonToLangchain(chat);
+  const chatmodel: ChatOpenAI = new ChatOpenAI({
+    temperature: 0,
+    openAIApiKey: env.OPEN_AI_API_KEY,
+  });
+
+  const res = await chatmodel.call(msgs);
+  return res.content;
+};
+
+export const azureOpenAiChatModel = (
+  model: string | undefined,
+  streaming: boolean,
+  handlers?: any,
+): ChatOpenAI => {
+  return new ChatOpenAI({
+    modelName: model,
+    temperature: 0.5,
+    azureOpenAIApiKey: env.AZURE_OPENAI_API_KEY,
+    azureOpenAIApiVersion: env.AZURE_OPENAI_API_VERSION,
+    azureOpenAIApiInstanceName: env.AZURE_OPENAI_API_INSTANCE_NAME,
+    azureOpenAIApiDeploymentName: env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
+    topP: 0.5,
+    streaming: streaming,
+    callbacks: handlers ? [handlers] : [],
+  });
+};
+
+
+
+export const openAIChatModel = (
+  model: string | undefined,
+  streaming: boolean,
+  handlers?: any,
+): ChatOpenAI => {
+  return new ChatOpenAI({
+    modelName: model,
+    temperature: 0.5,
+    topP: 0.5,
+    openAIApiKey: env.OPEN_AI_API_KEY,
+    streaming: streaming,
+    maxRetries: 0,
+    callbacks: handlers ? [handlers] : [],
+  });
 };

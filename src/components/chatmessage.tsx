@@ -205,7 +205,9 @@ const ChatMessage = (props: ChatMessageProps) => {
                 onEditComplete(e, props.messageIndex, props.chat.role)
               }
             >
-              {isLoading && <CircleNotch className="w-4 h-4 animate-spin" />}
+              {isLoading && (
+                <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
+              )}
               Save{props.chat.role === "user" && " and Regenerate"}
             </Button>
             <Button onClick={cancelEditing}>Cancel</Button>

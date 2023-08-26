@@ -81,7 +81,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
         className={`${buttonVariants({ variant: "secondary" })} mt-4 `}
       >
         <CircleNotch
-          className={`${isFetchingNextPage ? "animate-spin" : "hidden"}`}
+          className={` mr-2 ${isFetchingNextPage ? "animate-spin" : "hidden"}`}
           size={24}
           color="#618a9e"
           weight="bold"
