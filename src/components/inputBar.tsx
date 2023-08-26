@@ -107,14 +107,19 @@ const InputBar = (props: InputBarProps) => {
         body: file,
       });
 
-      props.setInput("Generating Embeddings");
+      props.setInput("Generating Embeddings...");
+
+      // console.log("EMBEDDING_ENDPOINT", process.env.NEXT_PUBLIC_EMBEDDING_ENDPOINT)
       try {
-        const response = await fetch(`${process.env.EMBEDDING_ENDPOINT}`, {
-          method: "POST",
-          body: JSON.stringify({
-            url: getUrl,
-          }),
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_EMBEDDING_ENDPOINT}`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              url: getUrl,
+            }),
+          },
+        );
 
         const data = await response.json();
         console.log("data", data);

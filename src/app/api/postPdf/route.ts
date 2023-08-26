@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
   const getCommand = new GetObjectCommand({
     Bucket: process.env.BUCKET_NAME,
-    Key: fileName,
+    Key: `${orgSlug}/${fileName}`,
   });
   const get = await getSignedUrl(client, getCommand, { expiresIn: 3600 });
   console.log("get", get);
