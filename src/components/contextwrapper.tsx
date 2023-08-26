@@ -31,7 +31,7 @@ export function ContextWrapper(props: Props) {
       let template = PromptTemplate.fromTemplate(`{prompt}"{selection}"`);
       let prompt = await template.format({
         prompt: predefinedPrompts[promptType],
-        selection: selection.toString(),
+        selection: selection.toString().trim(),
       });
 
       const message = {
