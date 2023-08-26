@@ -30,3 +30,16 @@ export const QuerySchema = z.object({
   query: z.string().nonempty(),
   systemMessage: z.string(),
 });
+
+export const CHAT_COMPLETION_CONTENT =
+  "This chat has reached its maximum limit. Start a new Conversation.";
+
+export type Model = "gpt-4" | "gpt-3.5-turbo" | "gpt-3.5-turbo-16k";
+
+export type PromptTypes =
+  | "factCheck"
+  | "explain"
+  | "elaborate"
+  | "criticise"
+  | "examples"
+  | "references";

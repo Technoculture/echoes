@@ -5,6 +5,7 @@ import { ChatEntry, ChatLog } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
+import { ContextWrapper } from "@/components/contextwrapper";
 
 interface ChatProps {
   orgId: string;
@@ -55,24 +56,38 @@ export default function Chat(props: ChatProps) {
         ? props.liveChat.map((entry, index) => {
             if (entry.role !== "system") {
               return (
-                <ChatMessage
-                  uid={props.uid}
-                  name={props.username}
-                  chat={entry as Message}
+                <ContextWrapper
+                  append={append}
+                  username={props.username}
+                  userId={props.uid}
                   key={entry.id || index}
-                />
+                >
+                  <ChatMessage
+                    uid={props.uid}
+                    name={props.username}
+                    chat={entry as Message}
+                    key={entry.id || index}
+                  />
+                </ContextWrapper>
               );
             }
           })
         : messages.map((entry, index) => {
             if (entry.role !== "system") {
               return (
-                <ChatMessage
-                  uid={props.uid}
-                  name={props.username}
-                  chat={entry as Message}
+                <ContextWrapper
+                  append={append}
+                  username={props.username}
+                  userId={props.uid}
                   key={entry.id || index}
-                />
+                >
+                  <ChatMessage
+                    uid={props.uid}
+                    name={props.username}
+                    chat={entry as Message}
+                    key={entry.id || index}
+                  />
+                </ContextWrapper>
               );
             }
           })}

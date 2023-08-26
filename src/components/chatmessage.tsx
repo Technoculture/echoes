@@ -11,8 +11,6 @@ import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { PluggableList } from "react-markdown/lib/react-markdown";
 import { Badge } from "@/components/badge";
 import { ScrollArea } from "@/components/scrollarea";
-// import Plugable
-// totally Message with an optional createdBy property
 interface OrganizationChatMessage extends Message {
   createdBy?: string;
 }

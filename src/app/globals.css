@@ -157,3 +157,8 @@ code {
   font-size: 95%;
 }
 */
+
+
+::selection {
+  background-color: rgb(6 182 212); /* Replace with your desired background color */
+}
