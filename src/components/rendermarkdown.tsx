@@ -26,10 +26,10 @@ const RenderMarkdown = (props: Props) => {
   return (
     <div>
       <ReactMarkdown
-        className={`text-primary text-sm ${
+        className={`text-primary max-w-full text-sm box-border ${
           props.role === "user"
             ? "group-hover:text-gray-100"
-            : "max-w-full p-4 overflow-x-auto"
+            : " p-4 overflow-x-auto"
         } `}
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[remarkRehype] as PluggableList}

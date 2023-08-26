@@ -20,6 +20,7 @@ import useClipboard from "@/lib/useClipboard";
 type Props = {
   content: string;
   role: MessageRole;
+  isEditing: boolean;
   setEditing: Dispatch<SetStateAction<boolean>>;
   handleRegenerate: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   isRegenerating: boolean;
@@ -52,7 +53,11 @@ const ChatMessageActions = (props: Props) => {
             <DropdownMenuItem onClick={(e) => props.handleRegenerate(e)}>
               <div className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-2">
                 <ArrowsClockwise
-                  className={`${props.isRegenerating ? "animate-spin" : ""}`}
+                  className={`${
+                    props.isRegenerating && !props.isEditing
+                      ? "animate-spin"
+                      : ""
+                  }`}
                 />
               </div>{" "}
               Regenerate

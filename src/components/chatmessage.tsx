@@ -16,6 +16,7 @@ interface ChatMessageProps {
   orgId: string;
   messages: Message[];
   setMessages: (messages: Message[]) => void;
+  updateRoom: (data: any) => void;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -39,6 +40,7 @@ const ChatMessage = (props: ChatMessageProps) => {
 
   const onEditComplete = async (e: any, index: number, role: MessageRole) => {
     setIsLoading(true);
+    setIsRegenerating(true);
     console.log("index", index); // got the index
 
     console.log("role", role); // got the role
@@ -68,6 +70,7 @@ const ChatMessage = (props: ChatMessageProps) => {
 
         console.log("response", await res.json());
         props.setMessages(tempMessages);
+        props.updateRoom(tempMessages);
       } catch (err) {
         console.log("err", err);
         setEditText(props.chat.content);
@@ -88,6 +91,7 @@ const ChatMessage = (props: ChatMessageProps) => {
 
         const data = await res.json();
         props.setMessages(data.updatedMessages);
+        props.updateRoom(data.updatedMessages);
         console.log("incomingData", data.updatedMessages);
         // console.log("res", await res.json())
       } catch (err) {
@@ -100,6 +104,7 @@ const ChatMessage = (props: ChatMessageProps) => {
 
     setIsLoading(false);
     setIsEditing(false);
+    setIsRegenerating(false);
   };
 
   const cancelEditing = () => {
@@ -135,6 +140,7 @@ const ChatMessage = (props: ChatMessageProps) => {
 
       const data = await res.json();
       props.setMessages(data.updatedMessages);
+      props.updateRoom(data.updatedMessages);
       console.log("incomingData", data.updatedMessages);
       // console.log("res", await res.json())
     } catch (err) {
@@ -149,7 +155,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   return (
     <div
       className={
-        "flex-col p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
+        "flex-col box-border overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
       }
     >
       <div className="grow flex justify-between">
@@ -163,6 +169,7 @@ const ChatMessage = (props: ChatMessageProps) => {
           {userName}
         </p>
         <ChatMessageActions
+          isEditing={isEditing}
           setEditing={setIsEditing}
           role={props.chat.role}
           content={props.chat.content}
@@ -181,16 +188,19 @@ const ChatMessage = (props: ChatMessageProps) => {
           <RenderMarkdown content={props.chat.content} role={props.chat.role} />
         </div>
       ) : (
-        <div className="grid gap-2">
+        <div
+          className={`grid gap-2 ${
+            isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
+          } `}
+        >
           <TextareaAutosize
             autoFocus={true}
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           ></TextareaAutosize>
-          <div className="place-self-end">
+          <div className="flex gap-2 place-self-end">
             <Button
-              className="mr-2"
               onClick={(e) =>
                 onEditComplete(e, props.messageIndex, props.chat.role)
               }

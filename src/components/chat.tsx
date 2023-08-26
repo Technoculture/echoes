@@ -65,6 +65,7 @@ export default function Chat(props: ChatProps) {
                   key={entry.id || index}
                   messages={messages}
                   setMessages={setMessages}
+                  updateRoom={updateRoomData}
                 />
               );
             }
@@ -82,6 +83,7 @@ export default function Chat(props: ChatProps) {
                   key={entry.id || index}
                   messages={messages}
                   setMessages={setMessages}
+                  updateRoom={updateRoomData}
                 />
               );
             }
