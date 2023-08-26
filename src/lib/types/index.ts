@@ -41,7 +41,8 @@ export type PromptTypes =
   | "explain"
   | "elaborate"
   | "criticise"
-  | "examples";
+  | "examples"
+  | "references";
 
 export type MessageRole = "function" | "user" | "assistant" | "system";
 

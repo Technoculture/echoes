@@ -45,7 +45,6 @@ export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
   };
   chat.push(FIXED as ChatEntry);
   const msgs = jsonToLangchain(chat);
-
   const azure_chat_model: ChatOpenAI = new ChatOpenAI({
     temperature: 0.5,
     azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
