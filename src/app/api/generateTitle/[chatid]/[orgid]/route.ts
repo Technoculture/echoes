@@ -3,7 +3,7 @@ import { env } from "@/app/env.mjs";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { Chat, chats } from "@/lib/db/schema";
-import { jsonToLangchain } from "@/app/api/chatmodel/[chatid]/route";
+import { jsonToLangchain } from "@/utils/apiHelper";
 import { NextResponse } from "next/server";
 import { ChatEntry } from "@/lib/types";
 export const revalidate = 0; // disable cache

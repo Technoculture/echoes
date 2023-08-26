@@ -111,8 +111,6 @@ export const azureOpenAiChatModel = (
   });
 };
 
-
-
 export const openAIChatModel = (
   model: string | undefined,
   streaming: boolean,
