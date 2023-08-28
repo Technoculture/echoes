@@ -46,13 +46,17 @@ const ChatMessageActions = (props: Props) => {
             <CopyToClipboard copied={copied} /> Copy
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => props.setEditing(true)}>
-            <NotePencil className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-2" />{" "}
+            <NotePencil
+              size={14}
+              className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-2"
+            />{" "}
             Edit
           </DropdownMenuItem>
           {props.role !== "user" && (
             <DropdownMenuItem onClick={(e) => props.handleRegenerate(e)}>
               <div className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-2">
                 <ArrowsClockwise
+                  size={14}
                   className={`${
                     props.isRegenerating && !props.isEditing
                       ? "animate-spin"

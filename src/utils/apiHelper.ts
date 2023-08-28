@@ -122,7 +122,7 @@ export const openAIChatModel = (
     topP: 0.5,
     openAIApiKey: env.OPEN_AI_API_KEY,
     streaming: streaming,
-    maxRetries: 0,
+    maxRetries: 1,
     callbacks: handlers ? [handlers] : [],
   });
 };
