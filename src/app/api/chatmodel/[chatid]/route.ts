@@ -124,6 +124,7 @@ export async function POST(
   const modelWithFallback = openai_chat_model.withFallbacks({
     fallbacks: [azure_chat_model],
   });
+  modelWithFallback.invoke(msgs);
   console.info("info", modelWithFallback);
   return new StreamingTextResponse(stream);
 }
