@@ -3,7 +3,7 @@ import { chats } from "@/lib/db/schema";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import {
   OPEN_AI_MODELS,
-  azureOpenAiChatModel,
+  // azureOpenAiChatModel,
   jsonToLangchain,
   openAIChatModel,
 } from "@/utils/apiHelper";
@@ -28,18 +28,19 @@ export async function POST(
 
   const msgs = jsonToLangchain(preMessages as ChatEntry[], systemPrompt);
 
-  const azure_chat_model = azureOpenAiChatModel(
-    OPEN_AI_MODELS.gptTurbo16k,
-    false,
-  );
+  // const azure_chat_model = azureOpenAiChatModel(
+  //   OPEN_AI_MODELS.gptTurbo16k,
+  //   false,
+  // );
 
   const openai_chat_model = openAIChatModel(OPEN_AI_MODELS.gpt4, false);
 
-  const modelWithFallback = openai_chat_model.withFallbacks({
-    fallbacks: [azure_chat_model],
-  });
+  // const modelWithFallback = openai_chat_model.withFallbacks({
+  //   fallbacks: [azure_chat_model],
+  // });
 
-  const answer = await modelWithFallback.invoke(msgs);
+  // const answer = await modelWithFallback.invoke(msgs);
+  const answer = await openai_chat_model.call(msgs);
 
   const updatedAIResponse = {
     role: "assistant",
