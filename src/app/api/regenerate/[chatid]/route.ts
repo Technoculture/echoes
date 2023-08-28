@@ -1,13 +1,16 @@
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { ChatEntry, ChatLog } from "@/lib/types";
-import { jsonToLangchain } from "@/utils/apiHelper";
+import {
+  OPEN_AI_MODELS,
+  azureOpenAiChatModel,
+  jsonToLangchain,
+  openAIChatModel,
+} from "@/utils/apiHelper";
 import { systemPrompt } from "@/utils/prompts";
 import { Message } from "ai";
 import { eq } from "drizzle-orm";
-import { ChatOpenAI } from "langchain/chat_models/openai";
 import { NextResponse } from "next/server";
-import { env } from "process";
 
 type regenerateBody = {
   preMessages: Message[];
@@ -22,29 +25,16 @@ export async function POST(
   const chatId = params.params.chatid;
   let preMessages = body.preMessages;
   let postMessages = body.postMessages;
-  console.log("preMessages", preMessages);
-  console.log("postMessages", postMessages);
 
   const msgs = jsonToLangchain(preMessages as ChatEntry[], systemPrompt);
 
-  const azure_chat_model: ChatOpenAI = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo-16k",
-    temperature: 0.5,
-    azureOpenAIApiKey: env.AZURE_OPENAI_API_KEY,
-    azureOpenAIApiVersion: env.AZURE_OPENAI_API_VERSION,
-    azureOpenAIApiInstanceName: env.AZURE_OPENAI_API_INSTANCE_NAME,
-    azureOpenAIApiDeploymentName: env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
-    topP: 0.5,
-  });
-  // change model type based on isFast variable and OPEN_AI_API_KEY as well
-  const openai_chat_model: ChatOpenAI = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo-16k",
-    temperature: 0.5,
-    topP: 0.5,
-    openAIApiKey: env.OPEN_AI_API_KEY,
-    streaming: true,
-    maxRetries: 0,
-  });
+  const azure_chat_model = azureOpenAiChatModel(
+    OPEN_AI_MODELS.gptTurbo16k,
+    false,
+  );
+
+  const openai_chat_model = openAIChatModel(OPEN_AI_MODELS.gpt4, false);
+
   const modelWithFallback = openai_chat_model.withFallbacks({
     fallbacks: [azure_chat_model],
   });

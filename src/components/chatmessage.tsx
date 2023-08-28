@@ -41,34 +41,19 @@ const ChatMessage = (props: ChatMessageProps) => {
   const onEditComplete = async (e: any, index: number, role: MessageRole) => {
     setIsLoading(true);
     setIsRegenerating(true);
-    console.log("index", index); // got the index
-
-    console.log("role", role); // got the role
-    // update local messages using index
-    // if role is user => regenerate response and replace the next assistant message
-    // if role is !user => update database with corrected text
 
     if (role === "assistant") {
       try {
-        console.log("messages", props.messages);
-        console.log("editText", editText);
-        // const tempMessages = [...props.messages];
-
         const tempMessages = structuredClone(props.messages);
         tempMessages[Number(index)].content = editText;
-        console.log("tempMessages", tempMessages);
-        // const updatedMessages = props.messages.map((message, index) => [message.index, index].includes(props.messageIndex) ? {...message, content: editText} : message)
         const res = await fetch(`/api/updateChat/${props.chatId}`, {
           method: "post",
           body: JSON.stringify({
             orgId: props.orgId,
             updatedMessages: tempMessages,
-            // messageIndex: props.messageIndex,
-            // updatedContent: editText
           }),
         });
 
-        console.log("response", await res.json());
         props.setMessages(tempMessages);
         props.updateRoom(tempMessages);
       } catch (err) {
@@ -92,14 +77,9 @@ const ChatMessage = (props: ChatMessageProps) => {
         const data = await res.json();
         props.setMessages(data.updatedMessages);
         props.updateRoom(data.updatedMessages);
-        console.log("incomingData", data.updatedMessages);
-        // console.log("res", await res.json())
       } catch (err) {
         console.log("line 94", err);
       }
-
-      console.log("preMessages", preMessages);
-      console.log("postMessages", postMessages);
     }
 
     setIsLoading(false);
@@ -115,19 +95,13 @@ const ChatMessage = (props: ChatMessageProps) => {
   const handleRegenerate = async (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
-    // e.preventDefault();
     setIsRegenerating(true);
     const id = props.messageIndex; // id of the response to be regenerated
 
     const tempMessages = structuredClone(props.messages);
 
-    //TODO: handle the case if the user wants to regenerate the last message
-    // messages before the response to be regenerated
     const chatToBeSent = tempMessages.slice(0, id); // response is not included
-    console.log("chatToBeSent", chatToBeSent);
-    console.log("tempMessages", tempMessages);
     const remainingMessages = tempMessages.slice(id + 1);
-    console.log("remainingMessages", remainingMessages);
 
     try {
       const res = await fetch(`/api/regenerate/${props.chatId}`, {
@@ -141,13 +115,10 @@ const ChatMessage = (props: ChatMessageProps) => {
       const data = await res.json();
       props.setMessages(data.updatedMessages);
       props.updateRoom(data.updatedMessages);
-      console.log("incomingData", data.updatedMessages);
-      // console.log("res", await res.json())
     } catch (err) {
       console.log(err);
     }
 
-    console.log("regenerating", id);
     setIsRegenerating(false);
     setIsActionsOpen(false);
   };
