@@ -65,6 +65,7 @@
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
     "react-markdown": "^8.0.7",
+    "react-mic": "^12.4.6",
     "react-syntax-highlighter": "^15.5.0",
     "react-textarea-autosize": "^8.4.1",
     "remark-gfm": "^3.0.1",
@@ -73,9 +74,11 @@
     "tailwindcss-animate": "^1.0.5",
     "typescript": "5.0.3",
     "uploadthing": "^5.2.0",
+    "vaul": "^0.4.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/react-mic": "^12.4.3",
     "@types/react-syntax-highlighter": "^15.5.7",
     "autoprefixer": "^10.4.14",
     "cross-env": "^7.0.3",

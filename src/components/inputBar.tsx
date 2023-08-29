@@ -1,10 +1,17 @@
 "use client";
 
 import TextareaAutosize from "react-textarea-autosize";
-import { ChangeEvent, Dispatch, FormEvent, SetStateAction } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useState,
+} from "react";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { Toggle } from "@/components/toogle";
-import { Brain, Lightning } from "@phosphor-icons/react";
+import { Brain, Lightning, Microphone } from "@phosphor-icons/react";
+import AudioDrawer from "@/components/audiodrawer";
 
 interface InputBarProps {
   value: string;
@@ -24,6 +31,9 @@ interface InputBarProps {
 }
 
 const InputBar = (props: InputBarProps) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const message = {
@@ -33,6 +43,27 @@ const InputBar = (props: InputBarProps) => {
     };
     props.append(message as Message);
     props.setInput("");
+  };
+
+  const handleAudio = async (audioFile: File, shouldSubmit: boolean) => {
+    const f = new FormData();
+    f.append("file", audioFile);
+    // Buffer.from(audioFile)
+    console.log(audioFile);
+    try {
+      const res = await fetch("/api/transcript", {
+        method: "POST",
+        body: f,
+      });
+
+      // console.log('data', await data.json());
+      const data = await res.json();
+      console.log("got the data", data);
+      props.setInput(data.text);
+      setIsDrawerOpen(false);
+    } catch (err) {
+      console.log("got in error", err);
+    }
   };
 
   return (
@@ -47,15 +78,33 @@ const InputBar = (props: InputBarProps) => {
           {props.isFast ? <Brain /> : <Lightning />}
         </Toggle>
 
-        <TextareaAutosize
-          disabled={props.isChatCompleted}
-          maxRows={10}
-          placeholder="Type your message here..."
-          autoFocus
-          value={props.value}
-          onChange={props.onChange}
-          className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm"
-        />
+        <div className="relative w-full">
+          <TextareaAutosize
+            disabled={props.isChatCompleted}
+            maxRows={10}
+            placeholder="Type your message here..."
+            autoFocus
+            value={props.value}
+            onChange={props.onChange}
+            className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm w-full"
+          />
+          <button
+            onClick={() => setIsDrawerOpen(true)}
+            type="button"
+            className="p-2 text-green-400 hover:text-green-100 absolute right-8"
+          >
+            <Microphone size={24} color="#618a9e" weight="bold" />
+          </button>
+        </div>
+        {isDrawerOpen && (
+          <AudioDrawer
+            isRecording={isRecording}
+            setIsRecording={setIsRecording}
+            isOpen={isDrawerOpen}
+            setIsOpen={setIsDrawerOpen}
+            submitAudio={handleAudio}
+          />
+        )}
         <button
           disabled={props.isChatCompleted}
           type="submit"
