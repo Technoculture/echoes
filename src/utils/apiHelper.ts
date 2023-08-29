@@ -93,23 +93,23 @@ export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
   return res.content;
 };
 
-export const azureOpenAiChatModel = (
-  model: string | undefined,
-  streaming: boolean,
-  handlers?: any,
-): ChatOpenAI => {
-  return new ChatOpenAI({
-    modelName: model,
-    temperature: 0.5,
-    azureOpenAIApiKey: env.AZURE_OPENAI_API_KEY,
-    azureOpenAIApiVersion: env.AZURE_OPENAI_API_VERSION,
-    azureOpenAIApiInstanceName: env.AZURE_OPENAI_API_INSTANCE_NAME,
-    azureOpenAIApiDeploymentName: env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
-    topP: 0.5,
-    streaming: streaming,
-    callbacks: handlers ? [handlers] : [],
-  });
-};
+// export const azureOpenAiChatModel = (
+//   model: string | undefined,
+//   streaming: boolean,
+//   handlers?: any,
+// ): ChatOpenAI => {
+//   return new ChatOpenAI({
+//     modelName: model,
+//     temperature: 0.5,
+//     azureOpenAIApiKey: env.AZURE_OPENAI_API_KEY,
+//     azureOpenAIApiVersion: env.AZURE_OPENAI_API_VERSION,
+//     azureOpenAIApiInstanceName: env.AZURE_OPENAI_API_INSTANCE_NAME,
+//     azureOpenAIApiDeploymentName: env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
+//     topP: 0.5,
+//     streaming: streaming,
+//     callbacks: handlers ? [handlers] : [],
+//   });
+// };
 
 export const openAIChatModel = (
   model: string | undefined,
