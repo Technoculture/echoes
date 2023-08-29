@@ -36,7 +36,7 @@ const ChatMessageActions = (props: Props) => {
       onOpenChange={() => props.setOpen((prev) => !prev)}
     >
       <DropdownMenuTrigger asChild>
-        <Button size={"sm"} variant="ghost" className="px-1 h-4">
+        <Button size="icon" variant="ghost">
           <DotsThreeVertical />
         </Button>
       </DropdownMenuTrigger>
@@ -46,17 +46,17 @@ const ChatMessageActions = (props: Props) => {
             <CopyToClipboard copied={copied} /> Copy
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => props.setEditing(true)}>
-            <NotePencil
-              size={14}
-              className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-2"
-            />{" "}
+            <div className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-2">
+              <NotePencil width={14} height={14} />
+            </div>{" "}
             Edit
           </DropdownMenuItem>
           {props.role !== "user" && (
             <DropdownMenuItem onClick={(e) => props.handleRegenerate(e)}>
               <div className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-2">
                 <ArrowsClockwise
-                  size={14}
+                  width={14}
+                  height={14}
                   className={`${
                     props.isRegenerating && !props.isEditing
                       ? "animate-spin"

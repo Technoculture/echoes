@@ -126,6 +126,6 @@ export async function POST(
   // });
   // modelWithFallback.invoke(msgs);
   openai_chat_model.call(msgs);
-  // console.info("info", modelWithFallback.lc_kwargs);
+  console.info("info", openai_chat_model.lc_kwargs);
   return new StreamingTextResponse(stream);
 }
