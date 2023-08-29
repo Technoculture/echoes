@@ -43,3 +43,7 @@ export type PromptTypes =
   | "criticise"
   | "examples"
   | "references";
+
+export type MessageRole = "function" | "user" | "assistant" | "system";
+
+// export type MessageRole = Pick<Message, "role">

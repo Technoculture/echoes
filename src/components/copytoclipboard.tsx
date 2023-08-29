@@ -7,23 +7,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/tooltip";
-import useClipboard from "@/lib/useClipboard";
 
 interface CopyToClipboardProps {
-  content: string;
+  copied: boolean;
 }
 
 const CopyToClipboard = (props: CopyToClipboardProps) => {
-  const { copied, copyToClipboard } = useClipboard();
-
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger
-          onClick={() => copyToClipboard(props.content)}
-          className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit"
-        >
-          {copied ? (
+        <TooltipTrigger className="bg-secondary group-hover:bg-popover text-primary group-hover:text-primary flex-none p-1 w-fit h-fit mr-2">
+          {props.copied ? (
             <Check className="hover:text-primary" height={14} width={14} />
           ) : (
             <Copy className="hover:text-primary" height={14} width={14} />

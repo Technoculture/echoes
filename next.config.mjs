@@ -1,5 +1,5 @@
 import "./src/app/env.mjs";
-import { withSentryConfig } from "@sentry/nextjs"
+import * as Sentry  from "@sentry/nextjs"
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -17,7 +17,7 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {authToken: process.env.SENTRY_AUTH_TOKEN, org: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT, hideSourceMaps: true},  {
+export default Sentry.withSentryConfig(nextConfig, {authToken: process.env.SENTRY_AUTH_TOKEN, org: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT, hideSourceMaps: true},  {
 // For all available options, see:
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 

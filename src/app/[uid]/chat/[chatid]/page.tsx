@@ -63,6 +63,7 @@ export default async function Page({
         uid={userId}
         username={fullname}
         chatAvatarData={fetchedChat[0]}
+        org_slug={params.uid} // here uid contains org_slug
       ></RoomWrapper>
     </RoomProvider>
   );

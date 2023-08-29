@@ -1,32 +1,31 @@
-import CopyToClipboard from "@/components/copytoclipboard";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Message } from "ai";
-import remarkRehype from "remark-rehype/lib";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { NormalComponents } from "react-markdown/lib/complex-types";
-import { SpecialComponents } from "react-markdown/lib/ast-to-react";
-import { PluggableList } from "react-markdown/lib/react-markdown";
-import { Badge } from "@/components/badge";
-import { ScrollArea } from "@/components/scrollarea";
-interface OrganizationChatMessage extends Message {
-  createdBy?: string;
-}
+import TextareaAutosize from "react-textarea-autosize";
+import ChatMessageActions from "@/components/chatmessageactions";
+import { useState } from "react";
+import RenderMarkdown from "@/components/rendermarkdown";
+import { Button } from "@/components/button";
+import { MessageRole } from "@/lib/types";
+import { CircleNotch } from "@phosphor-icons/react";
 
 interface ChatMessageProps {
   name: string;
-  chat: OrganizationChatMessage;
+  chat: Message;
   uid: string;
+  messageIndex: number;
+  chatId: string;
+  orgId: string;
+  messages: Message[];
+  setMessages: (messages: Message[]) => void;
+  updateRoom: (data: any) => void;
 }
 
-interface Components
-  extends Partial<
-    Omit<NormalComponents, keyof SpecialComponents> & SpecialComponents
-  > {}
-
 const ChatMessage = (props: ChatMessageProps) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editText, setEditText] = useState<string>(props.chat.content);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
+  const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
+
   let userName = "";
   if (props?.chat.name) {
     const [name, id] = props.chat.name.split(",");
@@ -39,10 +38,95 @@ const ChatMessage = (props: ChatMessageProps) => {
     }
   }
 
+  const onEditComplete = async (e: any, index: number, role: MessageRole) => {
+    setIsLoading(true);
+    setIsRegenerating(true);
+
+    if (role === "assistant") {
+      try {
+        const tempMessages = structuredClone(props.messages);
+        tempMessages[Number(index)].content = editText;
+        const res = await fetch(`/api/updateChat/${props.chatId}`, {
+          method: "post",
+          body: JSON.stringify({
+            orgId: props.orgId,
+            updatedMessages: tempMessages,
+          }),
+        });
+
+        props.setMessages(tempMessages);
+        props.updateRoom(tempMessages);
+      } catch (err) {
+        console.log("err", err);
+        setEditText(props.chat.content);
+      }
+    } else {
+      const preMessages = props.messages.slice(0, index + 1); // including the edited one
+      preMessages[preMessages.length - 1].content = editText;
+      const postMessages = props.messages.slice(index + 2);
+
+      try {
+        const res = await fetch(`/api/regenerate/${props.chatId}`, {
+          method: "post",
+          body: JSON.stringify({
+            preMessages: preMessages,
+            postMessages: postMessages,
+          }),
+        });
+
+        const data = await res.json();
+        props.setMessages(data.updatedMessages);
+        props.updateRoom(data.updatedMessages);
+      } catch (err) {
+        console.log("line 94", err);
+      }
+    }
+
+    setIsLoading(false);
+    setIsEditing(false);
+    setIsRegenerating(false);
+  };
+
+  const cancelEditing = () => {
+    setIsEditing(false);
+    setEditText(props.chat.content);
+  };
+
+  const handleRegenerate = async (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
+    setIsRegenerating(true);
+    const id = props.messageIndex; // id of the response to be regenerated
+
+    const tempMessages = structuredClone(props.messages);
+
+    const chatToBeSent = tempMessages.slice(0, id); // response is not included
+    const remainingMessages = tempMessages.slice(id + 1);
+
+    try {
+      const res = await fetch(`/api/regenerate/${props.chatId}`, {
+        method: "post",
+        body: JSON.stringify({
+          preMessages: chatToBeSent,
+          postMessages: remainingMessages,
+        }),
+      });
+
+      const data = await res.json();
+      props.setMessages(data.updatedMessages);
+      props.updateRoom(data.updatedMessages);
+    } catch (err) {
+      console.log(err);
+    }
+
+    setIsRegenerating(false);
+    setIsActionsOpen(false);
+  };
+
   return (
     <div
       className={
-        "flex-col p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
+        "flex-col box-border overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
       }
     >
       <div className="grow flex justify-between">
@@ -55,164 +139,54 @@ const ChatMessage = (props: ChatMessageProps) => {
         >
           {userName}
         </p>
-        <CopyToClipboard content={props.chat.content} />
+        <ChatMessageActions
+          isEditing={isEditing}
+          setEditing={setIsEditing}
+          role={props.chat.role}
+          content={props.chat.content}
+          handleRegenerate={handleRegenerate}
+          isRegenerating={isRegenerating}
+          open={isActionsOpen}
+          setOpen={setIsActionsOpen}
+        />
       </div>
-      {props.chat.role === "user" ? (
-        <ReactMarkdown
-          className="text-primary text-sm group-hover:text-gray-100"
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[remarkRehype] as PluggableList}
-          remarkRehypeOptions={{}}
-          components={components}
+      {!isEditing ? (
+        <div
+          className={
+            isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
+          }
         >
-          {props.chat.content}
-        </ReactMarkdown>
+          <RenderMarkdown content={props.chat.content} role={props.chat.role} />
+        </div>
       ) : (
-        <ReactMarkdown
-          className="text-primary text-sm max-w-full p-4 overflow-x-auto "
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[remarkRehype] as PluggableList}
-          components={components}
+        <div
+          className={`grid gap-2 ${
+            isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
+          } `}
         >
-          {props.chat.content}
-        </ReactMarkdown>
+          <TextareaAutosize
+            autoFocus={true}
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          ></TextareaAutosize>
+          <div className="flex gap-2 place-self-end">
+            <Button
+              onClick={(e) =>
+                onEditComplete(e, props.messageIndex, props.chat.role)
+              }
+            >
+              {isLoading && (
+                <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
+              )}
+              Save{props.chat.role === "user" && " and Regenerate"}
+            </Button>
+            <Button onClick={cancelEditing}>Cancel</Button>
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
 export default ChatMessage;
-
-const components: Components = {
-  h1: ({ children, node, level, ...props }) => {
-    return (
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-        {children}
-      </h1>
-    );
-  },
-  h2: ({ children, node, level, ...props }) => {
-    return (
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-        {children}
-      </h2>
-    );
-  },
-  h3: ({ children, node, level, ...props }) => {
-    return (
-      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-        {children}
-      </h3>
-    );
-  },
-  h4: ({ children, node, level, ...props }) => {
-    return (
-      <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-        {children}
-      </h4>
-    );
-  },
-  p: ({ children, node, ...props }) => {
-    if (children.length === 1 && children.toString().includes("#")) {
-      const str = children.toString();
-      let strChunks = str.split(" ");
-      return (
-        <p className="leading-normal [&:not(:first-child)]:mt-6">
-          {strChunks.map((chunk) =>
-            chunk.match(/([#])\w+/g) ? (
-              <Badge key={chunk}>{chunk.slice(1)}</Badge>
-            ) : (
-              <span key={chunk}>{chunk}</span>
-            ),
-          )}
-        </p>
-      );
-    }
-    return (
-      <p className="leading-normal [&:not(:first-child)]:my-4">{children}</p>
-    );
-  },
-  blockquote: ({ children, node, ...props }) => {
-    return (
-      <blockquote className="mt-6 border-l-2 pl-6 italic">
-        {children}
-      </blockquote>
-    );
-  },
-  ul: ({ children, node, ...props }) => {
-    return <ul className="my-6 ml-6 list-disc [&>li]:mt-2">{children}</ul>;
-  },
-  ol: ({ children, node, ...props }) => {
-    return <ol className="my-6 ml-6 list-decimal [&>li]:mt-2">{children}</ol>;
-  },
-  code({ node, inline, className, style, children, ...props }) {
-    const match = /language-(\w+)/.exec(className || "");
-    return (
-      <ScrollArea className="w-[90vw]">
-        {!inline && match ? (
-          <div style={dark}>
-            <SyntaxHighlighter
-              style={atomDark}
-              language={match[1]}
-              PreTag="div"
-              showLineNumbers
-              {...props}
-            >
-              {String(children).replace(/\n$/, "")}
-            </SyntaxHighlighter>
-          </div>
-        ) : (
-          <code className={className} {...props}>
-            {children}
-          </code>
-        )}
-      </ScrollArea>
-    );
-  },
-  small: ({ children }) => {
-    return (
-      <small className="text-sm font-medium leading-none">{children}</small>
-    );
-  },
-  table: ({ children }) => {
-    return (
-      <ScrollArea className="w-[90vw]">
-        <table className="w-full">{children}</table>
-      </ScrollArea>
-    );
-  },
-  tr: ({ children }) => {
-    return <tr className="m-0 border-t p-0 even:bg-muted">{children}</tr>;
-  },
-  th: ({ children }) => {
-    return (
-      <th className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right">
-        {children}
-      </th>
-    );
-  },
-  td: ({ children }) => {
-    return (
-      <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
-        {children}
-      </td>
-    );
-  },
-  a: ({ children, href }) => {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        className="underline underline-offset-4 hover:text-primary"
-      >
-        {children}
-      </a>
-    );
-  },
-  b: ({ children }) => {
-    return <b className="font-bold">{children}</b>;
-  },
-  i: ({ children }) => {
-    return <i className="italic">{children}</i>;
-  },
-};

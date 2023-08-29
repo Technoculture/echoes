@@ -1,47 +1,25 @@
-import { ChatOpenAI } from "langchain/chat_models/openai";
 import { StreamingTextResponse, LangChainStream } from "ai";
-import {
-  HumanMessage,
-  SystemMessage,
-  AIMessage,
-  BaseMessage,
-} from "langchain/schema";
-import { env } from "@/app/env.mjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { ChatEntry, ChatLog } from "@/lib/types";
-import { auth } from "@clerk/nextjs";
-import { generateTitle } from "../../generateTitle/[chatid]/[orgid]/route";
+import { CHAT_COMPLETION_CONTENT, ChatEntry, ChatLog } from "@/lib/types";
+import { systemPrompt } from "@/utils/prompts";
+import {
+  chooseModel,
+  jsonToLangchain,
+  generateTitle,
+  // azureOpenAiChatModel,
+  // OPEN_AI_MODELS,
+  openAIChatModel,
+} from "@/utils/apiHelper";
+import { NextResponse } from "next/server";
 export const revalidate = 0; // disable cache
-
-export const jsonToLangchain = (
-  chatData: ChatEntry[],
-  system?: string,
-): BaseMessage[] => {
-  let ret: BaseMessage[] = [];
-  if (system) {
-    ret.push(new SystemMessage(system));
-  }
-
-  chatData.forEach((item: ChatEntry) => {
-    if (item.hasOwnProperty("role")) {
-      if (item.role === "user") {
-        ret.push(new HumanMessage(item.content));
-      } else if (item.role === "assistant") {
-        ret.push(new AIMessage(item.content));
-      }
-    }
-  });
-  return ret;
-};
 
 export async function POST(
   request: Request,
   params: { params: { chatid: string } },
 ) {
   const body = await request.json();
-  const { userId } = auth();
 
   const _chat = body.messages;
   const isFast = body.isFast;
@@ -56,11 +34,32 @@ export async function POST(
     );
     return;
   }
-  const msgs = jsonToLangchain(
-    _chat,
-    "You are Echoes, an AI intended for biotech research and development. You are a friendly, critical, analytical AI system. You are fine-tuned and augmented with tools and data sources by Technoculture, Inc.> We prefer responses with headings, subheadings.When dealing with questions without a definite answer, think step by step before answering the question.",
-  );
+  const msgs = jsonToLangchain(_chat, systemPrompt);
   console.log("msgs", msgs[0]);
+
+  const { error, model } = chooseModel(isFast, msgs, systemPrompt);
+
+  if (error) {
+    const msg = {
+      content: CHAT_COMPLETION_CONTENT,
+      role: "assistant",
+    };
+    _chat.push(msg); // pushing the final message to identify that the chat is completed
+    await db
+      .update(chats)
+      .set({
+        messages: JSON.stringify({ log: _chat }),
+        updatedAt: new Date(),
+      })
+      .where(eq(chats.id, Number(id)))
+      .run();
+    return NextResponse.json(
+      { ...msg },
+      {
+        status: 400,
+      },
+    );
+  }
 
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
@@ -115,30 +114,18 @@ export async function POST(
     },
   });
 
-  // change model type based on isFast variable and OPEN_AI_API_KEY as well
-  const chatmodelazure: ChatOpenAI = new ChatOpenAI({
-    modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
-    temperature: 0.5,
-    azureOpenAIApiKey: env.AZURE_OPENAI_API_KEY,
-    azureOpenAIApiVersion: env.AZURE_OPENAI_API_VERSION,
-    azureOpenAIApiInstanceName: env.AZURE_OPENAI_API_INSTANCE_NAME,
-    azureOpenAIApiDeploymentName: env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
-    topP: 0.5,
-    streaming: true,
-    callbacks: [handlers],
-  });
-  const chatmodel: ChatOpenAI = new ChatOpenAI({
-    modelName: isFast ? "gpt-4" : "gpt-3.5-turbo-16k",
-    temperature: 0.5,
-    topP: 0.5,
-    openAIApiKey: env.OPEN_AI_API_KEY,
-    streaming: true,
-    maxRetries: 0,
-    callbacks: [handlers],
-  });
-  const modelWithFallback = chatmodel.withFallbacks({
-    fallbacks: [chatmodelazure],
-  });
-  modelWithFallback.invoke(msgs);
+  // const azure_chat_model = azureOpenAiChatModel(
+  //   OPEN_AI_MODELS.gptTurbo16k,
+  //   true,
+  //   handlers,
+  // ); // here it is type unsafe
+  const openai_chat_model = openAIChatModel(model, true, handlers);
+
+  // const modelWithFallback = openai_chat_model.withFallbacks({
+  //   fallbacks: [azure_chat_model],
+  // });
+  // modelWithFallback.invoke(msgs);
+  openai_chat_model.call(msgs);
+  console.info("info", openai_chat_model.lc_kwargs);
   return new StreamingTextResponse(stream);
 }

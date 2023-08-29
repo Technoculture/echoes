@@ -20,6 +20,7 @@ interface InputBarProps {
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
+  isChatCompleted: boolean;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -38,6 +39,7 @@ const InputBar = (props: InputBarProps) => {
     <form onSubmit={handleSubmit}>
       <div className="flex bg-linear-900 p-2 pt-2 rounded-sm  ">
         <Toggle
+          disabled={props.isChatCompleted}
           className="mr-2"
           pressed={props.isFast}
           onPressedChange={() => props.setIsFast(!props.isFast)}
@@ -46,6 +48,7 @@ const InputBar = (props: InputBarProps) => {
         </Toggle>
 
         <TextareaAutosize
+          disabled={props.isChatCompleted}
           maxRows={10}
           placeholder="Type your message here..."
           autoFocus
@@ -54,8 +57,9 @@ const InputBar = (props: InputBarProps) => {
           className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm"
         />
         <button
+          disabled={props.isChatCompleted}
           type="submit"
-          className="p-2 text-green-400 hover:text-green-100 flex justify-end"
+          className="p-2 text-green-400 hover:text-green-100 flex justify-end disabled:text-gray-500"
         >
           Send
         </button>

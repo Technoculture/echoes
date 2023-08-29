@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import ChatMessage from "@/components/chatmessage";
-import { ChatEntry, ChatLog } from "@/lib/types";
+import { CHAT_COMPLETION_CONTENT, ChatEntry, ChatLog } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
 import { ContextWrapper } from "@/components/contextwrapper";
+import Startnewchatbutton from "@/components/startnewchatbutton";
 
 interface ChatProps {
   orgId: string;
@@ -14,6 +15,7 @@ interface ChatProps {
   liveChat?: readonly ChatEntry[] | null;
   chatId: string;
   username: string;
+  org_slug: string;
 }
 
 export default function Chat(props: ChatProps) {
@@ -21,7 +23,13 @@ export default function Chat(props: ChatProps) {
     storage.set("chat", data);
   }, []);
 
+  const updateRoomAsCompleted = useMutation(({ storage }, newMessage) => {
+    const list = storage.get("chat");
+    list.push(JSON.parse(newMessage));
+  }, []);
+
   const [isFast, setIsFast] = useState<boolean>(true);
+  const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const {
     messages,
     input,
@@ -42,6 +50,11 @@ export default function Chat(props: ChatProps) {
       isFast: isFast,
       name: props.username,
     }, // some conflicts in role
+    onError: (error) => {
+      console.log("got the error", error);
+      updateRoomAsCompleted(error.message);
+      setIsChatCompleted(true);
+    },
   });
 
   useEffect(() => {
@@ -63,10 +76,16 @@ export default function Chat(props: ChatProps) {
                   key={entry.id || index}
                 >
                   <ChatMessage
+                    messageIndex={index}
+                    chatId={props.chatId}
+                    orgId={props.orgId}
                     uid={props.uid}
                     name={props.username}
                     chat={entry as Message}
                     key={entry.id || index}
+                    messages={messages}
+                    setMessages={setMessages}
+                    updateRoom={updateRoomData}
                   />
                 </ContextWrapper>
               );
@@ -74,6 +93,12 @@ export default function Chat(props: ChatProps) {
           })
         : messages.map((entry, index) => {
             if (entry.role !== "system") {
+              if (index === messages.length - 1 && !isChatCompleted) {
+                // track a state to disable all the fields
+                if (messages[index].content === CHAT_COMPLETION_CONTENT) {
+                  setIsChatCompleted(true);
+                }
+              }
               return (
                 <ContextWrapper
                   append={append}
@@ -82,15 +107,26 @@ export default function Chat(props: ChatProps) {
                   key={entry.id || index}
                 >
                   <ChatMessage
+                    messageIndex={index}
+                    chatId={props.chatId}
+                    orgId={props.orgId}
                     uid={props.uid}
                     name={props.username}
                     chat={entry as Message}
                     key={entry.id || index}
+                    messages={messages}
+                    setMessages={setMessages}
+                    updateRoom={updateRoomData}
                   />
                 </ContextWrapper>
               );
             }
           })}
+      {isChatCompleted && (
+        <div>
+          <Startnewchatbutton org_slug={props.org_slug} org_id={props.orgId} />
+        </div>
+      )}
       <InputBar
         username={props.username}
         userId={props.uid}
@@ -100,6 +136,7 @@ export default function Chat(props: ChatProps) {
         onChange={handleInputChange}
         setInput={setInput}
         append={append}
+        isChatCompleted={isChatCompleted}
       />
     </div>
   );
