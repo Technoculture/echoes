@@ -8,8 +8,8 @@ import {
   chooseModel,
   jsonToLangchain,
   generateTitle,
-  // azureOpenAiChatModel,
-  // OPEN_AI_MODELS,
+  azureOpenAiChatModel,
+  OPEN_AI_MODELS,
   openAIChatModel,
 } from "@/utils/apiHelper";
 import { NextResponse } from "next/server";
@@ -114,18 +114,18 @@ export async function POST(
     },
   });
 
-  // const azure_chat_model = azureOpenAiChatModel(
-  //   OPEN_AI_MODELS.gptTurbo16k,
-  //   true,
-  //   handlers,
-  // ); // here it is type unsafe
+  const azure_chat_model = azureOpenAiChatModel(
+    OPEN_AI_MODELS.gptTurbo16k,
+    true,
+    handlers,
+  ); // here it is type unsafe
   const openai_chat_model = openAIChatModel(model, true, handlers);
 
-  // const modelWithFallback = openai_chat_model.withFallbacks({
-  //   fallbacks: [azure_chat_model],
-  // });
-  // modelWithFallback.invoke(msgs);
-  openai_chat_model.call(msgs);
-  console.info("info", openai_chat_model.lc_kwargs);
+  const modelWithFallback = openai_chat_model.withFallbacks({
+    fallbacks: [azure_chat_model],
+  });
+  modelWithFallback.invoke(msgs);
+  // openai_chat_model.call(msgs);
+  console.info("info", modelWithFallback.lc_kwargs);
   return new StreamingTextResponse(stream);
 }
