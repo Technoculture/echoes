@@ -9,9 +9,11 @@ import {
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
-import { Toggle } from "@/components/toogle";
-import { Brain, Lightning, Microphone } from "@phosphor-icons/react";
-import AudioDrawer from "@/components/audiodrawer";
+import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
+import { Button } from "@/components/button";
+
+import InputBarActions from "./inputbaractions";
+import AudioWaveForm from "./audiowaveform";
 
 interface InputBarProps {
   value: string;
@@ -31,8 +33,9 @@ interface InputBarProps {
 }
 
 const InputBar = (props: InputBarProps) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [isAudioWaveVisible, setIsAudioWaveVisible] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,7 +48,9 @@ const InputBar = (props: InputBarProps) => {
     props.setInput("");
   };
 
-  const handleAudio = async (audioFile: File, shouldSubmit: boolean) => {
+  const handleAudio = async (audioFile: File) => {
+    setIsAudioWaveVisible(false);
+    setIsTranscribing(true);
     const f = new FormData();
     f.append("file", audioFile);
     // Buffer.from(audioFile)
@@ -60,59 +65,57 @@ const InputBar = (props: InputBarProps) => {
       const data = await res.json();
       console.log("got the data", data);
       props.setInput(data.text);
-      setIsDrawerOpen(false);
+      setIsTranscribing(false);
     } catch (err) {
       console.log("got in error", err);
+      setIsTranscribing(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm  ">
-        <Toggle
-          disabled={props.isChatCompleted}
-          className="mr-2"
-          pressed={props.isFast}
-          onPressedChange={() => props.setIsFast(!props.isFast)}
-        >
-          {props.isFast ? <Brain /> : <Lightning />}
-        </Toggle>
+      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm gap-2  ">
+        <InputBarActions />
 
-        <div className="relative w-full">
-          <TextareaAutosize
-            disabled={props.isChatCompleted}
-            maxRows={10}
-            placeholder="Type your message here..."
-            autoFocus
-            value={props.value}
-            onChange={props.onChange}
-            className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm w-full"
+        <TextareaAutosize
+          disabled={props.isChatCompleted || isRecording || isTranscribing}
+          maxRows={10}
+          placeholder="Type your message here..."
+          autoFocus
+          value={props.value}
+          onChange={props.onChange}
+          className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm"
+        />
+        <Button
+          disabled={isRecording || isTranscribing}
+          onClick={() => setIsAudioWaveVisible(true)}
+          variant="outline"
+          type="button"
+          className="p-2 text-blue-400 hover:text-green-100"
+        >
+          <Microphone
+            className="h-4 w-4 fill-current"
+            color="#618a9e"
+            weight="bold"
           />
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            type="button"
-            className="p-2 text-green-400 hover:text-green-100 absolute right-8"
-          >
-            <Microphone size={24} color="#618a9e" weight="bold" />
-          </button>
-        </div>
-        {isDrawerOpen && (
-          <AudioDrawer
-            isRecording={isRecording}
-            setIsRecording={setIsRecording}
-            isOpen={isDrawerOpen}
-            setIsOpen={setIsDrawerOpen}
-            submitAudio={handleAudio}
-          />
-        )}
-        <button
-          disabled={props.isChatCompleted}
+        </Button>
+
+        <Button
+          variant="outline"
+          disabled={props.isChatCompleted || isRecording || isTranscribing}
           type="submit"
           className="p-2 text-green-400 hover:text-green-100 flex justify-end disabled:text-gray-500"
         >
-          Send
-        </button>
+          <PaperPlaneTilt className="h-4 w-4 fill-current" />
+        </Button>
       </div>
+      {isAudioWaveVisible && (
+        <AudioWaveForm
+          handleAudio={handleAudio}
+          isRecording={isRecording}
+          setIsRecording={setIsRecording}
+        />
+      )}
     </form>
   );
 };
