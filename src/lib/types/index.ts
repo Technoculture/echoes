@@ -47,3 +47,5 @@ export type PromptTypes =
 export type MessageRole = "function" | "user" | "assistant" | "system";
 
 // export type MessageRole = Pick<Message, "role">
+
+export type AIType = "universal" | "oligoai";

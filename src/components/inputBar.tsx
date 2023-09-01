@@ -14,14 +14,15 @@ import { Button } from "@/components/button";
 
 import InputBarActions from "./inputbaractions";
 import AudioWaveForm from "./audiowaveform";
+import { AIType } from "@/lib/types";
 
 interface InputBarProps {
   value: string;
   onChange: (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => void;
-  isFast: boolean;
-  setIsFast: (arg0: boolean) => void;
+  choosenAI: AIType;
+  setChoosenAI: Dispatch<SetStateAction<AIType>>;
   username: string;
   userId: string;
   append: (
@@ -44,8 +45,10 @@ const InputBar = (props: InputBarProps) => {
       content: props.value,
       name: `${props.username},${props.userId}`,
     };
-    props.append(message as Message);
-    props.setInput("");
+    if (props.choosenAI === "universal") {
+      props.append(message as Message);
+      props.setInput("");
+    }
   };
 
   const handleAudio = async (audioFile: File) => {
@@ -75,7 +78,10 @@ const InputBar = (props: InputBarProps) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex bg-linear-900 p-2 pt-2 rounded-sm gap-2  ">
-        <InputBarActions />
+        <InputBarActions
+          aiType={props.choosenAI}
+          setAIType={props.setChoosenAI}
+        />
 
         <TextareaAutosize
           disabled={props.isChatCompleted || isRecording || isTranscribing}

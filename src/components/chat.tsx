@@ -1,7 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import ChatMessage from "@/components/chatmessage";
-import { CHAT_COMPLETION_CONTENT, ChatEntry, ChatLog } from "@/lib/types";
+import {
+  AIType,
+  CHAT_COMPLETION_CONTENT,
+  ChatEntry,
+  ChatLog,
+} from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
@@ -28,7 +33,7 @@ export default function Chat(props: ChatProps) {
     list.push(JSON.parse(newMessage));
   }, []);
 
-  const [isFast, setIsFast] = useState<boolean>(true);
+  const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const {
     messages,
@@ -47,7 +52,7 @@ export default function Chat(props: ChatProps) {
         : (props.dbChat?.log as Message[]),
     body: {
       orgId: props.orgId,
-      isFast: isFast,
+      isFast: choosenAI === "universal" ? true : false,
       name: props.username,
     }, // some conflicts in role
     onError: (error) => {
@@ -130,8 +135,8 @@ export default function Chat(props: ChatProps) {
       <InputBar
         username={props.username}
         userId={props.uid}
-        isFast={isFast}
-        setIsFast={setIsFast}
+        choosenAI={choosenAI}
+        setChoosenAI={setChoosenAI}
         value={input}
         onChange={handleInputChange}
         setInput={setInput}

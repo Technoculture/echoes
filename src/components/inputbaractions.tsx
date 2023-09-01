@@ -1,9 +1,10 @@
 "use client";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuLabel,
   DropdownMenuGroup,
   DropdownMenuSeparator,
   DropdownMenuRadioGroup,
@@ -11,43 +12,44 @@ import {
 } from "@/components/ui/dropdownmeu";
 
 import { Button } from "@/components/button";
-import { Dna } from "@phosphor-icons/react";
-
-type Position = "top" | "bottom" | "right";
+import { Dna, Brain } from "@phosphor-icons/react";
+import { AIType } from "@/lib/types";
 
 export interface InputBarActionProps {
-  position: Position;
-  setPosition: Dispatch<SetStateAction<Position>>;
+  aiType: AIType;
+  setAIType: Dispatch<SetStateAction<AIType>>;
 }
 
-// const InputBarActions = React.forwardRef<HTMLButtonElement, InputBarActionProps>((props: Props) => {
-const InputBarActions = React.forwardRef<InputBarActionProps>((props) => {
-  const [position, setPosition] = useState("top");
+const InputBarActions = ({ aiType, setAIType }: InputBarActionProps) => {
+  const Comp = aiType === "universal" ? <Brain /> : <Dna />;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="sm" variant="outline">
-          <Dna />
+          {Comp}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-            <DropdownMenuRadioItem value="top">Universal</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="bottom">
-              OpenOligo
+          <DropdownMenuRadioGroup
+            value={aiType}
+            onValueChange={(value) => setAIType(value as AIType)}
+          >
+            <DropdownMenuRadioItem value="universal">
+              Universal
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="oligoai">
+              OligoAI
             </DropdownMenuRadioItem>
             <DropdownMenuSeparator />
-            <DropdownMenuRadioItem value="right">
-              AIModels
-            </DropdownMenuRadioItem>
+            <DropdownMenuLabel inset>AIModels</DropdownMenuLabel>
           </DropdownMenuRadioGroup>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-});
+};
 
 InputBarActions.displayName = "InputBarActions";
 
