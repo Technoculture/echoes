@@ -41,9 +41,9 @@ const AudioWaveForm = (props: Props) => {
   };
 
   return (
-    <motion.div className="w-full flex p-2 gap-2">
+    <motion.div className="box-border flex justify-between p-2 gap-2 max-w-[100%]">
       <ReactMic
-        className="flex-1"
+        className="min-w-[90%]"
         mimeType="audio/wav"
         record={props.isRecording}
         onStop={onStop}

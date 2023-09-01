@@ -64,7 +64,7 @@ export default function Chat(props: ChatProps) {
   }, [messages]);
 
   return (
-    <div className="grid grig-cols-1 gap-1">
+    <div className="grid grid-cols-1 gap-1">
       {props.liveChat
         ? props.liveChat.map((entry, index) => {
             if (entry.role !== "system") {
