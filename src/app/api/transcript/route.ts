@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-
 import { env } from "@/app/env.mjs";
+
 export async function POST(request: Request) {
   const formData = await request.formData();
 
   const audio = formData.get("file") as Blob;
-  console.log("audio", audio);
   const f = new FormData();
   f.append("file", audio);
   f.append("model", "whisper-1");
@@ -20,7 +19,6 @@ export async function POST(request: Request) {
   });
 
   const data = await res.json();
-  console.log("data", data);
 
   return NextResponse.json({ text: data.text });
 }

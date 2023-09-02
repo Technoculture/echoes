@@ -12,9 +12,10 @@ import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 
-import InputBarActions from "./inputbaractions";
-import AudioWaveForm from "./audiowaveform";
+import ModelSwitcher from "@/components/modelswitcher";
+import AudioWaveForm from "@/components/audiowaveform";
 import { AIType } from "@/lib/types";
+import { motion } from "framer-motion";
 
 interface InputBarProps {
   value: string;
@@ -77,51 +78,60 @@ const InputBar = (props: InputBarProps) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm gap-2  ">
-        <InputBarActions
-          aiType={props.choosenAI}
-          setAIType={props.setChoosenAI}
-        />
-
-        <TextareaAutosize
-          disabled={props.isChatCompleted || isRecording || isTranscribing}
-          maxRows={10}
-          placeholder="Type your message here..."
-          autoFocus
-          value={props.value}
-          onChange={props.onChange}
-          className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm"
-        />
-        <Button
-          disabled={isRecording || isTranscribing}
-          onClick={() => setIsAudioWaveVisible(true)}
-          variant="outline"
-          type="button"
-          className="p-2 text-blue-400 hover:text-green-100"
-        >
-          <Microphone
-            className="h-4 w-4 fill-current"
-            color="#618a9e"
-            weight="bold"
+      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm gap-2 min-w-max">
+        {isAudioWaveVisible ? (
+          <AudioWaveForm
+            handleAudio={handleAudio}
+            isRecording={isRecording}
+            setIsRecording={setIsRecording}
           />
-        </Button>
+        ) : (
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            className="flex w-full gap-2"
+          >
+            <ModelSwitcher
+              disabled={props.isChatCompleted || isRecording || isTranscribing}
+              aiType={props.choosenAI}
+              setAIType={props.setChoosenAI}
+            />
 
-        <Button
-          variant="outline"
-          disabled={props.isChatCompleted || isRecording || isTranscribing}
-          type="submit"
-          className="p-2 text-green-400 hover:text-green-100 flex justify-end disabled:text-gray-500"
-        >
-          <PaperPlaneTilt className="h-4 w-4 fill-current" />
-        </Button>
+            <TextareaAutosize
+              disabled={props.isChatCompleted || isRecording || isTranscribing}
+              maxRows={10}
+              placeholder="Type your message here..."
+              autoFocus
+              value={props.value}
+              onChange={props.onChange}
+              className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm disabled:text-muted"
+            />
+            <Button
+              disabled={isRecording || isTranscribing}
+              onClick={() => setIsAudioWaveVisible(true)}
+              variant="outline"
+              type="button"
+              className="text-blue-400 hover:text-green-100 disabled:text-muted"
+            >
+              <Microphone
+                className="h-4 w-4 fill-current"
+                color="#618a9e"
+                weight="bold"
+              />
+            </Button>
+
+            <Button
+              variant="outline"
+              disabled={props.isChatCompleted || isRecording || isTranscribing}
+              type="submit"
+              className=" text-green-400 hover:text-green-100 flex justify-end disabled:text-muted"
+            >
+              <PaperPlaneTilt className="h-4 w-4 fill-current" />
+            </Button>
+          </motion.div>
+        )}
       </div>
-      {isAudioWaveVisible && (
-        <AudioWaveForm
-          handleAudio={handleAudio}
-          isRecording={isRecording}
-          setIsRecording={setIsRecording}
-        />
-      )}
     </form>
   );
 };

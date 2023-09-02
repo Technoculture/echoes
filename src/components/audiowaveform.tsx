@@ -41,9 +41,14 @@ const AudioWaveForm = (props: Props) => {
   };
 
   return (
-    <motion.div className="box-border flex justify-between p-2 gap-2 max-w-[100%]">
+    <motion.div
+      initial={{ y: 300, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 300, opacity: 0 }}
+      className="box-border flex justify-between p-2 gap-2 w-full"
+    >
       <ReactMic
-        className="min-w-[90%]"
+        className="min-w-[90%] rounded-sm"
         mimeType="audio/wav"
         record={props.isRecording}
         onStop={onStop}
@@ -56,7 +61,7 @@ const AudioWaveForm = (props: Props) => {
         variant={"outline"}
         onClick={() => props.setIsRecording(false)}
       >
-        <StopCircle />
+        <StopCircle className="h-4 w-4 fill-current" />
       </Button>
     </motion.div>
   );
