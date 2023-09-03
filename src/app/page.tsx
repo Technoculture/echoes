@@ -5,13 +5,8 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/button";
 import Link from "next/link";
 import { Widget } from "@typeform/embed-react";
-//import Image from "next/image";
-import {
-  motion,
-  AnimatePresence,
-  //MotionConfig,
-  useAnimation,
-} from "framer-motion";
+import Image from "next/image";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Key, LayoutDashboard } from "lucide-react";
 
@@ -63,22 +58,32 @@ export default function Home() {
               asChild
             ></Button>
           </Header>
-          <div className="flex flex-col flex-grow p-20 h-screen justify-center items-center gap-2 text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground">
-              Hello Innovator,
-            </h1>
-            <h1 className="text-2xl text-popover-foreground flex-wrap w-72 text-center">
-              Let's hyper-accelerate your research.
-            </h1>
-            <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
-              <Button>
-                <LayoutDashboard className="mr-2 w-4 h-4" />
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
-              <Button variant="secondary">
-                <Key className="mr-2 w-4 h-4" />
-                <Link href="/#requestaccess">Request Access</Link>
-              </Button>
+          <div className="relative y-0 flex flex-col flex-grow p-20 h-screen justify-center items-center gap-2 text-center">
+            <div className="absolute inset-0 -z-5">
+              <Image
+                src="/isometric.png"
+                alt="image of echoes being used"
+                className="w-full h-full object-cover mix-blend-soft-light"
+                fill={true}
+              />
+            </div>
+            <div className="z-10">
+              <h1 className="text-4xl font-bold tracking-tight text-foreground">
+                Hello Innovator,
+              </h1>
+              <h1 className="text-2xl text-popover-foreground flex-wrap w-72 text-center">
+                Let's hyper-accelerate your research.
+              </h1>
+              <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
+                <Button>
+                  <LayoutDashboard className="mr-2 w-4 h-4" />
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                <Button variant="secondary">
+                  <Key className="mr-2 w-4 h-4" />
+                  <Link href="/#requestaccess">Request Access</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
