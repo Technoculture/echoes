@@ -29,7 +29,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
   ({ className, variant, ...props }: HeaderProps = {}, ref) => {
     return (
       <header
-        className={cn(headerVariants({ variant, className }), "")}
+        className={cn(headerVariants({ variant, className }), "z-50")}
         ref={ref}
         {...props}
       >
