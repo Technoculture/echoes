@@ -1,17 +1,44 @@
 "use client";
 
+import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/logo.png";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { cva, type VariantProps } from "class-variance-authority";
 
-interface HeaderProps {
-  children?: React.ReactNode;
-}
+import { cn } from "@/lib/utils";
 
-export default function Header({ children }: HeaderProps) {
+const headerVariants = cva("w-full", {
+  variants: {
+    variant: {
+      default: "",
+      sticky: "fixed bg-black",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+export interface HeaderProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof headerVariants> {}
+
+const Header = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, variant, ...props }: HeaderProps, ref) => {
   return (
-    <header className="flex justify-between p-5">
+  <header
+    className={cn(
+      headerVariants({ variant, className }),
+      "",
+    )}
+    ref={ref}
+    {...props}
+  >
+    <div className="flex justify-between p-5">
       <Link
         href="/"
         className="gap-2 flex items-center cursor-pointer h-[32px]"
@@ -24,13 +51,15 @@ export default function Header({ children }: HeaderProps) {
         <h1 className="text-gray-200 align-middle">Echoes</h1>
       </Link>
       <SignedIn>
-        {/* Mount the UserButton component */}
         <div className="flex">
-          {children}
+          {props.children}
           <UserButton />
         </div>
       </SignedIn>
       <SignedOut></SignedOut>
-    </header>
-  );
-}
+    </div>
+  </header>
+);
+});
+
+export { Header };
