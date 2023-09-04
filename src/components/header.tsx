@@ -1,36 +1,63 @@
 "use client";
 
+import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/logo.png";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { cva, type VariantProps } from "class-variance-authority";
 
-interface HeaderProps {
-  children?: React.ReactNode;
-}
+import { cn } from "@/lib/utils";
 
-export default function Header({ children }: HeaderProps) {
-  return (
-    <header className="flex justify-between p-5">
-      <Link
-        href="/"
-        className="gap-2 flex items-center cursor-pointer h-[32px]"
+const headerVariants = cva("w-full", {
+  variants: {
+    variant: {
+      default: "",
+      sticky: "fixed bg-black",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+export interface HeaderProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof headerVariants> {}
+
+const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
+  ({ className, variant, ...props }: HeaderProps = {}, ref) => {
+    return (
+      <header
+        className={cn(headerVariants({ variant, className }), "z-50")}
+        ref={ref}
+        {...props}
       >
-        <Image
-          src={logo}
-          alt="logo"
-          className="w-6 h-6 border-gray-700 border-2"
-        />
-        <h1 className="text-gray-200 align-middle">Echoes</h1>
-      </Link>
-      <SignedIn>
-        {/* Mount the UserButton component */}
-        <div className="flex">
-          {children}
-          <UserButton />
+        <div className="flex justify-between p-5">
+          <Link
+            href="/"
+            className="gap-2 flex items-center cursor-pointer h-[32px]"
+          >
+            <Image
+              src={logo}
+              alt="logo"
+              className="w-6 h-6 border-gray-700 border-2"
+            />
+            <h1 className="text-gray-200 align-middle">Echoes</h1>
+          </Link>
+          <SignedIn>
+            <div className="flex">
+              {props.children}
+              <UserButton />
+            </div>
+          </SignedIn>
+          <SignedOut></SignedOut>
         </div>
-      </SignedIn>
-      <SignedOut></SignedOut>
-    </header>
-  );
-}
+      </header>
+    );
+  },
+);
+
+Header.displayName = "Header";
+
+export { Header };
