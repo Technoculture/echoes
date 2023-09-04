@@ -1,4 +1,4 @@
-import Header from "@/components/header";
+import { Header } from "@/components/header";
 import { OrganizationSwitcher, auth } from "@clerk/nextjs";
 export const dynamic = "force-dynamic",
   revalidate = 0;
