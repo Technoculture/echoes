@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Header } from "@/components/header";
-import { Button } from "@/components/button";
+import { Button, buttonVariants } from "@/components/button";
 import Link from "next/link";
 import { Widget } from "@typeform/embed-react";
 import Image from "next/image";
@@ -75,14 +75,20 @@ export default function Home() {
                 Let's hyper-accelerate your research.
               </h1>
               <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
-                <Button>
+                <Link
+                  href="/dashboard"
+                  className={buttonVariants({ variant: "default" })}
+                >
                   <LayoutDashboard className="mr-2 w-4 h-4" />
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-                <Button variant="secondary">
+                  Dashboard
+                </Link>
+                <Link
+                  className={buttonVariants({ variant: "secondary" })}
+                  href="/#requestaccess"
+                >
                   <Key className="mr-2 w-4 h-4" />
-                  <Link href="/#requestaccess">Request Access</Link>
-                </Button>
+                  Request Access
+                </Link>
               </div>
             </div>
           </div>
