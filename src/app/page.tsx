@@ -9,6 +9,7 @@ import Image from "next/image";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Key, LayoutDashboard } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
@@ -47,6 +48,8 @@ export default function Home() {
     }
   }, [controls, inView]);
 
+  const { isSignedIn } = useAuth();
+
   return (
     <div>
       <AnimatePresence onExitComplete={handleSmoothScroll}>
@@ -82,27 +85,31 @@ export default function Home() {
                   <LayoutDashboard className="mr-2 w-4 h-4" />
                   Dashboard
                 </Link>
-                <Link
-                  className={buttonVariants({ variant: "secondary" })}
-                  href="/#requestaccess"
-                >
-                  <Key className="mr-2 w-4 h-4" />
-                  Request Access
-                </Link>
+                {isSignedIn || (
+                  <Link
+                    className={buttonVariants({ variant: "secondary" })}
+                    href="/#requestaccess"
+                  >
+                    <Key className="mr-2 w-4 h-4" />
+                    Request Access
+                  </Link>
+                )}
               </div>
             </div>
           </div>
         </div>
       </AnimatePresence>
 
-      <AnimatePresence onExitComplete={handleSmoothScroll}>
-        <div
-          className="h-screen flex flex-col justify-center items-center bg-gradient-to-b from-slate-950 via-black to-black -z-20"
-          id="requestaccess"
-        >
-          <Widget id="H4H0D2hi" className="w-min-72 w-3/4 h-3/4 -z-2" />
-        </div>
-      </AnimatePresence>
+      {isSignedIn || (
+        <AnimatePresence onExitComplete={handleSmoothScroll}>
+          <div
+            className="h-screen flex flex-col justify-center items-center bg-gradient-to-b from-slate-950 via-black to-black -z-20"
+            id="requestaccess"
+          >
+            <Widget id="H4H0D2hi" className="w-min-72 w-3/4 h-3/4 -z-2" />
+          </div>
+        </AnimatePresence>
+      )}
 
       <div className="md:p-20 p-12 bg-slate-950 border border-t-1 border-slate-900">
         <motion.div
