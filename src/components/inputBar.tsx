@@ -78,7 +78,7 @@ const InputBar = (props: InputBarProps) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm gap-2 min-w-max">
+      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm gap-2 ">
         {isAudioWaveVisible ? (
           <AudioWaveForm
             handleAudio={handleAudio}

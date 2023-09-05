@@ -53,7 +53,7 @@ const AudioWaveForm = (props: Props) => {
         record={props.isRecording}
         onStop={onStop}
         onData={onData}
-        strokeColor="blue"
+        strokeColor="#cbd5e1"
         backgroundColor="gray"
       />
       <Button
