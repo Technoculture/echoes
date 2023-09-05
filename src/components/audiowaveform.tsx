@@ -45,11 +45,11 @@ const AudioWaveForm = (props: Props) => {
       initial={{ y: 300, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 300, opacity: 0 }}
-      className="box-border flex justify-between p-2 gap-2 w-full"
+      className="box-border flex gap-2 p-2 w-full"
     >
       <ReactMic
         visualSetting="frequencyBars"
-        className="min-w-[90%] rounded-sm"
+        className="min-w-[85%] sm:min-w-[95%] rounded-sm"
         mimeType="audio/wav"
         record={props.isRecording}
         onStop={onStop}

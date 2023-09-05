@@ -17,6 +17,7 @@ import AudioWaveForm from "@/components/audiowaveform";
 import { AIType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface InputBarProps {
   value: string;
@@ -112,9 +113,10 @@ const InputBar = (props: InputBarProps) => {
                 className="flex-none resize-none rounded-sm grow w-full bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm disabled:text-muted"
               />
               <Loader2
-                className={`h-4 w-4 animate-spin absolute left-2 top-3 ${
-                  isTranscribing ? "visible" : "hidden"
-                }`}
+                className={cn(
+                  "h-4 w-4 animate-spin absolute left-2 top-3",
+                  isTranscribing ? "visible" : "hidden",
+                )}
               />
             </div>
             <Button
