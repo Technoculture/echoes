@@ -34,7 +34,7 @@ const handleSmoothScroll = (): void => {
 
 const footerAnimationStates = {
   visible: { opacity: 1, y: 0, transition: { duration: 1 } },
-  hidden: { opacity: 0, y: 100 },
+  hidden: { opacity: 0, y: -50 },
 };
 
 export default function Home() {
@@ -54,7 +54,7 @@ export default function Home() {
     <div>
       <AnimatePresence onExitComplete={handleSmoothScroll}>
         <div className="h-screen relative">
-          <Header variant="sticky">
+          <Header variant="sticky" className="bg-black/40 backdrop-blur-md">
             <Button
               className="mr-4 h-[32px]"
               variant="secondary"
