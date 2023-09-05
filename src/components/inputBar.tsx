@@ -80,7 +80,7 @@ const InputBar = (props: InputBarProps) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm min-w-[90vw] gap-2 ">
+      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm min-w-[90vw] sm:min-w-[97vw]  gap-2 ">
         {isAudioWaveVisible ? (
           <AudioWaveForm
             handleAudio={handleAudio}
@@ -122,7 +122,7 @@ const InputBar = (props: InputBarProps) => {
             <Button
               disabled={isRecording || isTranscribing}
               onClick={() => setIsAudioWaveVisible(true)}
-              size="sm"
+              size="icon"
               variant="outline"
               type="button"
               className="text-blue-400 hover:text-green-100 disabled:text-muted"
@@ -135,11 +135,11 @@ const InputBar = (props: InputBarProps) => {
             </Button>
 
             <Button
-              size="sm"
+              size="icon"
               variant="outline"
               disabled={props.isChatCompleted || isRecording || isTranscribing}
               type="submit"
-              className=" text-green-400 hover:text-green-100 flex justify-end disabled:text-muted"
+              className=" text-green-400 hover:text-green-100 disabled:text-muted"
             >
               <PaperPlaneTilt className="h-4 w-4 fill-current" />
             </Button>

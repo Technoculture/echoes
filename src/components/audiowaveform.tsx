@@ -49,7 +49,7 @@ const AudioWaveForm = (props: Props) => {
     >
       <ReactMic
         visualSetting="frequencyBars"
-        className="min-w-[85%] sm:min-w-[95%] rounded-sm"
+        className="min-w-[85%] sm:min-w-[95%] xl:min-w-[97%] rounded-sm"
         mimeType="audio/wav"
         record={props.isRecording}
         onStop={onStop}
@@ -62,6 +62,7 @@ const AudioWaveForm = (props: Props) => {
       />
       <Button
         type="button"
+        size="icon"
         variant={"outline"}
         onClick={() => props.setIsRecording(false)}
       >

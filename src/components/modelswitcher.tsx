@@ -37,7 +37,7 @@ const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
             {...props}
             className={className}
             ref={ref}
-            size="sm"
+            size="icon"
             variant="outline"
           >
             {Comp}
