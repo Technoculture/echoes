@@ -16,6 +16,7 @@ import ModelSwitcher from "@/components/modelswitcher";
 import AudioWaveForm from "@/components/audiowaveform";
 import { AIType } from "@/lib/types";
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 interface InputBarProps {
   value: string;
@@ -78,7 +79,7 @@ const InputBar = (props: InputBarProps) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm gap-2 ">
+      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm min-w-[90vw] gap-2 ">
         {isAudioWaveVisible ? (
           <AudioWaveForm
             handleAudio={handleAudio}
@@ -98,18 +99,28 @@ const InputBar = (props: InputBarProps) => {
               setAIType={props.setChoosenAI}
             />
 
-            <TextareaAutosize
-              disabled={props.isChatCompleted || isRecording || isTranscribing}
-              maxRows={10}
-              placeholder="Type your message here..."
-              autoFocus
-              value={props.value}
-              onChange={props.onChange}
-              className="flex-none resize-none rounded-sm grow bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm disabled:text-muted"
-            />
+            <div className="relative w-full">
+              <TextareaAutosize
+                disabled={
+                  props.isChatCompleted || isRecording || isTranscribing
+                }
+                maxRows={10}
+                placeholder={isTranscribing ? "" : "Type your message here..."}
+                autoFocus
+                value={props.value}
+                onChange={props.onChange}
+                className="flex-none resize-none rounded-sm grow w-full bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm disabled:text-muted"
+              />
+              <Loader2
+                className={`h-4 w-4 animate-spin absolute left-2 top-3 ${
+                  isTranscribing ? "visible" : "hidden"
+                }`}
+              />
+            </div>
             <Button
               disabled={isRecording || isTranscribing}
               onClick={() => setIsAudioWaveVisible(true)}
+              size="sm"
               variant="outline"
               type="button"
               className="text-blue-400 hover:text-green-100 disabled:text-muted"
@@ -122,6 +133,7 @@ const InputBar = (props: InputBarProps) => {
             </Button>
 
             <Button
+              size="sm"
               variant="outline"
               disabled={props.isChatCompleted || isRecording || isTranscribing}
               type="submit"

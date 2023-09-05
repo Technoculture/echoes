@@ -23,7 +23,12 @@ export interface InputBarActionProps
 
 const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
   ({ aiType, setAIType, className, ...props }, ref) => {
-    const Comp = aiType === "universal" ? <Brain /> : <Dna />;
+    const Comp =
+      aiType === "universal" ? (
+        <Brain className="h-4 w-4 fill-current" />
+      ) : (
+        <Dna className="h-4 w-4 fill-current" />
+      );
 
     return (
       <DropdownMenu>

@@ -48,13 +48,17 @@ const AudioWaveForm = (props: Props) => {
       className="box-border flex justify-between p-2 gap-2 w-full"
     >
       <ReactMic
+        visualSetting="frequencyBars"
         className="min-w-[90%] rounded-sm"
         mimeType="audio/wav"
         record={props.isRecording}
         onStop={onStop}
         onData={onData}
         strokeColor="#cbd5e1"
-        backgroundColor="gray"
+        backgroundColor="rgb(15,23,42)"
+        echoCancellation={true}
+        autoGainControl={true}
+        noiseSuppression={true}
       />
       <Button
         type="button"
