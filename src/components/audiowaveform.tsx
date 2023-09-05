@@ -42,32 +42,48 @@ const AudioWaveForm = (props: Props) => {
 
   return (
     <motion.div
-      initial={{ y: 300, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 300, opacity: 0 }}
+      layout
+      // initial={{ height: "100%", opacity: 0 }}
+      animate={{ height: "100%", opacity: 1 }}
+      exit={{ height: "0%", opacity: 0 }}
       className="box-border flex gap-2 p-2 w-full"
     >
-      <ReactMic
-        visualSetting="frequencyBars"
-        className="min-w-[85%] sm:min-w-[95%] xl:min-w-[97%] rounded-sm"
-        mimeType="audio/wav"
-        record={props.isRecording}
-        onStop={onStop}
-        onData={onData}
-        strokeColor="#cbd5e1"
-        backgroundColor="rgb(15,23,42)"
-        echoCancellation={true}
-        autoGainControl={true}
-        noiseSuppression={true}
-      />
-      <Button
-        type="button"
-        size="icon"
-        variant={"outline"}
-        onClick={() => props.setIsRecording(false)}
+      <motion.div
+        layout
+        // transition={{ duration: 0.6 }}
+        // animate={{ height: "100%" }}
+        // exit={{ height: "80%" }}
+        className="w-full"
       >
-        <StopCircle className="h-4 w-4 fill-current" />
-      </Button>
+        <ReactMic
+          visualSetting="frequencyBars"
+          // className="min-w-[85%] sm:min-w-[95%] xl:min-w-[97%] rounded-sm"
+          className="min-w-[100%] rounded-sm"
+          mimeType="audio/wav"
+          record={props.isRecording}
+          onStop={onStop}
+          onData={onData}
+          strokeColor="#cbd5e1"
+          backgroundColor="rgb(15,23,42)"
+          echoCancellation={true}
+          autoGainControl={true}
+          noiseSuppression={true}
+        />
+      </motion.div>
+      <motion.div
+        initial={{ x: -10, y: -15, opacity: 0 }}
+        animate={{ x: 0, y: 0, opacity: 1 }}
+        exit={{ x: -10, y: -15, opacity: 0 }}
+      >
+        <Button
+          type="button"
+          size="icon"
+          variant={"outline"}
+          onClick={() => props.setIsRecording(false)}
+        >
+          <StopCircle className="h-4 w-4 fill-current" />
+        </Button>
+      </motion.div>
     </motion.div>
   );
 };

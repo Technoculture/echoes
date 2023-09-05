@@ -80,7 +80,11 @@ const InputBar = (props: InputBarProps) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex bg-linear-900 p-2 pt-2 rounded-sm min-w-[90vw] sm:min-w-[97vw]  gap-2 ">
+      <motion.div
+        layout
+        className="flex bg-linear-900 p-2 pt-2 rounded-sm min-w-[90vw] sm:min-w-[97vw]  gap-2 "
+      >
+        {/* <AnimatePresence> */}
         {isAudioWaveVisible ? (
           <AudioWaveForm
             handleAudio={handleAudio}
@@ -88,19 +92,21 @@ const InputBar = (props: InputBarProps) => {
             setIsRecording={setIsRecording}
           />
         ) : (
-          <motion.div
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -100, opacity: 0 }}
-            className="flex w-full gap-2"
-          >
-            <ModelSwitcher
-              disabled={props.isChatCompleted || isRecording || isTranscribing}
-              aiType={props.choosenAI}
-              setAIType={props.setChoosenAI}
-            />
-
-            <div className="relative w-full">
+          <motion.div layout className="flex w-full gap-2">
+            <motion.div
+              initial={{ x: -20 }}
+              animate={{ x: 0 }}
+              exit={{ x: -20 }}
+            >
+              <ModelSwitcher
+                disabled={
+                  props.isChatCompleted || isRecording || isTranscribing
+                }
+                aiType={props.choosenAI}
+                setAIType={props.setChoosenAI}
+              />
+            </motion.div>
+            <motion.div className="relative w-full">
               <TextareaAutosize
                 disabled={
                   props.isChatCompleted || isRecording || isTranscribing
@@ -118,34 +124,45 @@ const InputBar = (props: InputBarProps) => {
                   isTranscribing ? "visible" : "hidden",
                 )}
               />
-            </div>
-            <Button
-              disabled={isRecording || isTranscribing}
-              onClick={() => setIsAudioWaveVisible(true)}
-              size="icon"
-              variant="outline"
-              type="button"
-              className="text-blue-400 hover:text-green-100 disabled:text-muted"
+            </motion.div>
+            <motion.div
+              initial={{ x: 10, y: 15 }}
+              animate={{ x: 0, y: 0 }}
+              exit={{ x: 10, y: 15 }}
             >
-              <Microphone
-                className="h-4 w-4 fill-current"
-                color="#618a9e"
-                weight="bold"
-              />
-            </Button>
+              <Button
+                disabled={isRecording || isTranscribing}
+                onClick={() => setIsAudioWaveVisible(true)}
+                size="icon"
+                variant="outline"
+                type="button"
+                className="text-blue-400 hover:text-green-100 disabled:text-muted"
+              >
+                <Microphone
+                  className="h-4 w-4 fill-current"
+                  color="#618a9e"
+                  weight="bold"
+                />
+              </Button>
+            </motion.div>
 
-            <Button
-              size="icon"
-              variant="outline"
-              disabled={props.isChatCompleted || isRecording || isTranscribing}
-              type="submit"
-              className=" text-green-400 hover:text-green-100 disabled:text-muted"
-            >
-              <PaperPlaneTilt className="h-4 w-4 fill-current" />
-            </Button>
+            <motion.div initial={{ x: 20 }} animate={{ x: 0 }} exit={{ x: 20 }}>
+              <Button
+                size="icon"
+                variant="outline"
+                disabled={
+                  props.isChatCompleted || isRecording || isTranscribing
+                }
+                type="submit"
+                className=" text-green-400 hover:text-green-100 disabled:text-muted"
+              >
+                <PaperPlaneTilt className="h-4 w-4 fill-current" />
+              </Button>
+            </motion.div>
           </motion.div>
         )}
-      </div>
+        {/* </AnimatePresence> */}
+      </motion.div>
     </form>
   );
 };
