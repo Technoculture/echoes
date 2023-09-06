@@ -43,6 +43,9 @@ const InputBar = (props: InputBarProps) => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (props.value.trim() === "") {
+      return;
+    }
     const message = {
       role: "user",
       content: props.value,
