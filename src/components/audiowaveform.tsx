@@ -50,22 +50,23 @@ const AudioWaveForm = (props: Props) => {
         transition: { duration: 1, type: "spring" },
       }}
       exit={{ height: 0, opacity: 0, transition: { duration: 1 } }}
-      className="box-border flex gap-2 p-2 w-full"
+      className="flex w-full gap-2 p-2"
     >
-      <ReactMic
-        visualSetting="frequencyBars"
-        className="min-w-[85%] sm:min-w-[95%] xl:min-w-[97%] rounded-sm"
-        // className="min-w-[100%] rounded-sm"
-        mimeType="audio/wav"
-        record={props.isRecording}
-        onStop={onStop}
-        onData={onData}
-        strokeColor="#cbd5e1"
-        backgroundColor="rgb(15,23,42)"
-        echoCancellation={true}
-        autoGainControl={true}
-        noiseSuppression={true}
-      />
+      <div className="flex flex-grow">
+        <ReactMic
+          visualSetting="frequencyBars"
+          className="min-w-full max-w-full rounded-sm"
+          mimeType="audio/wav"
+          record={props.isRecording}
+          onStop={onStop}
+          onData={onData}
+          strokeColor="#cbd5e1"
+          backgroundColor="rgb(15,23,42)"
+          echoCancellation={true}
+          autoGainControl={true}
+          noiseSuppression={true}
+        />
+      </div>
       <motion.div
         initial={{ x: -20, y: -25, opacity: 0 }}
         animate={{ x: 0, y: 0, opacity: 1, transition: { duration: 0.5 } }}
@@ -74,10 +75,10 @@ const AudioWaveForm = (props: Props) => {
         <Button
           type="button"
           size="icon"
-          variant={"outline"}
+          variant="outline"
           onClick={() => props.setIsRecording(false)}
         >
-          <StopCircle className="h-4 w-4 fill-current" />
+          <StopCircle className="h-4 w-4 text-destructive" />
         </Button>
       </motion.div>
     </motion.div>

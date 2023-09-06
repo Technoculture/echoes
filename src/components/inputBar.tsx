@@ -76,16 +76,16 @@ const InputBar = (props: InputBarProps) => {
       props.setInput(data.text);
       setIsTranscribing(false);
     } catch (err) {
-      console.log("got in error", err);
+      console.error("got in error", err);
       setIsTranscribing(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="flex flex-grow">
       <motion.div
         layout
-        className="flex bg-linear-900 p-2 pt-2 rounded-sm min-w-[90vw] sm:min-w-[97vw]  gap-2 "
+        className="flex flex-grow bg-linear-900 p-2 pt-2 rounded-sm gap-2 "
       >
         {/* <AnimatePresence> */}
         {isAudioWaveVisible ? (
@@ -95,7 +95,7 @@ const InputBar = (props: InputBarProps) => {
             setIsRecording={setIsRecording}
           />
         ) : (
-          <motion.div layout className="flex w-full gap-2">
+          <motion.div layout className="flex flex-grow w-full gap-2">
             <motion.div
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}

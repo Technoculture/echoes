@@ -69,64 +69,66 @@ export default function Chat(props: ChatProps) {
   }, [messages]);
 
   return (
-    <div className="grid grid-cols-1 gap-1">
-      {props.liveChat
-        ? props.liveChat.map((entry, index) => {
-            if (entry.role !== "system") {
-              return (
-                <ContextWrapper
-                  append={append}
-                  username={props.username}
-                  userId={props.uid}
-                  key={entry.id || index}
-                >
-                  <ChatMessage
-                    messageIndex={index}
-                    chatId={props.chatId}
-                    orgId={props.orgId}
-                    uid={props.uid}
-                    name={props.username}
-                    chat={entry as Message}
+    <div className="flex flex-col gap-1">
+      <div className="grid grid-cols-1">
+        {props.liveChat
+          ? props.liveChat.map((entry, index) => {
+              if (entry.role !== "system") {
+                return (
+                  <ContextWrapper
+                    append={append}
+                    username={props.username}
+                    userId={props.uid}
                     key={entry.id || index}
-                    messages={messages}
-                    setMessages={setMessages}
-                    updateRoom={updateRoomData}
-                  />
-                </ContextWrapper>
-              );
-            }
-          })
-        : messages.map((entry, index) => {
-            if (entry.role !== "system") {
-              if (index === messages.length - 1 && !isChatCompleted) {
-                // track a state to disable all the fields
-                if (messages[index].content === CHAT_COMPLETION_CONTENT) {
-                  setIsChatCompleted(true);
-                }
+                  >
+                    <ChatMessage
+                      messageIndex={index}
+                      chatId={props.chatId}
+                      orgId={props.orgId}
+                      uid={props.uid}
+                      name={props.username}
+                      chat={entry as Message}
+                      key={entry.id || index}
+                      messages={messages}
+                      setMessages={setMessages}
+                      updateRoom={updateRoomData}
+                    />
+                  </ContextWrapper>
+                );
               }
-              return (
-                <ContextWrapper
-                  append={append}
-                  username={props.username}
-                  userId={props.uid}
-                  key={entry.id || index}
-                >
-                  <ChatMessage
-                    messageIndex={index}
-                    chatId={props.chatId}
-                    orgId={props.orgId}
-                    uid={props.uid}
-                    name={props.username}
-                    chat={entry as Message}
+            })
+          : messages.map((entry, index) => {
+              if (entry.role !== "system") {
+                if (index === messages.length - 1 && !isChatCompleted) {
+                  // track a state to disable all the fields
+                  if (messages[index].content === CHAT_COMPLETION_CONTENT) {
+                    setIsChatCompleted(true);
+                  }
+                }
+                return (
+                  <ContextWrapper
+                    append={append}
+                    username={props.username}
+                    userId={props.uid}
                     key={entry.id || index}
-                    messages={messages}
-                    setMessages={setMessages}
-                    updateRoom={updateRoomData}
-                  />
-                </ContextWrapper>
-              );
-            }
-          })}
+                  >
+                    <ChatMessage
+                      messageIndex={index}
+                      chatId={props.chatId}
+                      orgId={props.orgId}
+                      uid={props.uid}
+                      name={props.username}
+                      chat={entry as Message}
+                      key={entry.id || index}
+                      messages={messages}
+                      setMessages={setMessages}
+                      updateRoom={updateRoomData}
+                    />
+                  </ContextWrapper>
+                );
+              }
+            })}
+      </div>
       {isChatCompleted && (
         <div>
           <Startnewchatbutton org_slug={props.org_slug} org_id={props.orgId} />
