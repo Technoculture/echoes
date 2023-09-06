@@ -44,7 +44,11 @@ const AudioWaveForm = (props: Props) => {
     <motion.div
       layout
       initial={{ height: 0, opacity: 0 }}
-      animate={{ height: "100%", opacity: 1, transition: { duration: 1 } }}
+      animate={{
+        height: "100%",
+        opacity: 1,
+        transition: { duration: 1, type: "spring" },
+      }}
       exit={{ height: 0, opacity: 0, transition: { duration: 1 } }}
       className="box-border flex gap-2 p-2 w-full"
     >

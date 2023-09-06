@@ -65,15 +65,15 @@ const InputBar = (props: InputBarProps) => {
     // Buffer.from(audioFile)
     console.log(audioFile);
     try {
-      // const res = await fetch("/api/transcript", {
-      //   method: "POST",
-      //   body: f,
-      // });
+      const res = await fetch("/api/transcript", {
+        method: "POST",
+        body: f,
+      });
 
-      // // console.log('data', await data.json());
-      // const data = await res.json();
-      // console.log("got the data", data);
-      // props.setInput(data.text);
+      // console.log('data', await data.json());
+      const data = await res.json();
+      console.log("got the data", data);
+      props.setInput(data.text);
       setIsTranscribing(false);
     } catch (err) {
       console.log("got in error", err);
