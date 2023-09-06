@@ -1,7 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import ChatMessage from "@/components/chatmessage";
-import { CHAT_COMPLETION_CONTENT, ChatEntry, ChatLog } from "@/lib/types";
+import {
+  AIType,
+  CHAT_COMPLETION_CONTENT,
+  ChatEntry,
+  ChatLog,
+} from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
@@ -28,7 +33,7 @@ export default function Chat(props: ChatProps) {
     list.push(JSON.parse(newMessage));
   }, []);
 
-  const [isFast, setIsFast] = useState<boolean>(true);
+  const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const {
     messages,
@@ -47,7 +52,7 @@ export default function Chat(props: ChatProps) {
         : (props.dbChat?.log as Message[]),
     body: {
       orgId: props.orgId,
-      isFast: isFast,
+      isFast: choosenAI === "universal" ? true : false,
       name: props.username,
     }, // some conflicts in role
     onError: (error) => {
@@ -64,64 +69,66 @@ export default function Chat(props: ChatProps) {
   }, [messages]);
 
   return (
-    <div className="grid grig-cols-1 gap-1">
-      {props.liveChat
-        ? props.liveChat.map((entry, index) => {
-            if (entry.role !== "system") {
-              return (
-                <ContextWrapper
-                  append={append}
-                  username={props.username}
-                  userId={props.uid}
-                  key={entry.id || index}
-                >
-                  <ChatMessage
-                    messageIndex={index}
-                    chatId={props.chatId}
-                    orgId={props.orgId}
-                    uid={props.uid}
-                    name={props.username}
-                    chat={entry as Message}
+    <div className="flex flex-col gap-1">
+      <div className="grid grid-cols-1">
+        {props.liveChat
+          ? props.liveChat.map((entry, index) => {
+              if (entry.role !== "system") {
+                return (
+                  <ContextWrapper
+                    append={append}
+                    username={props.username}
+                    userId={props.uid}
                     key={entry.id || index}
-                    messages={messages}
-                    setMessages={setMessages}
-                    updateRoom={updateRoomData}
-                  />
-                </ContextWrapper>
-              );
-            }
-          })
-        : messages.map((entry, index) => {
-            if (entry.role !== "system") {
-              if (index === messages.length - 1 && !isChatCompleted) {
-                // track a state to disable all the fields
-                if (messages[index].content === CHAT_COMPLETION_CONTENT) {
-                  setIsChatCompleted(true);
-                }
+                  >
+                    <ChatMessage
+                      messageIndex={index}
+                      chatId={props.chatId}
+                      orgId={props.orgId}
+                      uid={props.uid}
+                      name={props.username}
+                      chat={entry as Message}
+                      key={entry.id || index}
+                      messages={messages}
+                      setMessages={setMessages}
+                      updateRoom={updateRoomData}
+                    />
+                  </ContextWrapper>
+                );
               }
-              return (
-                <ContextWrapper
-                  append={append}
-                  username={props.username}
-                  userId={props.uid}
-                  key={entry.id || index}
-                >
-                  <ChatMessage
-                    messageIndex={index}
-                    chatId={props.chatId}
-                    orgId={props.orgId}
-                    uid={props.uid}
-                    name={props.username}
-                    chat={entry as Message}
+            })
+          : messages.map((entry, index) => {
+              if (entry.role !== "system") {
+                if (index === messages.length - 1 && !isChatCompleted) {
+                  // track a state to disable all the fields
+                  if (messages[index].content === CHAT_COMPLETION_CONTENT) {
+                    setIsChatCompleted(true);
+                  }
+                }
+                return (
+                  <ContextWrapper
+                    append={append}
+                    username={props.username}
+                    userId={props.uid}
                     key={entry.id || index}
-                    messages={messages}
-                    setMessages={setMessages}
-                    updateRoom={updateRoomData}
-                  />
-                </ContextWrapper>
-              );
-            }
-          })}
+                  >
+                    <ChatMessage
+                      messageIndex={index}
+                      chatId={props.chatId}
+                      orgId={props.orgId}
+                      uid={props.uid}
+                      name={props.username}
+                      chat={entry as Message}
+                      key={entry.id || index}
+                      messages={messages}
+                      setMessages={setMessages}
+                      updateRoom={updateRoomData}
+                    />
+                  </ContextWrapper>
+                );
+              }
+            })}
+      </div>
       {isChatCompleted && (
         <div>
           <Startnewchatbutton org_slug={props.org_slug} org_id={props.orgId} />
@@ -130,8 +137,8 @@ export default function Chat(props: ChatProps) {
       <InputBar
         username={props.username}
         userId={props.uid}
-        isFast={isFast}
-        setIsFast={setIsFast}
+        choosenAI={choosenAI}
+        setChoosenAI={setChoosenAI}
         value={input}
         onChange={handleInputChange}
         setInput={setInput}

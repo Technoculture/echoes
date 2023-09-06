@@ -1,10 +1,9 @@
 "use client";
+
 import { useState } from "react";
-import { Plus } from "@phosphor-icons/react";
-// import Link from 'next/link';
 import { buttonVariants } from "@/components/button";
 import { useRouter } from "next/navigation";
-import { CircleNotch } from "@phosphor-icons/react";
+import { Plus, CircleNotch } from "@phosphor-icons/react";
 
 interface Props {
   org_slug: string;
@@ -24,7 +23,7 @@ const Startnewchatbutton = (props: Props) => {
 
   return (
     <button
-      className={buttonVariants({ variant: "default" })}
+      className={buttonVariants({ variant: "outline" })}
       onClick={() => {
         setShowLoading(true);
         handleNavigate();
@@ -32,13 +31,13 @@ const Startnewchatbutton = (props: Props) => {
     >
       {showLoading ? (
         <>
-          <CircleNotch className="w-4 h-4 mr-4 animate-spin" />
-          Starting Chat
+          <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
+          Starting New Chat
         </>
       ) : (
         <>
-          <Plus className="w-4 h-4 mr-4" />
-          Start a new Chat
+          <Plus className="w-4 h-4 mr-2" />
+          New Chat
         </>
       )}
     </button>

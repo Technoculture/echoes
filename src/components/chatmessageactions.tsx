@@ -36,7 +36,7 @@ const ChatMessageActions = (props: Props) => {
       onOpenChange={() => props.setOpen((prev) => !prev)}
     >
       <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="ghost">
+        <Button size="xs" variant="ghost">
           <DotsThreeVertical />
         </Button>
       </DropdownMenuTrigger>

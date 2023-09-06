@@ -126,7 +126,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   return (
     <div
       className={
-        "flex-col box-border overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
+        "flex-col flex-grow box-border overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
       }
     >
       <div className="grow flex justify-between">
