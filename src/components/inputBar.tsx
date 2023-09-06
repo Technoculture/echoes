@@ -94,9 +94,9 @@ const InputBar = (props: InputBarProps) => {
         ) : (
           <motion.div layout className="flex w-full gap-2">
             <motion.div
-              initial={{ x: -20 }}
+              initial={{ x: -50 }}
               animate={{ x: 0 }}
-              exit={{ x: -20 }}
+              exit={{ x: -50 }}
             >
               <ModelSwitcher
                 disabled={
@@ -106,7 +106,12 @@ const InputBar = (props: InputBarProps) => {
                 setAIType={props.setChoosenAI}
               />
             </motion.div>
-            <motion.div className="relative w-full">
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              className="relative w-full"
+            >
               <TextareaAutosize
                 disabled={
                   props.isChatCompleted || isRecording || isTranscribing
@@ -126,9 +131,9 @@ const InputBar = (props: InputBarProps) => {
               />
             </motion.div>
             <motion.div
-              initial={{ x: 10, y: 15 }}
+              initial={{ x: 20, y: 25 }}
               animate={{ x: 0, y: 0 }}
-              exit={{ x: 10, y: 15 }}
+              exit={{ x: 20, y: 25 }}
             >
               <Button
                 disabled={isRecording || isTranscribing}
@@ -146,7 +151,7 @@ const InputBar = (props: InputBarProps) => {
               </Button>
             </motion.div>
 
-            <motion.div initial={{ x: 20 }} animate={{ x: 0 }} exit={{ x: 20 }}>
+            <motion.div initial={{ x: 50 }} animate={{ x: 0 }} exit={{ x: 50 }}>
               <Button
                 size="icon"
                 variant="outline"
