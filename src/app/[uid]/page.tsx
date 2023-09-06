@@ -30,12 +30,14 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   return (
-    <div className={`grid gap-4 "grid-cols-1"}`}>
+    <div className="grid gap-4 grid-cols-1">
       {!isOrgExist ? (
         <div>
-          You are not a member in any Organisations{" "}
-          <Button className="mr-4 h-[32px]" variant="secondary" asChild>
-            <Link href="/create-org">Create One</Link>
+          You are not a member in any Organisations.{" "}
+          <Button className="mr-2 h-[32px]" variant="secondary" asChild>
+            <Link href="https://www.echoes.team/#requestaccess">
+              Request Access
+            </Link>
           </Button>
         </div>
       ) : (
