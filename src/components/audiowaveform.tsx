@@ -44,8 +44,8 @@ const AudioWaveForm = (props: Props) => {
     <motion.div
       layout
       initial={{ height: 0, opacity: 0 }}
-      animate={{ height: "100%", opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
+      animate={{ height: "100%", opacity: 1, transition: { duration: 1 } }}
+      exit={{ height: 0, opacity: 0, transition: { duration: 1 } }}
       className="box-border flex gap-2 p-2 w-full"
     >
       <ReactMic
@@ -64,8 +64,8 @@ const AudioWaveForm = (props: Props) => {
       />
       <motion.div
         initial={{ x: -20, y: -25, opacity: 0 }}
-        animate={{ x: 0, y: 0, opacity: 1 }}
-        exit={{ x: -20, y: -25, opacity: 0 }}
+        animate={{ x: 0, y: 0, opacity: 1, transition: { duration: 0.5 } }}
+        exit={{ x: -20, y: -25, opacity: 0, transition: { duration: 0.5 } }}
       >
         <Button
           type="button"

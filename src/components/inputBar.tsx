@@ -65,15 +65,15 @@ const InputBar = (props: InputBarProps) => {
     // Buffer.from(audioFile)
     console.log(audioFile);
     try {
-      const res = await fetch("/api/transcript", {
-        method: "POST",
-        body: f,
-      });
+      // const res = await fetch("/api/transcript", {
+      //   method: "POST",
+      //   body: f,
+      // });
 
-      // console.log('data', await data.json());
-      const data = await res.json();
-      console.log("got the data", data);
-      props.setInput(data.text);
+      // // console.log('data', await data.json());
+      // const data = await res.json();
+      // console.log("got the data", data);
+      // props.setInput(data.text);
       setIsTranscribing(false);
     } catch (err) {
       console.log("got in error", err);
@@ -97,9 +97,9 @@ const InputBar = (props: InputBarProps) => {
         ) : (
           <motion.div layout className="flex w-full gap-2">
             <motion.div
-              initial={{ x: -50 }}
-              animate={{ x: 0 }}
-              exit={{ x: -50 }}
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
+              exit={{ x: -50, opacity: 0, transition: { duration: 0.5 } }}
             >
               <ModelSwitcher
                 disabled={
@@ -111,8 +111,8 @@ const InputBar = (props: InputBarProps) => {
             </motion.div>
             <motion.div
               initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1, transition: { duration: 0.5 } }}
+              exit={{ y: 50, opacity: 0, transition: { duration: 0.5 } }}
               className="relative w-full"
             >
               <TextareaAutosize
@@ -134,9 +134,14 @@ const InputBar = (props: InputBarProps) => {
               />
             </motion.div>
             <motion.div
-              initial={{ x: 20, y: 25 }}
-              animate={{ x: 0, y: 0 }}
-              exit={{ x: 20, y: 25 }}
+              initial={{ x: 20, y: 25, opacity: 0 }}
+              animate={{
+                x: 0,
+                y: 0,
+                opacity: 1,
+                transition: { duration: 0.5 },
+              }}
+              exit={{ x: 20, y: 25, opacity: 0, transition: { duration: 0.5 } }}
             >
               <Button
                 disabled={isRecording || isTranscribing}
@@ -154,7 +159,11 @@ const InputBar = (props: InputBarProps) => {
               </Button>
             </motion.div>
 
-            <motion.div initial={{ x: 50 }} animate={{ x: 0 }} exit={{ x: 50 }}>
+            <motion.div
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
+              exit={{ x: 50, opacity: 0, transition: { duration: 0.5 } }}
+            >
               <Button
                 size="icon"
                 variant="outline"
