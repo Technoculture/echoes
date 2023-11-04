@@ -1,4 +1,4 @@
-import { StreamingTextResponse, LangChainStream } from "ai";
+import { LangChainStream } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
