@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/chatagent/*.ts": {
-      "maxDuration": 60
-    }
-  }
-}

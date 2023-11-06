@@ -16,6 +16,8 @@ import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { BufferMemory, ChatMessageHistory } from "langchain/memory";
 import { AgentStep } from "langchain/schema";
 const apiKey = process.env.SERP_API_KEY;
+export const maxDuration = 60; // This function can run for a maximum of 5 seconds
+export const dynamic = 'force-dynamic'
 
 export const revalidate = 0; // disable cache
 
