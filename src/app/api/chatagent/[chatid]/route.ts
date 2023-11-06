@@ -1,4 +1,3 @@
-import { LangChainStream } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
@@ -8,8 +7,6 @@ import {
   chooseModel,
   jsonToLangchain,
   generateTitle,
-  // azureOpenAiChatModel,
-  // OPEN_AI_MODELS,
   openAIChatModel,
 } from "@/utils/apiHelper";
 import { Calculator } from "langchain/tools/calculator";
@@ -17,8 +14,8 @@ import { NextResponse } from "next/server";
 import { SerpAPI } from "langchain/tools";
 import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { BufferMemory, ChatMessageHistory } from "langchain/memory";
-const apiKey =
-  "1d72abd1addcda2e0cba4c2fa96279ca11af10b43a4c6e21d41ade61cccd0156";
+import { AgentStep } from "langchain/schema";
+const apiKey = process.env.SERP_API_KEY;
 
 export const revalidate = 0; // disable cache
 
@@ -28,7 +25,7 @@ export async function POST(
 ) {
   const body = await request.json();
 
-  const _chat = body.messages;
+  const _chat = body.messages as ChatEntry[];
   const isFast = body.isFast || true;
   let orgId = "";
   orgId = body.orgId;
@@ -51,7 +48,7 @@ export async function POST(
       content: CHAT_COMPLETION_CONTENT,
       role: "assistant",
     };
-    _chat.push(msg); // pushing the final message to identify that the chat is completed
+    _chat.push(msg as ChatEntry); // pushing the final message to identify that the chat is completed
     await db
       .update(chats)
       .set({
@@ -68,89 +65,8 @@ export async function POST(
     );
   }
 
-  const { stream, handlers } = LangChainStream({
-    onCompletion: async (fullResponse: string) => {
-      const latestReponse = { role: "assistant", content: fullResponse };
-      if (orgId !== "") {
-        // it means it is the first message in a specific chat id
-        // Handling organization chat inputs
-        if (_chat.length === 1) {
-          console.log("got in 1 length case");
-          _chat.push(latestReponse);
-          const title = await generateTitle(_chat as ChatEntry[]);
-          // popping up because inserted the prompt for generating the title so removing the title prompt
-          _chat.pop();
-          console.log("generated title", title);
-          await db
-            .update(chats)
-            .set({
-              messages: JSON.stringify({ log: _chat } as ChatLog),
-              title: title,
-            })
-            .where(eq(chats.id, Number(id)))
-            .run();
-        } else {
-          _chat.push(latestReponse);
-          await db
-            .update(chats)
-            .set({
-              messages: JSON.stringify({ log: _chat }),
-              updatedAt: new Date(),
-            })
-            .where(eq(chats.id, Number(id)))
-            .run();
-        }
-      }
-      // handling user's personal chat
-      //  else {
-      //   // it means it is the first message in a specific chat id
-      //   if (_chat.length === 1) {
-      //     _chat.push(latestReponse);
-      //     await db.insert(chats).values({
-      //       user_id: String(userId),
-      //       messages: JSON.stringify({ log: _chat } as ChatLog),
-      //     });
-      //   } else {
-      //     _chat.push(latestReponse);
-      //     await db
-      //       .update(chats)
-      //       .set({ messages: JSON.stringify({ log: _chat }) })
-      //       .where(eq(chats.id, Number(id)));
-      //   }
-      // }
-    },
-    onFinal(completion) {
-      console.log(
-        "this is the data on the completion of function call",
-        completion,
-      );
-    },
-    onToken(token) {
-      console.log("this is onToken", token);
-    },
-    onStart() {
-      console.log("this is on start");
-    },
-  });
-
-  // const azure_chat_model = azureOpenAiChatModel(
-  //   OPEN_AI_MODELS.gptTurbo16k,
-  //   true,
-  //   handlers,
-  // ); // here it is type unsafe
-  const tools = [
-    new SerpAPI(
-      apiKey,
-      //   {
-      //   location: "Austin,Texas,United States",
-      //   hl: "en",
-      //   gl: "us",
-      // }
-    ),
-    new Calculator(),
-  ];
+  const tools = [new SerpAPI(apiKey), new Calculator()];
   const openai_chat_model = openAIChatModel(model, false);
-  const memory = new BufferMemory({ memoryKey: "chat_history" });
   const executor = await initializeAgentExecutorWithOptions(
     tools,
     openai_chat_model,
@@ -159,22 +75,63 @@ export async function POST(
       agentType: "openai-functions",
       memory: new BufferMemory({
         memoryKey: "chat_history",
-        chatHistory: new ChatMessageHistory(msgs),
+        chatHistory: new ChatMessageHistory(msgs.slice(0, -1)),
         returnMessages: true,
         outputKey: "output",
       }),
       returnIntermediateSteps: true,
-      // verbose: true,
     },
   );
 
-  // const modelWithFallback = openai_chat_model.withFallbacks({
-  //   fallbacks: [azure_chat_model],
-  // });
-  // modelWithFallback.invoke(msgs);
-  // openai_chat_model.call(msgs, { tools : [new SerpAPI(apiKey), new Calculator()] });
   const data = await executor.call({ input: msgs[msgs.length - 1].content });
+
+  const intermediateStepMessages = (data.intermediateSteps ?? []).map(
+    (intermediateStep: AgentStep) => {
+      return { content: JSON.stringify(intermediateStep), role: "function" };
+    },
+  ) as ChatEntry[];
+  const functionMessage = {
+    role: "assistant",
+    content: data.output,
+  } as ChatEntry;
+  const titleSystemMessage = {
+    role: "system",
+    content:
+      "Generate a clear, compact and precise title based on the below conversation in the form of Title:Description",
+  } as ChatEntry;
+
+  try {
+    if (_chat.length === 1) {
+      console.log("got in 1 length case");
+      const chatCopy = structuredClone(_chat.slice(1));
+      chatCopy.push(functionMessage);
+      chatCopy.unshift(titleSystemMessage);
+      const title = await generateTitle(chatCopy);
+      console.log("generated title", title);
+      _chat.push(...intermediateStepMessages, functionMessage);
+      await db
+        .update(chats)
+        .set({
+          messages: JSON.stringify({ log: _chat } as ChatLog),
+          title: title,
+        })
+        .where(eq(chats.id, Number(id)))
+        .run();
+    } else {
+      await db
+        .update(chats)
+        .set({
+          messages: JSON.stringify({ log: _chat }),
+          updatedAt: new Date(),
+        })
+        .where(eq(chats.id, Number(id)))
+        .run();
+      return new Response(JSON.stringify(data));
+    }
+  } catch (err) {
+    return new Response(undefined, { status: 400 });
+  }
+
   console.log("this is data", data);
   console.info("info", openai_chat_model.lc_kwargs);
-  return new Response(JSON.stringify(data));
 }

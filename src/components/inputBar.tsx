@@ -18,6 +18,7 @@ import { AIType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AgentStep } from "langchain/schema";
 
 interface InputBarProps {
   value: string;
@@ -73,12 +74,27 @@ const InputBar = (props: InputBarProps) => {
       });
 
       const data = await res.json();
+
+      const intermediateStepMessages: Message[] = (
+        data.intermediateSteps ?? []
+      ).map((intermediateStep: AgentStep, i: number) => {
+        return {
+          id: nanoid(),
+          content: JSON.stringify(intermediateStep),
+          role: "function",
+        } as Message;
+      });
+
       const functionMessage: Message = {
         id: nanoid(),
         role: "assistant",
         content: data.output,
       };
-      props.setMessages([...props.messages, functionMessage]);
+      props.setMessages([
+        ...props.messages,
+        ...intermediateStepMessages,
+        functionMessage,
+      ]);
     }
   };
 
