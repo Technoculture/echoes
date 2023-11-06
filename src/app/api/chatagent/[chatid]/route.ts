@@ -17,7 +17,7 @@ import { BufferMemory, ChatMessageHistory } from "langchain/memory";
 import { AgentStep } from "langchain/schema";
 const apiKey = process.env.SERP_API_KEY;
 export const maxDuration = 60; // This function can run for a maximum of 5 seconds
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export const revalidate = 0; // disable cache
 
@@ -128,8 +128,8 @@ export async function POST(
         })
         .where(eq(chats.id, Number(id)))
         .run();
-      return new Response(JSON.stringify(data));
     }
+    return new Response(JSON.stringify(data));
   } catch (err) {
     return new Response(undefined, { status: 400 });
   }
