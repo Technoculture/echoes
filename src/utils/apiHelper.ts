@@ -15,6 +15,7 @@ export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
   gptTurbo: "gpt-3.5-turbo" as const,
   gptTurbo16k: "gpt-3.5-turbo-16k" as const,
+  gpt4Turbo: "gpt-4-1106-preview" as const,
 };
 
 const TOKEN_SIZE = {
@@ -40,7 +41,9 @@ export const chooseModel = (
 
   const contextSize = txt.length;
 
-  let model: Model = isFast ? OPEN_AI_MODELS.gpt4 : OPEN_AI_MODELS.gptTurbo;
+  let model: Model = isFast
+    ? OPEN_AI_MODELS.gpt4Turbo
+    : OPEN_AI_MODELS.gptTurbo;
 
   if (contextSize > TOKEN_SIZE.gptTurbo16k) {
     return { error: true, model: undefined };
@@ -50,7 +53,7 @@ export const chooseModel = (
     contextSize > TOKEN_SIZE.gptTurbo &&
     model === OPEN_AI_MODELS.gptTurbo
   ) {
-    model = OPEN_AI_MODELS.gpt4;
+    model = OPEN_AI_MODELS.gpt4Turbo;
   }
   return { error: false, model };
 };

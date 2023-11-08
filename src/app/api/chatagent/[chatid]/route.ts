@@ -41,7 +41,7 @@ export async function POST(
     return;
   }
   const msgs = jsonToLangchain(_chat, systemPrompt);
-  console.log("msgs", msgs[0]);
+  // console.log("msgs", msgs[0]);
 
   const { error, model } = chooseModel(isFast, msgs, systemPrompt);
 
@@ -120,6 +120,7 @@ export async function POST(
         .where(eq(chats.id, Number(id)))
         .run();
     } else {
+      _chat.push(...intermediateStepMessages, functionMessage);
       await db
         .update(chats)
         .set({

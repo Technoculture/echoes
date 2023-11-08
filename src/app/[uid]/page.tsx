@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
 
   if (isOrgExist) {
     orgConversations = await getConversations({
-      orgId: String(sessionClaims.org_id),
+      orgId: String(sessionClaims?.org_id),
     });
   }
 
@@ -45,12 +45,12 @@ export default async function Page({ params }: { params: { uid: string } }) {
           <div>
             <div>
               <Startnewchatbutton
-                org_id={sessionClaims.org_id as string}
-                org_slug={sessionClaims.org_slug as string}
+                org_id={sessionClaims?.org_id as string}
+                org_slug={sessionClaims?.org_slug as string}
               />
               <ChatCardWrapper
                 initialData={orgConversations}
-                org_id={sessionClaims.org_id}
+                org_id={sessionClaims?.org_id}
                 uid={uid}
                 org_slug={sessionClaims?.org_slug as string}
               />

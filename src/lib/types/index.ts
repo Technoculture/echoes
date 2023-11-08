@@ -34,7 +34,11 @@ export const QuerySchema = z.object({
 export const CHAT_COMPLETION_CONTENT =
   "This chat has reached its maximum limit. Start a new Conversation.";
 
-export type Model = "gpt-4" | "gpt-3.5-turbo" | "gpt-3.5-turbo-16k";
+export type Model =
+  | "gpt-4"
+  | "gpt-3.5-turbo"
+  | "gpt-3.5-turbo-16k"
+  | "gpt-4-1106-preview";
 
 export type PromptTypes =
   | "factCheck"

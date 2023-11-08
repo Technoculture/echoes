@@ -17,7 +17,7 @@
     "pre-commit": "yarn format && yarn lint:fix && yarn type-check"
   },
   "dependencies": {
-    "@clerk/nextjs": "4.19.0",
+    "@clerk/nextjs": "4.26.2",
     "@clerk/themes": "1.7.4",
     "@dqbd/tiktoken": "1.0.3",
     "@libsql/client": "0.3.1",
@@ -46,7 +46,7 @@
     "@types/react": "18.0.33",
     "@types/react-dom": "18.0.11",
     "@uploadthing/react": "5.2.0",
-    "@upstash/redis": "1.20.2",
+    "@upstash/redis": "^1.24.3",
     "ai": "2.2.20",
     "class-variance-authority": "0.6.0",
     "clsx": "1.2.1",
