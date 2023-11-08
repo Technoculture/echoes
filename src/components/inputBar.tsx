@@ -92,6 +92,7 @@ const InputBar = (props: InputBarProps) => {
       };
       props.setMessages([
         ...props.messages,
+        message,
         ...intermediateStepMessages,
         functionMessage,
       ]);
