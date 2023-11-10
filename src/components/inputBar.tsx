@@ -18,7 +18,6 @@ import { AIType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AgentStep } from "langchain/schema";
 
 interface InputBarProps {
   value: string;
@@ -73,29 +72,64 @@ const InputBar = (props: InputBarProps) => {
         }),
       });
 
-      const data = await res.json();
-
-      const intermediateStepMessages: Message[] = (
-        data.intermediateSteps ?? []
-      ).map((intermediateStep: AgentStep, i: number) => {
-        return {
-          id: nanoid(),
-          content: JSON.stringify(intermediateStep),
-          role: "function",
-        } as Message;
-      });
-
+      // if(res.body){
+      //   for await (const chunk of res?.body) {
+      //     console.log("chunk is ==>", chunck)
+      //     // Do something with the chunk
+      //   }
+      // }
+      let content = "";
+      const id = nanoid();
       const functionMessage: Message = {
-        id: nanoid(),
+        id,
         role: "assistant",
-        content: data.output,
+        content: "",
       };
-      props.setMessages([
-        ...props.messages,
-        message,
-        ...intermediateStepMessages,
-        functionMessage,
-      ]);
+      if (res.body) {
+        const reader = res?.body.getReader();
+
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            break;
+          }
+
+          const text = new TextDecoder().decode(value);
+          content += text;
+
+          functionMessage.content += text;
+          props.setMessages([
+            ...props.messages,
+            message,
+            // ...intermediateStepMessages,
+            functionMessage,
+          ]);
+          console.log("textChunck", functionMessage.content, "\n");
+        }
+      }
+
+      // const intermediateStepMessages: Message[] = (
+      //   data.intermediateSteps ?? []
+      // ).map((intermediateStep: AgentStep, i: number) => {
+      //   return {
+      //     id: nanoid(),
+      //     content: JSON.stringify(intermediateStep),
+      //     role: "function",
+      //   } as Message;
+      // });
+
+      // const functionMessage: Message = {
+      //   id: nanoid(),
+      //   role: "assistant",
+      //   content: content,
+      // };
+      // props.setMessages([
+      //   ...props.messages,
+      //   message,
+      //   // ...intermediateStepMessages,
+      //   functionMessage,
+      // ]);
     }
   };
 

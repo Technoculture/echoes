@@ -1,21 +1,23 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { CHAT_COMPLETION_CONTENT, ChatEntry, ChatLog } from "@/lib/types";
+import { CHAT_COMPLETION_CONTENT, ChatEntry } from "@/lib/types";
 import { systemPrompt } from "@/utils/prompts";
 import {
   chooseModel,
   jsonToLangchain,
-  generateTitle,
+  // generateTitle,
   openAIChatModel,
+  OPEN_AI_MODELS,
 } from "@/utils/apiHelper";
 import { Calculator } from "langchain/tools/calculator";
 import { NextResponse } from "next/server";
 import { SerpAPI } from "langchain/tools";
 import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { BufferMemory, ChatMessageHistory } from "langchain/memory";
-import { AgentStep } from "langchain/schema";
+import { StreamingTextResponse } from "ai";
 const apiKey = process.env.SERP_API_KEY;
+
 export const maxDuration = 60; // This function can run for a maximum of 5 seconds
 export const dynamic = "force-dynamic";
 
@@ -41,9 +43,9 @@ export async function POST(
     return;
   }
   const msgs = jsonToLangchain(_chat, systemPrompt);
-  // console.log("msgs", msgs[0]);
 
-  const { error, model } = chooseModel(isFast, msgs, systemPrompt);
+  const model = OPEN_AI_MODELS.gpt4Turbo;
+  const { error } = chooseModel(isFast, msgs, systemPrompt);
 
   if (error) {
     const msg = {
@@ -67,8 +69,16 @@ export async function POST(
     );
   }
 
+  const encoder = new TextEncoder();
+  let ctrl: ReadableStreamDefaultController<any>;
+  const readableStream = new ReadableStream({
+    start(controller) {
+      ctrl = controller;
+    },
+  });
+
   const tools = [new SerpAPI(apiKey), new Calculator()];
-  const openai_chat_model = openAIChatModel(model, false);
+  const openai_chat_model = openAIChatModel(model, true);
   const executor = await initializeAgentExecutorWithOptions(
     tools,
     openai_chat_model,
@@ -82,59 +92,132 @@ export async function POST(
         outputKey: "output",
       }),
       returnIntermediateSteps: true,
+      maxIterations: 10,
     },
   );
 
-  const data = await executor.call({ input: msgs[msgs.length - 1].content });
-
-  const intermediateStepMessages = (data.intermediateSteps ?? []).map(
-    (intermediateStep: AgentStep) => {
-      return { content: JSON.stringify(intermediateStep), role: "function" };
+  executor.call({ input: msgs[msgs.length - 1].content }, [
+    {
+      async handleToolStart(
+        tool,
+        input,
+        runId,
+        parentRunId,
+        tags,
+        metadata,
+        name,
+      ) {
+        console.log("handleToolStart tool", tool);
+        console.log("handleToolStart input", input);
+      },
+      async handleToolEnd(output, runId, parentRunId, tags) {
+        console.log("handleToolEnd output", output);
+      },
+      async handleAgentAction(action, runId, parentRunId, tags) {
+        console.log("handleAgentAction action", action);
+        // await writer.ready;
+        // streamData += JSON.stringify(action)
+        // await writer.write(encoder.encode(`${action}`));
+        // console.log("handleAgentAction runId", runId)
+        // console.log("handleAgentAction parentRunId", parentRunId)
+        // console.log("handleAgentAction tags", tags)
+      },
+      async handleAgentEnd(action, runId, parentRunId, tags) {
+        ctrl.close();
+        console.log("agent ended");
+      },
+      async handleLLMStart(
+        llm,
+        prompts,
+        runId,
+        parentRunId,
+        extraParams,
+        tags,
+        metadata,
+        name,
+      ) {
+        console.log("llm started", prompts);
+      },
+      async handleLLMNewToken(token, idx, runId, parentRunId, tags, fields) {
+        ctrl.enqueue(encoder.encode(token));
+        console.log("llmNewToken", token);
+      },
+      async handleLLMEnd(output, runId, parentRunId, tags) {
+        console.log("llm ended with output", output);
+      },
+      async handleChatModelStart(
+        llm,
+        messages,
+        runId,
+        parentRunId,
+        extraParams,
+        tags,
+        metadata,
+        name,
+      ) {
+        // console.log("chatModelStart", messages)
+      },
     },
-  ) as ChatEntry[];
-  const functionMessage = {
-    role: "assistant",
-    content: data.output,
-  } as ChatEntry;
-  const titleSystemMessage = {
-    role: "system",
-    content:
-      "Generate a clear, compact and precise title based on the below conversation in the form of Title:Description",
-  } as ChatEntry;
+  ]);
+
+  // const intermediateStepMessages = (data.intermediateSteps ?? []).map(
+  //   (intermediateStep: AgentStep) => {
+  //     const msg = { content: JSON.stringify(intermediateStep), role: "function" } as ChatEntry
+  //     // list.push(msg)
+  //     return msg;
+  //   },
+  // ) as ChatEntry[];
+  // const functionMessage = {
+  //   role: "assistant",
+  //   content: data.output,
+  // } as ChatEntry;
+  // const titleSystemMessage = {
+  //   role: "system",
+  //   content:
+  //     "Generate a clear, compact and precise title based on the below conversation in the form of Title:Description",
+  // } as ChatEntry;
+
+  // list.push(functionMessage)
+
+  // console.log("intermediate Steps", intermediateStepMessages)
+  // console.log("functionMessage", functionMessage)
+  // console.log("titleMessage", titleSystemMessage)
 
   try {
-    if (_chat.length === 1) {
-      console.log("got in 1 length case");
-      const chatCopy = structuredClone(_chat.slice(1));
-      chatCopy.push(functionMessage);
-      chatCopy.unshift(titleSystemMessage);
-      const title = await generateTitle(chatCopy);
-      console.log("generated title", title);
-      _chat.push(...intermediateStepMessages, functionMessage);
-      await db
-        .update(chats)
-        .set({
-          messages: JSON.stringify({ log: _chat } as ChatLog),
-          title: title,
-        })
-        .where(eq(chats.id, Number(id)))
-        .run();
-    } else {
-      _chat.push(...intermediateStepMessages, functionMessage);
-      await db
-        .update(chats)
-        .set({
-          messages: JSON.stringify({ log: _chat }),
-          updatedAt: new Date(),
-        })
-        .where(eq(chats.id, Number(id)))
-        .run();
-    }
-    return new Response(JSON.stringify(data));
+    // if (_chat.length === 1) {
+    //   console.log("got in 1 length case");
+    //   const chatCopy = structuredClone(_chat.slice(1));
+    //   chatCopy.push(functionMessage);
+    //   chatCopy.unshift(titleSystemMessage);
+    //   const title = await generateTitle(chatCopy);
+    //   console.log("generated title", title);
+    //   _chat.push(...intermediateStepMessages, functionMessage);
+    //   await db
+    //     .update(chats)
+    //     .set({
+    //       messages: JSON.stringify({ log: _chat } as ChatLog),
+    //       title: title,
+    //     })
+    //     .where(eq(chats.id, Number(id)))
+    //     .run();
+    // } else {
+    //   _chat.push(...intermediateStepMessages, functionMessage);
+    //   await db
+    //     .update(chats)
+    //     .set({
+    //       messages: JSON.stringify({ log: _chat }),
+    //       updatedAt: new Date(),
+    //     })
+    //     .where(eq(chats.id, Number(id)))
+    //     .run();
+    // }
+    // return new Response(JSON.stringify(data));
+    return new StreamingTextResponse(readableStream);
+    // return OpenAIStream(data);
   } catch (err) {
     return new Response(undefined, { status: 400 });
   }
 
-  console.log("this is data", data);
+  // console.log("this is data", data);
   console.info("info", openai_chat_model.lc_kwargs);
 }

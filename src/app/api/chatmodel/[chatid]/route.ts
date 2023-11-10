@@ -9,6 +9,7 @@ import {
   jsonToLangchain,
   generateTitle,
   openAIChatModel,
+  OPEN_AI_MODELS,
 } from "@/utils/apiHelper";
 import { NextResponse } from "next/server";
 export const revalidate = 0; // disable cache
@@ -35,7 +36,8 @@ export async function POST(
   const msgs = jsonToLangchain(_chat, systemPrompt);
   console.log("msgs", msgs[0]);
 
-  const { error, model } = chooseModel(isFast, msgs, systemPrompt);
+  const model = OPEN_AI_MODELS.gpt4Turbo;
+  const { error } = chooseModel(isFast, msgs, systemPrompt);
 
   if (error) {
     const msg = {
