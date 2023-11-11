@@ -104,7 +104,6 @@ const InputBar = (props: InputBarProps) => {
           }
 
           const text = new TextDecoder().decode(value);
-          const d = JSON.parse(text);
           if (isJSON(text)) {
             const functionMessage: Message = {
               id: nanoid(),
