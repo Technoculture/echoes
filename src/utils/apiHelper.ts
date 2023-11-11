@@ -1,13 +1,17 @@
 import { encodingForModel, getEncoding } from "js-tiktoken";
 import {
   AIMessage,
+  AgentStep,
   BaseMessage,
   HumanMessage,
   SystemMessage,
 } from "langchain/schema";
-import { ChatEntry, Model } from "@/lib/types";
+import { ChatEntry, ChatLog, Model } from "@/lib/types";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { env } from "@/app/env.mjs";
+import { db } from "@/lib/db";
+import { chats } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 // import { BaseCallbackHandler } from "langchain/dist/callbacks/base";
 
@@ -128,4 +132,62 @@ export const openAIChatModel = (
     maxRetries: 1,
     callbacks: handlers ? [handlers] : [],
   });
+};
+
+export const handleDBOperation = async (
+  _chat: ChatEntry[],
+  id: string,
+  intermediateSteps: AgentStep[],
+  assistantReply: string,
+) => {
+  const intermediateStepMessages = (intermediateSteps ?? []).map(
+    (intermediateStep: AgentStep) =>
+      ({
+        content: JSON.stringify(intermediateStep),
+        role: "function",
+      }) as ChatEntry,
+  ) as ChatEntry[]; // turning into appropriate messages
+
+  // creating assistant message
+  const assistantMessage = {
+    role: "assistant",
+    content: assistantReply,
+  } as ChatEntry;
+  const titleSystemMessage = {
+    role: "system",
+    content:
+      "Generate a clear, compact and precise title based on the below conversation in the form of Title:Description",
+  } as ChatEntry;
+
+  console.log("intermediate Steps", intermediateStepMessages);
+  console.log("functionMessage", assistantMessage);
+  console.log("titleMessage", titleSystemMessage);
+
+  if (_chat.length === 1) {
+    console.log("got in 1 length case");
+    const chatCopy = structuredClone(_chat.slice(1));
+    chatCopy.push(assistantMessage); // adding assistant message
+    chatCopy.unshift(titleSystemMessage); // adding system prompt to generate a title
+    const title = await generateTitle(chatCopy);
+    console.log("generated title", title);
+    _chat.push(...intermediateStepMessages, assistantMessage); // adding intermediateSteps and assitant message to real chat
+    await db
+      .update(chats)
+      .set({
+        messages: JSON.stringify({ log: _chat } as ChatLog),
+        title: title,
+      })
+      .where(eq(chats.id, Number(id)))
+      .run();
+  } else {
+    _chat.push(...intermediateStepMessages, assistantMessage);
+    await db
+      .update(chats)
+      .set({
+        messages: JSON.stringify({ log: _chat }),
+        updatedAt: new Date(),
+      })
+      .where(eq(chats.id, Number(id)))
+      .run();
+  }
 };

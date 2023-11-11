@@ -16,6 +16,7 @@ import { SerpAPI } from "langchain/tools";
 import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { BufferMemory, ChatMessageHistory } from "langchain/memory";
 import { StreamingTextResponse } from "ai";
+import { AgentStep } from "langchain/schema";
 const apiKey = process.env.SERP_API_KEY;
 
 export const maxDuration = 60; // This function can run for a maximum of 5 seconds
@@ -34,7 +35,7 @@ export async function POST(
   let orgId = "";
   orgId = body.orgId;
 
-  let id = params.params.chatid as any;
+  let id = params.params.chatid as string;
   // exceptional case
   if (_chat.length === 0) {
     console.error(
@@ -96,7 +97,9 @@ export async function POST(
     },
   );
 
-  let toolResponse = {};
+  const intermediateSteps = [] as AgentStep[];
+  let toolResponse: AgentStep = {} as AgentStep;
+  let assistantReply = "";
 
   executor.call({ input: msgs[msgs.length - 1].content }, [
     {
@@ -113,21 +116,24 @@ export async function POST(
         console.log("handleToolStart input", input);
       },
       async handleToolEnd(output, runId, parentRunId, tags) {
-        console.log("handleToolEnd output", output);
+        toolResponse.observation = output;
+        intermediateSteps.push(toolResponse); // managing intermediate steps
+        ctrl.enqueue(JSON.stringify(toolResponse)); // sendting tool output to stream
+        toolResponse = {} as AgentStep;
       },
       async handleAgentAction(action, runId, parentRunId, tags) {
-        ctrl.enqueue(JSON.stringify(action));
+        toolResponse.action = action;
         console.log("handleAgentAction action", action);
-        // await writer.ready;
-        // streamData += JSON.stringify(action)
-        // await writer.write(encoder.encode(`${action}`));
-        // console.log("handleAgentAction runId", runId)
-        // console.log("handleAgentAction parentRunId", parentRunId)
-        // console.log("handleAgentAction tags", tags)
       },
       async handleAgentEnd(action, runId, parentRunId, tags) {
-        ctrl.close();
-        console.log("agent ended");
+        try {
+          console.log("agent ended 1 assistantReply", assistantReply);
+          ctrl.close();
+          // await handleDBOperation(_chat, id, intermediateSteps, assistantReply);
+          console.log("agent ended 2");
+        } catch (err) {
+          console.error("error in handleAgentEnd", err);
+        }
       },
       async handleLLMStart(
         llm,
@@ -142,8 +148,8 @@ export async function POST(
         console.log("llm started", prompts);
       },
       async handleLLMNewToken(token, idx, runId, parentRunId, tags, fields) {
+        assistantReply += token;
         ctrl.enqueue(encoder.encode(token));
-        console.log("llmNewToken", token);
       },
       async handleLLMEnd(output, runId, parentRunId, tags) {
         console.log("llm ended with output", output);
@@ -163,64 +169,6 @@ export async function POST(
     },
   ]);
 
-  // const intermediateStepMessages = (data.intermediateSteps ?? []).map(
-  //   (intermediateStep: AgentStep) => {
-  //     const msg = { content: JSON.stringify(intermediateStep), role: "function" } as ChatEntry
-  //     // list.push(msg)
-  //     return msg;
-  //   },
-  // ) as ChatEntry[];
-  // const functionMessage = {
-  //   role: "assistant",
-  //   content: data.output,
-  // } as ChatEntry;
-  // const titleSystemMessage = {
-  //   role: "system",
-  //   content:
-  //     "Generate a clear, compact and precise title based on the below conversation in the form of Title:Description",
-  // } as ChatEntry;
-
-  // list.push(functionMessage)
-
-  // console.log("intermediate Steps", intermediateStepMessages)
-  // console.log("functionMessage", functionMessage)
-  // console.log("titleMessage", titleSystemMessage)
-
-  try {
-    // if (_chat.length === 1) {
-    //   console.log("got in 1 length case");
-    //   const chatCopy = structuredClone(_chat.slice(1));
-    //   chatCopy.push(functionMessage);
-    //   chatCopy.unshift(titleSystemMessage);
-    //   const title = await generateTitle(chatCopy);
-    //   console.log("generated title", title);
-    //   _chat.push(...intermediateStepMessages, functionMessage);
-    //   await db
-    //     .update(chats)
-    //     .set({
-    //       messages: JSON.stringify({ log: _chat } as ChatLog),
-    //       title: title,
-    //     })
-    //     .where(eq(chats.id, Number(id)))
-    //     .run();
-    // } else {
-    //   _chat.push(...intermediateStepMessages, functionMessage);
-    //   await db
-    //     .update(chats)
-    //     .set({
-    //       messages: JSON.stringify({ log: _chat }),
-    //       updatedAt: new Date(),
-    //     })
-    //     .where(eq(chats.id, Number(id)))
-    //     .run();
-    // }
-    // return new Response(JSON.stringify(data));
-    return new StreamingTextResponse(readableStream);
-    // return OpenAIStream(data);
-  } catch (err) {
-    return new Response(undefined, { status: 400 });
-  }
-
-  // console.log("this is data", data);
-  console.info("info", openai_chat_model.lc_kwargs);
+  return new StreamingTextResponse(readableStream);
+  // console.info("info", openai_chat_model.lc_kwargs);
 }

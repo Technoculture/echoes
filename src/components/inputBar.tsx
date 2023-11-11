@@ -120,7 +120,7 @@ const InputBar = (props: InputBarProps) => {
               ...functionMessages,
             ]);
           } else {
-            console.log("non-json");
+            console.log("non-json", text);
             content += text;
             props.setMessages([
               ...props.messages,
