@@ -18,6 +18,13 @@ import { AIType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+function isJSON(str: any) {
+  try {
+    return JSON.parse(str) && !!str;
+  } catch (e) {
+    return false;
+  }
+}
 
 interface InputBarProps {
   value: string;
@@ -80,11 +87,12 @@ const InputBar = (props: InputBarProps) => {
       // }
       let content = "";
       const id = nanoid();
-      const functionMessage: Message = {
+      const assistantMessage: Message = {
         id,
         role: "assistant",
         content: "",
       };
+
       if (res.body) {
         const reader = res?.body.getReader();
 
@@ -96,19 +104,28 @@ const InputBar = (props: InputBarProps) => {
           }
 
           const text = new TextDecoder().decode(value);
-          content += text;
-          console.log("text", text, "\n\n")
-          functionMessage.content += text;
-          props.setMessages([
-            ...props.messages,
-            message,
-            // ...intermediateStepMessages,
-            {
-              ...functionMessage,
-              content: content
-            },
-          ]);
-          console.log("textChunck", functionMessage.content, "\n");
+          const d = JSON.parse(text);
+          if (isJSON(text)) {
+            const functionMessage: Message = {
+              id: nanoid(),
+              role: "function",
+              content: text,
+            };
+
+            props.setMessages([...props.messages, message, functionMessage]);
+          } else {
+            content += text;
+            props.setMessages([
+              ...props.messages,
+              message,
+              // ...intermediateStepMessages,
+              {
+                ...assistantMessage,
+                content: content,
+              },
+            ]);
+          }
+          // console.log('textChunck', functionMessage.content, '\n');
         }
       }
 

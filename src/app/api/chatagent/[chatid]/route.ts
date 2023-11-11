@@ -114,7 +114,7 @@ export async function POST(
         console.log("handleToolEnd output", output);
       },
       async handleAgentAction(action, runId, parentRunId, tags) {
-        ctrl.enqueue(JSON.stringify(action))
+        ctrl.enqueue(JSON.stringify(action));
         console.log("handleAgentAction action", action);
         // await writer.ready;
         // streamData += JSON.stringify(action)
