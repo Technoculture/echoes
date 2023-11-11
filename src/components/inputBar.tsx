@@ -97,13 +97,16 @@ const InputBar = (props: InputBarProps) => {
 
           const text = new TextDecoder().decode(value);
           content += text;
-
+          console.log("text", text, "\n\n")
           functionMessage.content += text;
           props.setMessages([
             ...props.messages,
             message,
             // ...intermediateStepMessages,
-            functionMessage,
+            {
+              ...functionMessage,
+              content: content
+            },
           ]);
           console.log("textChunck", functionMessage.content, "\n");
         }
