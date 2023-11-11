@@ -96,6 +96,8 @@ export async function POST(
     },
   );
 
+  let toolResponse = {};
+
   executor.call({ input: msgs[msgs.length - 1].content }, [
     {
       async handleToolStart(

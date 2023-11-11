@@ -20,7 +20,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 function isJSON(str: any) {
   try {
-    return JSON.parse(str) && !!str;
+    return JSON.parse(str);
   } catch (e) {
     return false;
   }
@@ -92,6 +92,7 @@ const InputBar = (props: InputBarProps) => {
         role: "assistant",
         content: "",
       };
+      let functionMessages: Message[] = [];
 
       if (res.body) {
         const reader = res?.body.getReader();
@@ -105,19 +106,26 @@ const InputBar = (props: InputBarProps) => {
 
           const text = new TextDecoder().decode(value);
           if (isJSON(text)) {
+            console.log("this is json", text);
             const functionMessage: Message = {
               id: nanoid(),
               role: "function",
               content: text,
             };
+            functionMessages.push(functionMessage);
 
-            props.setMessages([...props.messages, message, functionMessage]);
+            props.setMessages([
+              ...props.messages,
+              message,
+              ...functionMessages,
+            ]);
           } else {
+            console.log("non-json");
             content += text;
             props.setMessages([
               ...props.messages,
               message,
-              // ...intermediateStepMessages,
+              ...functionMessages,
               {
                 ...assistantMessage,
                 content: content,

@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Message } from "ai/react";
-import { AgentStep } from "langchain/schema";
+import { AgentAction, AgentStep } from "langchain/schema";
 
 export function IntermediateStep(props: { message: Message }) {
-  const parsedInput: AgentStep = JSON.parse(props.message.content);
-  const action = parsedInput.action;
-  const observation = parsedInput.observation;
+  const parsedInput: AgentAction = JSON.parse(props.message.content);
+  // const action = parsedInput.action;
+  // const observation = parsedInput.observation;
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -19,7 +19,7 @@ export function IntermediateStep(props: { message: Message }) {
         onClick={(e) => setExpanded(!expanded)}
       >
         <code className="mr-2 bg-slate-600 px-2 py-1 rounded hover:text-blue-600">
-          🛠️ <b>{action.tool}</b>
+          🛠️ <b>{parsedInput.tool}</b>
         </code>
         <span className={expanded ? "hidden" : ""}>🔽</span>
         <span className={expanded ? "" : "hidden"}>🔼</span>
@@ -42,7 +42,7 @@ export function IntermediateStep(props: { message: Message }) {
             Tool Input:
             <br></br>
             <br></br>
-            {JSON.stringify(action.toolInput)}
+            {JSON.stringify(parsedInput.toolInput)}
           </code>
         </div>
         <div
@@ -55,7 +55,7 @@ export function IntermediateStep(props: { message: Message }) {
               expanded ? "opacity-100" : ""
             }`}
           >
-            {observation}
+            {"loading"}
           </code>
         </div>
       </div>
