@@ -19,15 +19,16 @@ import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 function isJSON(str: any) {
-  let obj : any;
+  let obj: any;
   try {
     obj = JSON.parse(str);
   } catch (e) {
     return false;
   }
-  if (typeof obj === 'number' || obj instanceof Number) {
+  if (typeof obj === "number" || obj instanceof Number) {
     return false;
-}
+  }
+  return !!obj && typeof obj === "object";
 }
 
 interface InputBarProps {
