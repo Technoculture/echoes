@@ -8,7 +8,7 @@ import {
   SetStateAction,
   useState,
 } from "react";
-import { ChatRequestOptions, CreateMessage, Message } from "ai";
+import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
 import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 
@@ -18,6 +18,18 @@ import { AIType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+function isJSON(str: any) {
+  let obj: any;
+  try {
+    obj = JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  if (typeof obj === "number" || obj instanceof Number) {
+    return false;
+  }
+  return !!obj && typeof obj === "object";
+}
 
 interface InputBarProps {
   value: string;
@@ -34,6 +46,10 @@ interface InputBarProps {
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
   isChatCompleted: boolean;
+  chatId: string;
+  messages: Message[];
+  orgId: string;
+  setMessages: (messages: Message[]) => void;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -41,12 +57,13 @@ const InputBar = (props: InputBarProps) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (props.value.trim() === "") {
       return;
     }
-    const message = {
+    const message: Message = {
+      id: nanoid(),
       role: "user",
       content: props.value,
       name: `${props.username},${props.userId}`,
@@ -54,6 +71,97 @@ const InputBar = (props: InputBarProps) => {
     if (props.choosenAI === "universal") {
       props.append(message as Message);
       props.setInput("");
+    }
+    if (props.choosenAI === "agent") {
+      props.setMessages([...props.messages, message]);
+      props.setInput("");
+      const res = await fetch(`/api/chatagent/${props.chatId}`, {
+        method: "POST",
+        body: JSON.stringify({
+          messages: [...props.messages, message],
+          isFast: true,
+          orgId: props.orgId,
+        }),
+      });
+
+      // if(res.body){
+      //   for await (const chunk of res?.body) {
+      //     console.log("chunk is ==>", chunck)
+      //     // Do something with the chunk
+      //   }
+      // }
+      let content = "";
+      const id = nanoid();
+      const assistantMessage: Message = {
+        id,
+        role: "assistant",
+        content: "",
+      };
+      let functionMessages: Message[] = [];
+
+      if (res.body) {
+        const reader = res?.body.getReader();
+
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            break;
+          }
+
+          const text = new TextDecoder().decode(value);
+          if (isJSON(text)) {
+            console.log("this is json", text);
+            const functionMessage: Message = {
+              id: nanoid(),
+              role: "function",
+              content: text,
+            };
+            functionMessages.push(functionMessage);
+
+            props.setMessages([
+              ...props.messages,
+              message,
+              ...functionMessages,
+            ]);
+          } else {
+            console.log("non-json", text);
+            content += text;
+            props.setMessages([
+              ...props.messages,
+              message,
+              ...functionMessages,
+              {
+                ...assistantMessage,
+                content: content,
+              },
+            ]);
+          }
+          // console.log('textChunck', functionMessage.content, '\n');
+        }
+      }
+
+      // const intermediateStepMessages: Message[] = (
+      //   data.intermediateSteps ?? []
+      // ).map((intermediateStep: AgentStep, i: number) => {
+      //   return {
+      //     id: nanoid(),
+      //     content: JSON.stringify(intermediateStep),
+      //     role: "function",
+      //   } as Message;
+      // });
+
+      // const functionMessage: Message = {
+      //   id: nanoid(),
+      //   role: "assistant",
+      //   content: content,
+      // };
+      // props.setMessages([
+      //   ...props.messages,
+      //   message,
+      //   // ...intermediateStepMessages,
+      //   functionMessage,
+      // ]);
     }
   };
 

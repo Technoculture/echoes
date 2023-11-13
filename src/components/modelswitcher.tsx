@@ -55,6 +55,7 @@ const ModelSwitcher = React.forwardRef<HTMLButtonElement, InputBarActionProps>(
               <DropdownMenuRadioItem value="oligoai">
                 OligoAI
               </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="agent">Agent</DropdownMenuRadioItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel inset>AIModels</DropdownMenuLabel>
             </DropdownMenuRadioGroup>

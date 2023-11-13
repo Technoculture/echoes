@@ -1,10 +1,12 @@
 import "./src/app/env.mjs";
-import * as Sentry  from "@sentry/nextjs"
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true,
+    // appDir: true,
     serverActions: true
+  },
+  images: {
+    domains: ['oaidalleapiprodscus.blob.core.windows.net', 'echoes-images.s3.ap-south-1.amazonaws.com', 'd7ftvotrexusa.cloudfront.net'],
   },
   redirects: async () => {
     return [
@@ -17,22 +19,24 @@ const nextConfig = {
   },
 };
 
-export default Sentry.withSentryConfig(nextConfig, {authToken: process.env.SENTRY_AUTH_TOKEN, org: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT, hideSourceMaps: true},  {
-// For all available options, see:
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+export default nextConfig;
 
-// Upload a larger set of source maps for prettier stack traces (increases build time)
-widenClientFileUpload: true,
+// export default Sentry.withSentryConfig(nextConfig, {authToken: process.env.SENTRY_AUTH_TOKEN, org: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT, hideSourceMaps: true},  {
+// // For all available options, see:
+// // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
-// Transpiles SDK to be compatible with IE11 (increases bundle size)
-transpileClientSDK: true,
+// // Upload a larger set of source maps for prettier stack traces (increases build time)
+// widenClientFileUpload: true,
 
-// Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-tunnelRoute: "/monitoring",
+// // Transpiles SDK to be compatible with IE11 (increases bundle size)
+// transpileClientSDK: true,
 
-// Hides source maps from generated client bundles
-hideSourceMaps: true,
+// // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
+// tunnelRoute: "/monitoring",
 
-// Automatically tree-shake Sentry logger statements to reduce bundle size
-disableLogger: true,
-});
+// // Hides source maps from generated client bundles
+// hideSourceMaps: true,
+
+// // Automatically tree-shake Sentry logger statements to reduce bundle size
+// disableLogger: true,
+// });

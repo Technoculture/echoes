@@ -6,6 +6,7 @@ import RenderMarkdown from "@/components/rendermarkdown";
 import { Button } from "@/components/button";
 import { MessageRole } from "@/lib/types";
 import { CircleNotch } from "@phosphor-icons/react";
+import { IntermediateStep } from "./intermediatesteps";
 
 interface ChatMessageProps {
   name: string;
@@ -150,7 +151,9 @@ const ChatMessage = (props: ChatMessageProps) => {
           setOpen={setIsActionsOpen}
         />
       </div>
-      {!isEditing ? (
+      {props.chat.role === "function" ? (
+        <IntermediateStep message={props.chat} />
+      ) : !isEditing ? (
         <div
           className={
             isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""

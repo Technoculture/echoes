@@ -27,6 +27,12 @@ export const env = createEnv({
     SENTRY_AUTH_TOKEN: z.string().min(1),
     SENTRY_ORG: z.string().min(1),
     SENTRY_PROJECT: z.string().min(1),
+    // aws
+    AWS_ACCESS_KEY_ID: z.string().min(1),
+    AWS_SECRET_ACCESS_KEY: z.string().min(1),
+    AWS_REGION: z.string().min(1),
+    BUCKET_NAME: z.string().min(1),
+    IMAGE_PREFIX_URL: z.string().min(1),
   },
 
   client: {
@@ -66,6 +72,12 @@ export const env = createEnv({
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
     SENTRY_ORG: process.env.SENTRY_ORG,
     SENTRY_PROJECT: process.env.SENTRY_AUTH_TOKEN,
+    // aws
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_REGION: process.env.AWS_REGION,
+    BUCKET_NAME: process.env.BUCKET_NAME,
+    IMAGE_PREFIX_URL: process.env.IMAGE_PREFIX_URL,
   },
 });
 

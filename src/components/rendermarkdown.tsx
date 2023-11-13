@@ -8,7 +8,6 @@ import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { NormalComponents } from "react-markdown/lib/complex-types";
 import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { PluggableList } from "react-markdown/lib/react-markdown";
-import { Badge } from "@/components/badge";
 import { ScrollArea } from "@/components/scrollarea";
 import { MessageRole } from "@/lib/types";
 
@@ -77,15 +76,7 @@ const components: Components = {
       const str = children.toString();
       let strChunks = str.split(" ");
       return (
-        <p className="leading-normal [&:not(:first-child)]:mt-6">
-          {strChunks.map((chunk) =>
-            chunk.match(/([#])\w+/g) ? (
-              <Badge key={chunk}>{chunk.slice(1)}</Badge>
-            ) : (
-              <span key={chunk}>{chunk}</span>
-            ),
-          )}
-        </p>
+        <p className="leading-normal [&:not(:first-child)]:mt-6">{children}</p>
       );
     }
     return (

@@ -135,6 +135,10 @@ export default function Chat(props: ChatProps) {
         </div>
       )}
       <InputBar
+        chatId={props.chatId}
+        orgId={props.orgId}
+        messages={messages}
+        setMessages={setMessages}
         username={props.username}
         userId={props.uid}
         choosenAI={choosenAI}
