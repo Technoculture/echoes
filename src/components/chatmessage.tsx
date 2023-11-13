@@ -5,7 +5,7 @@ import { useState } from "react";
 import RenderMarkdown from "@/components/rendermarkdown";
 import { Button } from "@/components/button";
 import { MessageRole } from "@/lib/types";
-import { CircleNotch } from "@phosphor-icons/react";
+import { CircleNotch, Play } from "@phosphor-icons/react";
 import { IntermediateStep } from "./intermediatesteps";
 
 interface ChatMessageProps {
@@ -26,6 +26,9 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
   const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
+  const [audioSrc, setAudioSrc] = useState<string>("");
+  const [isFetchingAudioBuffer, setIsFetchingAudioBuffer] =
+    useState<boolean>(false);
 
   let userName = "";
   if (props?.chat.name) {
@@ -124,22 +127,55 @@ const ChatMessage = (props: ChatMessageProps) => {
     setIsActionsOpen(false);
   };
 
+  const textToSpeech = async () => {
+    const text = props.chat.content;
+    setIsFetchingAudioBuffer(true);
+    try {
+      const res = await fetch("/api/tts", {
+        method: "post",
+        body: JSON.stringify({ text: text, voice: "en-US" }),
+      });
+      const arrayBuffer = await res.arrayBuffer();
+      const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+      const url = URL.createObjectURL(blob);
+      console.log("generated url", url);
+      setAudioSrc(url);
+    } catch (err) {
+      console.log(err);
+    }
+    setIsFetchingAudioBuffer(false);
+  };
+
   return (
     <div
       className={
         "flex-col flex-grow box-border overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
       }
     >
-      <div className="grow flex justify-between">
-        <p
-          className={
-            props.chat.role === "user"
-              ? "text-slate-600 group-hover:text-gray-400 select-none"
-              : "text-green-300 group-hover:text-green-200 select-none"
-          }
-        >
-          {userName}
-        </p>
+      <div className="grow flex justify-between ">
+        <div className="flex items-center">
+          <p
+            className={
+              props.chat.role === "user"
+                ? "text-slate-600 group-hover:text-gray-400 select-none"
+                : "text-green-300 group-hover:text-green-200 select-none"
+            }
+          >
+            {userName}
+          </p>
+          {props.chat.role === "assistant" ? (
+            <Button size="xs" variant="ghost" onClick={textToSpeech}>
+              {isFetchingAudioBuffer ? (
+                <CircleNotch className="animate-spin" />
+              ) : (
+                <Play className="" />
+              )}
+            </Button>
+          ) : null}
+          {props.chat.role === "assistant" && audioSrc !== "" ? (
+            <audio src={audioSrc} controls className="ml-2 px-1 h-4"></audio>
+          ) : null}
+        </div>
         <ChatMessageActions
           isEditing={isEditing}
           setEditing={setIsEditing}
