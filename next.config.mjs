@@ -5,6 +5,9 @@ const nextConfig = {
     // appDir: true,
     serverActions: true
   },
+  images: {
+    domains: ['oaidalleapiprodscus.blob.core.windows.net', 'echoes-images.s3.ap-south-1.amazonaws.com', 'd7ftvotrexusa.cloudfront.net'],
+  },
   redirects: async () => {
     return [
       {

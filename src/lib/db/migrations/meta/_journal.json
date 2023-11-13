@@ -1,13 +1,1 @@
-{
-  "version": "5",
-  "dialect": "sqlite",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "5",
-      "when": 1690360314308,
-      "tag": "0000_ambiguous_machine_man",
-      "breakpoints": false
-    }
-  ]
-}
+{"version":"5","dialect":"sqlite","entries":[{"idx":1,"version":"5","when":1699717696182,"tag":"0001_dry_starbolt","breakpoints":false}]}

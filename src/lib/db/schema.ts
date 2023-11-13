@@ -7,6 +7,7 @@ export const chats = sqliteTable("chats", {
   user_id: text("user_id", { length: 191 }).notNull(),
   messages: blob("messages", { mode: "json" }),
   title: text("title").default(""),
+  image_url: text("image_url").default(""),
   createdAt: integer("created_at", { mode: "timestamp" }).default(
     sql`(strftime('%s', 'now'))`,
   ),

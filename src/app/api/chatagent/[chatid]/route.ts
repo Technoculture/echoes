@@ -118,7 +118,8 @@ export async function POST(
       async handleToolEnd(output, runId, parentRunId, tags) {
         toolResponse.observation = output;
         intermediateSteps.push(toolResponse); // managing intermediate steps
-        ctrl.enqueue(JSON.stringify(toolResponse)); // sendting tool output to stream
+        const obj = JSON.stringify(toolResponse);
+        ctrl.enqueue(obj); // sending tool output to stream
         toolResponse = {} as AgentStep;
       },
       async handleAgentAction(action, runId, parentRunId, tags) {
