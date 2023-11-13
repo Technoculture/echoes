@@ -63,7 +63,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
 
   return (
     <div className="relative">
-      <Card className="relative overflow-hidden hover:backdrop-blur-sm">
+      <Card className="relative overflow-hidden hover:backdrop-blur-sm ">
         <CardHeader className="h-36 overflow-y-hidden overflow-hidden">
           {/* <div className=" absolute opacity-100 "> */}
           <CardTitle className="">{title}</CardTitle>
@@ -123,7 +123,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
           src={imageUrl}
           alt="Photo by Drew Beamer"
           fill
-          className="absolute rounded-md object-cover bg-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none"
+          className="absolute rounded-md object-cover bg-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
         />
       )}
     </div>

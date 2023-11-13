@@ -4,7 +4,7 @@ import { chats } from "@/lib/db/schema";
 import { NextResponse } from "next/server";
 import { generateChatImage } from "@/utils/apiHelper";
 export const revalidate = 0; // disable cache
-export const maxDuration = 60; 
+export const maxDuration = 60;
 
 export async function POST(
   request: Request,

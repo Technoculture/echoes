@@ -34,12 +34,18 @@ jobs:
           SENTRY_ORG: ${{secrets.SENTRY_ORG}}
           SENTRY_PROJECT: ${{secrets.SENTRY_PROJECT}}
           REDIS_URL: ${{secrets.REDIS_URL}}
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          AWS_REGION: ${{secrets.AWS_REGION}}
+          BUCKET_NAME: ${{secrets.BUCKET_NAME}}
+          IMAGE_PREFIX_URL: ${{secrets.IMAGE_PREFIX_URL}}
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}}
           CLERK_SECRET_KEY: ${{secrets.CLERK_SECRET_KEY}}
           NEXT_PUBLIC_CLERK_SIGN_IN_URL: ${{secrets.NEXT_PUBLIC_CLERK_SIGN_IN_URL}}
           NEXT_PUBLIC_CLERK_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_SIGN_UP_URL}}
           NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL}}
           NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL}}
+
 
       - name: Formatting Check
         run: npm run format-check
