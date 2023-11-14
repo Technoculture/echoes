@@ -35,10 +35,10 @@ export async function POST(
     {
       method: "POST",
       body: JSON.stringify({ chatTitle: fullResponse }),
-      headers: {
-        Authorization: `Bearer ${await getToken()}`,
-      },
-      // headers: cookiesArray
+      // headers: {
+      //   Authorization: `Bearer ${await getToken()}`,
+      // },
+      headers: cookiesArray,
     },
   );
   await db

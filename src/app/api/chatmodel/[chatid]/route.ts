@@ -94,10 +94,10 @@ export async function POST(
             {
               method: "POST",
               body: JSON.stringify({ chat: _chat }),
-              headers: {
-                Authorization: `Bearer ${await getToken()}`,
-              },
-              // headers: [...cookiesArray]
+              // headers: {
+              //   Authorization: `Bearer ${await getToken()}`,
+              // },
+              headers: [...cookiesArray],
             },
           );
           await db
