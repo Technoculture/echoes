@@ -2,7 +2,7 @@ import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import * as z from "zod";
-export const maxDuration = 60; 
+export const maxDuration = 60;
 
 const bodyobj = z.object({
   text: z.string().min(1),

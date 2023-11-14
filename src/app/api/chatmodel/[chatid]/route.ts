@@ -10,12 +10,12 @@ import {
   generateTitle,
   openAIChatModel,
   OPEN_AI_MODELS,
-  // generateChatImage,
+  generateChatImage,
 } from "@/utils/apiHelper";
 import { NextResponse } from "next/server";
 export const revalidate = 0; // disable cache
 
-export const maxDuration = 60; 
+export const maxDuration = 60;
 
 export async function POST(
   request: Request,
@@ -74,9 +74,9 @@ export async function POST(
           console.log("got in 1 length case");
           _chat.push(latestReponse);
           const title = await generateTitle(_chat as ChatEntry[]);
-          // const imageUrl = await generateChatImage(title, id as string);
-          console.log("chat title", title)
-          // console.log("image__url", imageUrl)
+          const imageUrl = await generateChatImage(title, id as string);
+          console.log("chat title", title);
+          console.log("image__url", imageUrl);
           // popping up because inserted the prompt for generating the title so removing the title prompt
           _chat.pop();
           console.log("generated title", title);
@@ -85,7 +85,7 @@ export async function POST(
             .set({
               messages: JSON.stringify({ log: _chat } as ChatLog),
               title: title,
-              // image_url: imageUrl,
+              image_url: imageUrl,
             })
             .where(eq(chats.id, Number(id)))
             .run();
