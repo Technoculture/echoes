@@ -11,7 +11,6 @@ import {
   OPEN_AI_MODELS,
 } from "@/utils/apiHelper";
 import { NextResponse } from "next/server";
-import axios from "axios";
 import { env } from "@/app/env.mjs";
 export const revalidate = 0; // disable cache
 
@@ -79,9 +78,12 @@ export async function POST(
         if (_chat.length === 1) {
           console.log("got in 1 length case");
           _chat.push(latestReponse);
-          axios.post(
-            `zeplo.to/${mainUrl}/api/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
-            { chat: _chat },
+          fetch(
+            `zeplo.to/${urlArray[2]}/api/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+            {
+              method: "POST",
+              body: JSON.stringify({ chat: _chat }),
+            },
           );
           await db
             .update(chats)

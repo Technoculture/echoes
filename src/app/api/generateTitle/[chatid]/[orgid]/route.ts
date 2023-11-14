@@ -3,7 +3,6 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { NextResponse } from "next/server";
 import { generateTitle } from "@/utils/apiHelper";
-import axios from "axios";
 import { env } from "@/app/env.mjs";
 import { ChatEntry } from "@/lib/types";
 export const revalidate = 0; // disable cache
@@ -21,9 +20,12 @@ export async function POST(
   const urlArray = url.split("/");
   const mainUrl = urlArray.slice(0, 3).join("/");
   const fullResponse = await generateTitle(messages);
-  axios.post(
-    `zeplo.to/${mainUrl}/api/generateImage/${chatId}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
-    { chatTitle: fullResponse },
+  fetch(
+    `zeplo.to/${urlArray[2]}/api/generateImage/${chatId}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+    {
+      method: "POST",
+      body: JSON.stringify({ chatTitle: fullResponse }),
+    },
   );
   await db
     .update(chats)
