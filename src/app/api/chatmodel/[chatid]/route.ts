@@ -27,6 +27,12 @@ export async function POST(
   const isFast = body.isFast;
   let orgId = "";
   orgId = body.orgId;
+  const url = request.url;
+  console.log("this is request url", url);
+
+  // getting main url
+  const urlArray = url.split("/");
+  const mainUrl = urlArray.slice(0, 3).join("/");
 
   let id = params.params.chatid as any;
   // exceptional case
@@ -74,8 +80,8 @@ export async function POST(
           console.log("got in 1 length case");
           _chat.push(latestReponse);
           axios.post(
-            `zeplo.to/www.echoes.team/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
-            {chat: _chat},
+            `zeplo.to/${mainUrl}/api/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+            { chat: _chat },
           );
           await db
             .update(chats)

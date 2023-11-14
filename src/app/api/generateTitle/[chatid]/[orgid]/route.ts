@@ -17,10 +17,12 @@ export async function POST(
   const body = await request.json();
 
   const messages: ChatEntry[] = body.chat;
-
+  const url = request.url;
+  const urlArray = url.split("/");
+  const mainUrl = urlArray.slice(0, 3).join("/");
   const fullResponse = await generateTitle(messages);
   axios.post(
-    `zeplo.to/www.echoes.team/generateImage/${chatId}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+    `zeplo.to/${mainUrl}/api/generateImage/${chatId}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
     { chatTitle: fullResponse },
   );
   await db
