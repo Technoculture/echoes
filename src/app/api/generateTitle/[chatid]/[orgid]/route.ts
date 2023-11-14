@@ -21,7 +21,7 @@ export async function POST(
   const mainUrl = urlArray.slice(0, 3).join("/");
   const fullResponse = await generateTitle(messages);
   fetch(
-    `zeplo.to/${urlArray[2]}/api/generateImage/${chatId}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+    `https://zeplo.to/https://${urlArray[2]}/api/generateImage/${chatId}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
     {
       method: "POST",
       body: JSON.stringify({ chatTitle: fullResponse }),

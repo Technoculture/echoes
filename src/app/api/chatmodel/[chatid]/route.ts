@@ -79,7 +79,8 @@ export async function POST(
           console.log("got in 1 length case");
           _chat.push(latestReponse);
           fetch(
-            `zeplo.to/${urlArray[2]}/api/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+            `https://zeplo.to/https://${urlArray[2]}/api/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+            // `https://zeplo.to/https://echoes-ksyl6ee7h-tcr.vercel.app/api/generateTitle/1318/org_2SaqWIpmGf4bkmTGoFpc6kk1RDx?_token=ihaLqOwKwvWqtYaMPqHR8QGko3a2lstVqJuYXg`,
             {
               method: "POST",
               body: JSON.stringify({ chat: _chat }),
