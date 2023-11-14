@@ -1,8 +1,11 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { Chat, chats } from "@/lib/db/schema";
+import { chats } from "@/lib/db/schema";
 import { NextResponse } from "next/server";
 import { generateTitle } from "@/utils/apiHelper";
+import axios from "axios";
+import { env } from "@/app/env.mjs";
+import { ChatEntry } from "@/lib/types";
 export const revalidate = 0; // disable cache
 
 export async function POST(
@@ -11,20 +14,15 @@ export async function POST(
 ) {
   const chatId = params.params.chatid;
   let orgId = params.params.orgid;
+  const body = await request.json();
 
-  // getting the data from db
-  const orgConversations: Chat[] = await db
-    .select()
-    .from(chats)
-    .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))))
-    .limit(1)
-    .all();
-
-  const messages = JSON.parse(
-    orgConversations[0]?.messages as string,
-  ).log.splice(0, 2);
+  const messages: ChatEntry[] = body.chat;
 
   const fullResponse = await generateTitle(messages);
+  axios.post(
+    `zeplo.to/www.echoes.team/generateImage/${chatId}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+    { chatTitle: fullResponse },
+  );
   await db
     .update(chats)
     .set({ title: fullResponse })

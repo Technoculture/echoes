@@ -33,6 +33,8 @@ export const env = createEnv({
     AWS_REGION: z.string().min(1),
     BUCKET_NAME: z.string().min(1),
     IMAGE_PREFIX_URL: z.string().min(1),
+    // zeplo (message queue)
+    ZEPLO_TOKEN: z.string().min(1),
   },
 
   client: {
@@ -78,6 +80,8 @@ export const env = createEnv({
     AWS_REGION: process.env.AWS_REGION,
     BUCKET_NAME: process.env.BUCKET_NAME,
     IMAGE_PREFIX_URL: process.env.IMAGE_PREFIX_URL,
+    // zeplo
+    ZEPLO_TOKEN: process.env.ZEPLO_TOKEN,
   },
 });
 

@@ -2,17 +2,17 @@ import { StreamingTextResponse, LangChainStream } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { CHAT_COMPLETION_CONTENT, ChatEntry, ChatLog } from "@/lib/types";
+import { CHAT_COMPLETION_CONTENT, ChatLog } from "@/lib/types";
 import { systemPrompt } from "@/utils/prompts";
 import {
   chooseModel,
   jsonToLangchain,
-  generateTitle,
   openAIChatModel,
   OPEN_AI_MODELS,
-  generateChatImage,
 } from "@/utils/apiHelper";
 import { NextResponse } from "next/server";
+import axios from "axios";
+import { env } from "@/app/env.mjs";
 export const revalidate = 0; // disable cache
 
 export const maxDuration = 60;
@@ -73,19 +73,14 @@ export async function POST(
         if (_chat.length === 1) {
           console.log("got in 1 length case");
           _chat.push(latestReponse);
-          const title = await generateTitle(_chat as ChatEntry[]);
-          const imageUrl = await generateChatImage(title, id as string);
-          console.log("chat title", title);
-          console.log("image__url", imageUrl);
-          // popping up because inserted the prompt for generating the title so removing the title prompt
-          _chat.pop();
-          console.log("generated title", title);
+          axios.post(
+            `zeplo.to/www.echoes.team/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
+            {chat: _chat},
+          );
           await db
             .update(chats)
             .set({
               messages: JSON.stringify({ log: _chat } as ChatLog),
-              title: title,
-              image_url: imageUrl,
             })
             .where(eq(chats.id, Number(id)))
             .run();
