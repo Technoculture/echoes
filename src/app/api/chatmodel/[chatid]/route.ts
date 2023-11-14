@@ -15,6 +15,8 @@ import { env } from "@/app/env.mjs";
 export const revalidate = 0; // disable cache
 
 export const maxDuration = 60;
+import { auth } from "@clerk/nextjs";
+import { cookies } from "next/headers";
 
 export async function POST(
   request: Request,
@@ -28,10 +30,18 @@ export async function POST(
   orgId = body.orgId;
   const url = request.url;
   console.log("this is request url", url);
+  const { getToken } = await auth();
+  console.log("ckkoies", cookies());
+  console.log("token", await getToken());
+  const cookieStore = cookies();
+  const cookiesArray = cookieStore.getAll().map((cookie) => {
+    const cookieName = cookie.name;
+    const cookieValue = cookie.value;
+    return [cookieName, cookieValue] as [string, string];
+  });
 
   // getting main url
   const urlArray = url.split("/");
-  const mainUrl = urlArray.slice(0, 3).join("/");
 
   let id = params.params.chatid as any;
   // exceptional case
@@ -84,6 +94,10 @@ export async function POST(
             {
               method: "POST",
               body: JSON.stringify({ chat: _chat }),
+              headers: {
+                Authorization: `Bearer ${await getToken()}`,
+              },
+              // headers: [...cookiesArray]
             },
           );
           await db
