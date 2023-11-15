@@ -36,7 +36,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
         ref={ref}
         {...props}
       >
-        <div className="flex justify-between p-5">
+        <div className="flex justify-between items-center p-5">
           <Link
             href="/"
             className="gap-2 flex items-center cursor-pointer h-[32px]"
@@ -48,9 +48,9 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
             />
             <h1 className="text-gray-200 align-middle">Echoes</h1>
           </Link>
+          {props.children}
           <SignedIn>
             <div className="flex justify-between">
-              {props.children}
               <UserButton />
             </div>
           </SignedIn>

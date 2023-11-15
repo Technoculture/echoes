@@ -1,3 +1,4 @@
+"use client";
 import { Message } from "ai";
 import TextareaAutosize from "react-textarea-autosize";
 import ChatMessageActions from "@/components/chatmessageactions";
@@ -7,6 +8,8 @@ import { Button } from "@/components/button";
 import { MessageRole } from "@/lib/types";
 import { CircleNotch, Play } from "@phosphor-icons/react";
 import { IntermediateStep } from "./intermediatesteps";
+import useStore from "@/store";
+// import "./audio.css";
 
 interface ChatMessageProps {
   name: string;
@@ -29,6 +32,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [audioSrc, setAudioSrc] = useState<string>("");
   const [isFetchingAudioBuffer, setIsFetchingAudioBuffer] =
     useState<boolean>(false);
+  const store = useStore();
 
   let userName = "";
   if (props?.chat.name) {
@@ -138,8 +142,9 @@ const ChatMessage = (props: ChatMessageProps) => {
       const arrayBuffer = await res.arrayBuffer();
       const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
       const url = URL.createObjectURL(blob);
+      store.setAudioSrc(url);
       console.log("generated url", url);
-      setAudioSrc(url);
+      // setAudioSrc(url);
     } catch (err) {
       console.log(err);
     }
@@ -173,8 +178,14 @@ const ChatMessage = (props: ChatMessageProps) => {
             </Button>
           ) : null}
           {props.chat.role === "assistant" && audioSrc !== "" ? (
-            <audio src={audioSrc} controls className="ml-2 px-1 h-4"></audio>
-          ) : null}
+            <audio
+              src={audioSrc}
+              controls
+              controlsList="nodownload noplaybackrate"
+              className="ml-2 px-1 h-4 bg-green"
+            ></audio>
+          ) : // {/* <ReactAudioPlayer src={audioSrc} controls /> */}
+          null}
         </div>
         <ChatMessageActions
           isEditing={isEditing}
