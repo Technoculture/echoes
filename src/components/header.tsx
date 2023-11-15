@@ -29,7 +29,10 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
   ({ className, variant, ...props }: HeaderProps = {}, ref) => {
     return (
       <header
-        className={cn(headerVariants({ variant, className }), "z-50")}
+        className={cn(
+          headerVariants({ variant, className }),
+          "z-50 bg-background sticky top-0",
+        )}
         ref={ref}
         {...props}
       >
@@ -46,7 +49,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
             <h1 className="text-gray-200 align-middle">Echoes</h1>
           </Link>
           <SignedIn>
-            <div className="flex">
+            <div className="flex justify-between">
               {props.children}
               <UserButton />
             </div>

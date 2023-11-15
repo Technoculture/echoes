@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
-import { auth } from "@clerk/nextjs";
+import { auth, OrganizationSwitcher } from "@clerk/nextjs";
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import ChatCardWrapper from "@/components/chatcardwrapper";
 // import Uploadzone from "@/components/uploadzone";
@@ -30,7 +30,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   return (
-    <div className="grid gap-4 grid-cols-1">
+    <div className="grid gap-4 grid-cols-1 relative">
       {!isOrgExist ? (
         <div>
           You are not a member in any Organisations.{" "}
@@ -41,25 +41,22 @@ export default async function Page({ params }: { params: { uid: string } }) {
           </Button>
         </div>
       ) : (
-        <div>
-          <div>
-            <div>
-              <Startnewchatbutton
-                org_id={sessionClaims?.org_id as string}
-                org_slug={sessionClaims?.org_slug as string}
-              />
-              <ChatCardWrapper
-                initialData={orgConversations}
-                org_id={sessionClaims?.org_id}
-                uid={uid}
-                org_slug={sessionClaims?.org_slug as string}
-              />
+        <div className="relative">
+          <div className="sticky z-20 bg-background py-1.5 top-[72px] flex justify-between">
+            <Startnewchatbutton
+              org_id={sessionClaims?.org_id as string}
+              org_slug={sessionClaims?.org_slug as string}
+            />
+            <div className="h-[32px]">
+              <OrganizationSwitcher hidePersonal={true} />
             </div>
-            {/* <Uploadzone
-              orgId={sessionClaims.org_id as string}
-              className="my-4 border"
-            /> */}
           </div>
+          <ChatCardWrapper
+            initialData={orgConversations}
+            org_id={sessionClaims?.org_id}
+            uid={uid}
+            org_slug={sessionClaims?.org_slug as string}
+          />
         </div>
       )}
     </div>
