@@ -129,13 +129,19 @@ export async function putS3Object(inputParams: {
   s3: S3Client;
   Body: Buffer;
   chatId: string;
+  chatTitle: string;
 }) {
   try {
     const data = await inputParams.s3.send(
       new PutObjectCommand({
         Bucket: env.BUCKET_NAME,
         Body: inputParams.Body,
-        Key: `cardimages/${inputParams.chatId}`,
+        Key: `cardimages/${inputParams.chatId}.png`,
+        Metadata: {
+          "Content-Type": "image/png",
+          "chat-id": inputParams.chatId,
+          "chat-title": inputParams.chatTitle,
+        },
       }),
     );
     console.log(
@@ -193,8 +199,9 @@ export const generateChatImage = async (
       s3: s3,
       Body: buffer,
       chatId,
+      chatTitle,
     });
-    const image_s3_url = `${env.IMAGE_PREFIX_URL}cardimages/${chatId}`;
+    const image_s3_url = `${env.IMAGE_PREFIX_URL}cardimages/${chatId}.png`;
     console.log("generated image s3 url", image_s3_url);
     return image_s3_url;
   }
