@@ -24,7 +24,7 @@ export async function POST(
       method: "POST",
       body: JSON.stringify({ chatTitle: fullResponse }),
       headers: {
-        "x-zeplo-secret": env.ZEPLO_TOKEN,
+        "x-zeplo-secret": env.ZEPLO_SECRET,
       },
     },
   );
