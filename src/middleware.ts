@@ -1,6 +1,7 @@
 import { authMiddleware } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { NextFetchEvent } from "next/server";
+import { env } from "@/app/env.mjs";
 
 // This is your original middleware
 const clerkMiddleware = authMiddleware({
@@ -11,7 +12,7 @@ const clerkMiddleware = authMiddleware({
 export async function middleware(req: NextRequest, event: NextFetchEvent) {
   console.log("got into middleware");
   // Check if the request is from Zeplo
-  if (req.headers.get("x-zeplo-secret") === process.env.ZEPLO_SECRET) {
+  if (req.headers.get("x-zeplo-secret") === env.ZEPLO_SECRET) {
     // Handle the request without Clerk's authMiddleware
     console.log("got into if");
     // handleRequest(req, res);
