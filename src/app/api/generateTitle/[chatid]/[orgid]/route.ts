@@ -6,8 +6,6 @@ import { generateTitle } from "@/utils/apiHelper";
 import { env } from "@/app/env.mjs";
 import { ChatEntry } from "@/lib/types";
 export const revalidate = 0; // disable cache
-import { auth } from "@clerk/nextjs";
-import { cookies } from "next/headers";
 export async function POST(
   request: Request,
   params: { params: { chatid: string; orgid: string } },
@@ -15,16 +13,6 @@ export async function POST(
   const chatId = params.params.chatid;
   let orgId = params.params.orgid;
   const body = await request.json();
-
-  const { getToken } = await auth();
-  console.log("ckkoies", cookies());
-  console.log("token", await getToken());
-  const cookieStore = cookies();
-  const cookiesArray = cookieStore.getAll().map((cookie) => {
-    const cookieName = cookie.name;
-    const cookieValue = cookie.value;
-    return [cookieName, cookieValue] as [string, string];
-  });
 
   const messages: ChatEntry[] = body.chat;
   const url = request.url;
@@ -35,10 +23,9 @@ export async function POST(
     {
       method: "POST",
       body: JSON.stringify({ chatTitle: fullResponse }),
-      // headers: {
-      //   Authorization: `Bearer ${await getToken()}`,
-      // },
-      headers: cookiesArray,
+      headers: {
+        "z-zeplo-secret": env.ZEPLO_TOKEN,
+      },
     },
   );
   await db

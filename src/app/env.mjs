@@ -35,6 +35,7 @@ export const env = createEnv({
     IMAGE_PREFIX_URL: z.string().min(1),
     // zeplo (message queue)
     ZEPLO_TOKEN: z.string().min(1),
+    ZEPLO_SECRET: z.string().min(1),
   },
 
   client: {
@@ -82,6 +83,7 @@ export const env = createEnv({
     IMAGE_PREFIX_URL: process.env.IMAGE_PREFIX_URL,
     // zeplo
     ZEPLO_TOKEN: process.env.ZEPLO_TOKEN,
+    ZEPLO_SECRET: process.env.ZEPLO_SECRET,
   },
 });
 
