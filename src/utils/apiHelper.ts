@@ -152,37 +152,19 @@ export const generateChatImage = async (
   chatTitle: string,
   chatId: string,
 ): Promise<string> => {
-  //   const prompt = `
-  //   Given a chat between echoes (an ai chatbot for biotech research and a scientist) - GENERATE A COVER PHOTO THUMBNAIL.\n
-  // Needs to be a landscape image with a 3x2 aspect ratio.\n
-  // Colour scheme: Dark is preferred as the image is to be embedded in a UI with black and dark navy blue along with a vibrant lime green accent.\n
-  // NO OTHER COLOURS ALLOWED!\n
-  // Low key image with deep blacks.
-  // Visual style: can be ultra-realistic 4k, or anime.
-  // Not always necessary to show a human being.
-  // If a human is being shown, show scientists and never doctors.
-  // Always show scientists as Indians - either women in their early 20s or men in their late 40s.
-  // Do not make generic images.
-  // Try to make it as specific to the user's question as possible!
-  // STRIVE TO MAKE HIGHLY SCIENTIFICALLY ACCURATE IMAGES.
-
-  // —-
-
-  // Chat Question:
-  // ${chatQuestion}
-  // `;
-
-  const prompt2 = `Task: Create a cover photo thumbnail for the scientific topic: "title: ${chatTitle}"
-
-Instructions:
-1. The image should visually represent the scientific question in detail.
-2. Ensure scientific accuracy is paramount; this is critical.
-3. The image should be in a landscape format with a 3:2 aspect ratio.
-4. Use a color scheme of dark tones, compatible with a UI featuring black, dark navy blue, slate white, and vibrant lime green accents. No other colors are permitted. Aim for a low-key image with deep blacks.
-5. The visual style should be without text, resembling scientific illustrations. Aim for an ultra-realistic 4K quality, akin to visuals in the Nature Journal.
-6. Including a human figure is optional. If included, depict scientists, specifically Indian scientists - either women in their early 20s or men in their late 40s. Avoid depicting doctors.
-
-Always find out what the terms mentioned in the title mean before drawing them.`;
+  const prompt2 = `User
+  Task: Create a low contrast cover photo thumbnail for the key words in the scientific topic "${chatTitle}". Locate the key words in the biological context in which they are found in the body or nature.
+  
+  Instructions:
+  0. draw a low contrast dark IMAGE while Using poetic cinematic BLURS and a blurred FOREGROUND image showing the key concept in the title within its biological context.
+  1. The image should visually represent the scientific topic. FOCUS ONLY ON THE MOST IMPORTANT WORD IN THE TOPIC and its biological context.
+  2. The image MUST be scientifically meaningful and accurate.
+  3. The image should be in a landscape format with a 3:2 aspect ratio.
+  4. Use a colour scheme with DEEP BLACKS and very dark navy blue (rarely use vibrant lime green). No other colours are appreciated.
+  5. The visual style should be without text, resembling scientific illustrations. Aim for an ultra-realistic 4K quality, akin to visuals in the Nature Journal.
+  6. Including a human figure is optional. If included, depict scientists, specifically INDIAN scientists - either women in their early 20s or men in their late 40s. DO NOT SHOW ANY doctors.
+  
+  Always find out what the terms mentioned in the title mean before drawing them.`;
   const Openai = new OpenAI({
     apiKey: env.OPEN_AI_API_KEY,
   });
