@@ -110,29 +110,30 @@ const InputBar = (props: InputBarProps) => {
           }
 
           const text = new TextDecoder().decode(value);
-          // if (
-          //   text.startsWith('__JSON_START__') &&
-          //   text.endsWith('__JSON_END__')
-          // ) {
-          //   const jsonStr = text
-          //     .replace('__JSON_START__', '')
+          // const jsonStr = text
+          //     .replace('$__JSON_START__', '')
           //     .replace('__JSON_END__', '');
+          //     console.log("jsonStr", jsonStr);
+          if (text.startsWith(`$__JSON_START__`)) {
+            const jsonStr = text
+              .replace("$__JSON_START__", "")
+              .replace("__JSON_END__", "");
 
-          if (isJSON(text)) {
-            console.log("this is json", text);
-            const functionMessage: Message = {
-              id: nanoid(),
-              role: "function",
-              content: text,
-            };
-            functionMessages.push(functionMessage);
+            if (isJSON(jsonStr)) {
+              console.log("this is json", jsonStr);
+              const functionMessage: Message = {
+                id: nanoid(),
+                role: "function",
+                content: jsonStr,
+              };
+              functionMessages.push(functionMessage);
 
-            props.setMessages([
-              ...props.messages,
-              message,
-              ...functionMessages,
-            ]);
-            // }
+              props.setMessages([
+                ...props.messages,
+                message,
+                ...functionMessages,
+              ]);
+            }
           } else {
             console.log("non-json", text);
             content += text;
