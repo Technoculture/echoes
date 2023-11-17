@@ -110,6 +110,14 @@ const InputBar = (props: InputBarProps) => {
           }
 
           const text = new TextDecoder().decode(value);
+          // if (
+          //   text.startsWith('__JSON_START__') &&
+          //   text.endsWith('__JSON_END__')
+          // ) {
+          //   const jsonStr = text
+          //     .replace('__JSON_START__', '')
+          //     .replace('__JSON_END__', '');
+
           if (isJSON(text)) {
             console.log("this is json", text);
             const functionMessage: Message = {
@@ -124,6 +132,7 @@ const InputBar = (props: InputBarProps) => {
               message,
               ...functionMessages,
             ]);
+            // }
           } else {
             console.log("non-json", text);
             content += text;

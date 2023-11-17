@@ -119,7 +119,8 @@ export async function POST(
         toolResponse.observation = output;
         intermediateSteps.push(toolResponse); // managing intermediate steps
         const obj = JSON.stringify(toolResponse);
-        ctrl.enqueue(obj); // sending tool output to stream
+        ctrl.enqueue(encoder.encode(obj)); // sending tool output to stream
+        // ctrl.enqueue(`$__JSON_START__{obj}__JSON_END__`); // sending tool output to stream
         toolResponse = {} as AgentStep;
       },
       async handleAgentAction(action, runId, parentRunId, tags) {
