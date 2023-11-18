@@ -56,6 +56,7 @@ const InputBar = (props: InputBarProps) => {
   const [isAudioWaveVisible, setIsAudioWaveVisible] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
+  const [disableInputs, setDisableInputs] = useState<boolean>(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,6 +75,7 @@ const InputBar = (props: InputBarProps) => {
       props.setInput("");
     }
     if (props.choosenAI === "agent") {
+      setDisableInputs(true);
       props.setMessages([...props.messages, message]);
       props.setInput("");
       const res = await fetch(`/api/chatagent/${props.chatId}`, {
@@ -84,13 +86,6 @@ const InputBar = (props: InputBarProps) => {
           orgId: props.orgId,
         }),
       });
-
-      // if(res.body){
-      //   for await (const chunk of res?.body) {
-      //     console.log("chunk is ==>", chunck)
-      //     // Do something with the chunk
-      //   }
-      // }
       let content = "";
       const id = nanoid();
       const assistantMessage: Message = {
@@ -102,24 +97,18 @@ const InputBar = (props: InputBarProps) => {
 
       if (res.body) {
         const reader = res?.body.getReader();
-
         while (true) {
           const { done, value } = await reader.read();
-
           if (done) {
+            console.log("controller closed");
+            setDisableInputs(false);
             break;
           }
-
           const text = new TextDecoder().decode(value);
-          // const jsonStr = text
-          //     .replace('$__JSON_START__', '')
-          //     .replace('__JSON_END__', '');
-          //     console.log("jsonStr", jsonStr);
           if (text.startsWith(`$__JSON_START__`)) {
             const jsonStr = text
               .replace("$__JSON_START__", "")
               .replace("__JSON_END__", "");
-
             if (isJSON(jsonStr)) {
               console.log("this is json", jsonStr);
               const functionMessage: Message = {
@@ -128,7 +117,6 @@ const InputBar = (props: InputBarProps) => {
                 content: jsonStr,
               };
               functionMessages.push(functionMessage);
-
               props.setMessages([
                 ...props.messages,
                 message,
@@ -148,31 +136,8 @@ const InputBar = (props: InputBarProps) => {
               },
             ]);
           }
-          // console.log('textChunck', functionMessage.content, '\n');
         }
       }
-
-      // const intermediateStepMessages: Message[] = (
-      //   data.intermediateSteps ?? []
-      // ).map((intermediateStep: AgentStep, i: number) => {
-      //   return {
-      //     id: nanoid(),
-      //     content: JSON.stringify(intermediateStep),
-      //     role: "function",
-      //   } as Message;
-      // });
-
-      // const functionMessage: Message = {
-      //   id: nanoid(),
-      //   role: "assistant",
-      //   content: content,
-      // };
-      // props.setMessages([
-      //   ...props.messages,
-      //   message,
-      //   // ...intermediateStepMessages,
-      //   functionMessage,
-      // ]);
     }
   };
 
@@ -222,7 +187,10 @@ const InputBar = (props: InputBarProps) => {
             >
               <ModelSwitcher
                 disabled={
-                  props.isChatCompleted || isRecording || isTranscribing
+                  props.isChatCompleted ||
+                  isRecording ||
+                  isTranscribing ||
+                  disableInputs
                 }
                 aiType={props.choosenAI}
                 setAIType={props.setChoosenAI}
@@ -236,7 +204,10 @@ const InputBar = (props: InputBarProps) => {
             >
               <TextareaAutosize
                 disabled={
-                  props.isChatCompleted || isRecording || isTranscribing
+                  props.isChatCompleted ||
+                  isRecording ||
+                  isTranscribing ||
+                  disableInputs
                 }
                 maxRows={10}
                 placeholder={isTranscribing ? "" : "Type your message here..."}
@@ -263,7 +234,7 @@ const InputBar = (props: InputBarProps) => {
               exit={{ x: 20, y: 25, opacity: 0, transition: { duration: 0.5 } }}
             >
               <Button
-                disabled={isRecording || isTranscribing}
+                disabled={isRecording || isTranscribing || disableInputs}
                 onClick={() => setIsAudioWaveVisible(true)}
                 size="icon"
                 variant="outline"
@@ -287,7 +258,10 @@ const InputBar = (props: InputBarProps) => {
                 size="icon"
                 variant="outline"
                 disabled={
-                  props.isChatCompleted || isRecording || isTranscribing
+                  props.isChatCompleted ||
+                  isRecording ||
+                  isTranscribing ||
+                  disableInputs
                 }
                 type="submit"
                 className=" text-green-400 hover:text-green-100 disabled:text-muted"

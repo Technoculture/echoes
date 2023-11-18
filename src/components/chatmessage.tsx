@@ -192,16 +192,18 @@ const ChatMessage = (props: ChatMessageProps) => {
             </Button>
           ) : null}
         </div>
-        <ChatMessageActions
-          isEditing={isEditing}
-          setEditing={setIsEditing}
-          role={props.chat.role}
-          content={props.chat.content}
-          handleRegenerate={handleRegenerate}
-          isRegenerating={isRegenerating}
-          open={isActionsOpen}
-          setOpen={setIsActionsOpen}
-        />
+        {props.chat.role !== "function" ? (
+          <ChatMessageActions
+            isEditing={isEditing}
+            setEditing={setIsEditing}
+            role={props.chat.role}
+            content={props.chat.content}
+            handleRegenerate={handleRegenerate}
+            isRegenerating={isRegenerating}
+            open={isActionsOpen}
+            setOpen={setIsActionsOpen}
+          />
+        ) : null}
       </div>
       {props.chat.role === "function" ? (
         <IntermediateStep message={props.chat} />
