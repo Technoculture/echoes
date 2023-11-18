@@ -67,6 +67,7 @@ const InputBar = (props: InputBarProps) => {
       role: "user",
       content: props.value,
       name: `${props.username},${props.userId}`,
+      audio: "",
     };
     if (props.choosenAI === "universal") {
       props.append(message as Message);

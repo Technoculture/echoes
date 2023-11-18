@@ -29,7 +29,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
   const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
-  const [audioSrc, setAudioSrc] = useState<string>("");
+  const [audioSrc, setAudioSrc] = useState<string>(props.chat.audio || "");
   const [isFetchingAudioBuffer, setIsFetchingAudioBuffer] =
     useState<boolean>(false);
   const store = useStore();
@@ -131,20 +131,30 @@ const ChatMessage = (props: ChatMessageProps) => {
     setIsActionsOpen(false);
   };
 
-  const textToSpeech = async () => {
+  const textToSpeech = async (id: string) => {
+    if (audioSrc !== "") {
+      store.setAudioSrc(audioSrc);
+      return;
+    }
     const text = props.chat.content;
     setIsFetchingAudioBuffer(true);
     try {
       const res = await fetch("/api/tts", {
         method: "post",
-        body: JSON.stringify({ text: text, voice: "en-US" }),
+        body: JSON.stringify({
+          text: text,
+          messageId: id,
+          orgId: props.orgId,
+          chatId: props.chatId,
+          voice: "en-US",
+        }),
       });
-      const arrayBuffer = await res.arrayBuffer();
-      const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-      const url = URL.createObjectURL(blob);
+      const data = await res.json();
+      console.log("data", data);
+      const url = data.audioUrl;
+      props.setMessages(data.updatedMessages);
       store.setAudioSrc(url);
-      console.log("generated url", url);
-      // setAudioSrc(url);
+      setAudioSrc(url);
     } catch (err) {
       console.log(err);
     }
@@ -169,7 +179,11 @@ const ChatMessage = (props: ChatMessageProps) => {
             {userName}
           </p>
           {props.chat.role === "assistant" ? (
-            <Button size="xs" variant="ghost" onClick={textToSpeech}>
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={() => textToSpeech(props.chat.id)}
+            >
               {isFetchingAudioBuffer ? (
                 <CircleNotch className="animate-spin" />
               ) : (
@@ -177,15 +191,6 @@ const ChatMessage = (props: ChatMessageProps) => {
               )}
             </Button>
           ) : null}
-          {props.chat.role === "assistant" && audioSrc !== "" ? (
-            <audio
-              src={audioSrc}
-              controls
-              controlsList="nodownload noplaybackrate"
-              className="ml-2 px-1 h-4 bg-green"
-            ></audio>
-          ) : // {/* <ReactAudioPlayer src={audioSrc} controls /> */}
-          null}
         </div>
         <ChatMessageActions
           isEditing={isEditing}

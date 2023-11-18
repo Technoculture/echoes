@@ -45,7 +45,6 @@ const Chatusersavatars = ({ chat, chatLive, allPresenceIds }: Props) => {
       const ids = getUserIdList(chatLive);
       // include ids of users who have not participated in the chat but viewing the chat
       const viewersIds = allPresenceIds?.filter((id) => !ids?.includes(id));
-      console.log("viewersIds", viewersIds);
       if (ids.length) {
         if (viewersIds) {
           getUsers([...ids, ...viewersIds]);

@@ -299,3 +299,36 @@ export const handleDBOperation = async (
       .run();
   }
 };
+
+export const saveAudio = async ({
+  buffer,
+  chatId,
+  messageId,
+}: {
+  buffer: Buffer;
+  chatId: string;
+  messageId: string;
+}): Promise<string> => {
+  const s3 = new S3Client({
+    region: env.AWS_REGION,
+    credentials: {
+      accessKeyId: env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
+  const data = await s3.send(
+    new PutObjectCommand({
+      Bucket: env.BUCKET_NAME,
+      Body: buffer,
+      Key: `chataudio/${chatId}/${messageId}.mpeg`,
+      Metadata: {
+        "Content-Type": "audio/mpeg",
+        "chat-id": chatId,
+        "message-id": messageId,
+      },
+    }),
+  );
+
+  const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mpeg`;
+  return audioUrl;
+};

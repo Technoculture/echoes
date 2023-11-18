@@ -8,6 +8,7 @@ export type ChatEntry = {
   role: ChatRole;
   content: string;
   name: string;
+  audio?: string;
 };
 
 export type ChatLog = {

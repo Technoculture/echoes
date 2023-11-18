@@ -3,6 +3,7 @@ import { Header } from "@/components/header";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 import useStore from "@/store";
+import { useEffect, useRef } from "react";
 
 export default function LoggedInLayout({
   children, // will be a page or nested layout
@@ -10,10 +11,21 @@ export default function LoggedInLayout({
   children: React.ReactNode;
 }) {
   const store = useStore();
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (store.audioSrc && audioRef.current) {
+      audioRef.current.src = store.audioSrc;
+      audioRef.current.load();
+      audioRef.current.play();
+    }
+  }, [store.audioSrc]);
+
   return (
     <div className="relative">
       <Header>
         <audio
+          ref={audioRef}
           src={store.audioSrc}
           controls
           controlsList="nodownload noplaybackrate"

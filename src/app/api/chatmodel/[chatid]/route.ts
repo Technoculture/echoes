@@ -1,4 +1,4 @@
-import { StreamingTextResponse, LangChainStream } from "ai";
+import { StreamingTextResponse, LangChainStream, nanoid } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
@@ -68,7 +68,14 @@ export async function POST(
 
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
-      const latestReponse = { role: "assistant", content: fullResponse };
+      const latestReponse = {
+        id: nanoid(),
+        role: "assistant",
+        content: fullResponse,
+        createdAt: new Date(),
+        audio: "",
+      };
+      console.log("latestReponse", latestReponse);
       if (orgId !== "") {
         // it means it is the first message in a specific chat id
         // Handling organization chat inputs

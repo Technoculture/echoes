@@ -43,6 +43,8 @@ export default function Chat(props: ChatProps) {
     handleSubmit,
     append,
     setMessages,
+    isLoading,
+    data,
   } = useChat({
     api: `/api/chatmodel/${props.chatId}`,
     // initialMessages: props.chat.log as Message[],
@@ -60,6 +62,7 @@ export default function Chat(props: ChatProps) {
       updateRoomAsCompleted(error.message);
       setIsChatCompleted(true);
     },
+    sendExtraMessageFields: true,
   });
 
   useEffect(() => {

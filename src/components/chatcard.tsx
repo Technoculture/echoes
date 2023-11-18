@@ -40,7 +40,6 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
     });
     const data = await res.json();
     setImageUrl(data.url);
-    console.log("this is image url", data.url);
     setIsGeneratingImage(() => false);
   };
 
