@@ -54,7 +54,6 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
     title = trimmed.split(":")[0];
     description = trimmed.split(":")[1];
   }
-  console.log("url", chat.image_url);
   const msg = chat.messages;
   const chatlog = JSON.parse(msg as string) as ChatLog;
   const firstMessage = chatlog.log[0].content;

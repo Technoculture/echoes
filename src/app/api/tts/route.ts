@@ -20,16 +20,12 @@ const bodyobj = z.object({
 
 export async function POST(request: Request) {
   const b = await request.json();
-  console.log("b", b);
   const body = bodyobj.parse(b);
 
   const text = body.text;
   let messageId = body.messageId;
   const orgId = body.orgId;
   const chatId = body.chatId;
-  console.log("id of the message", body.messageId);
-  console.log("id of the message", body.orgId);
-  console.log("id of the message", body.chatId);
 
   const Openai = new OpenAI({
     apiKey: env.OPEN_AI_API_KEY,
@@ -79,8 +75,6 @@ export async function POST(request: Request) {
   // adding the audio to the message
   const audioUrl = await saveAudio({ buffer, chatId, messageId });
   message.audio = audioUrl;
-
-  console.log("message", message);
 
   await db
     .update(chats)

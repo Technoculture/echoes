@@ -136,7 +136,6 @@ const ChatMessage = (props: ChatMessageProps) => {
       store.setAudioSrc(audioSrc);
       return;
     }
-    store.setAudioSrc(undefined);
     const text = props.chat.content;
     setIsFetchingAudioBuffer(true);
     try {
@@ -152,7 +151,6 @@ const ChatMessage = (props: ChatMessageProps) => {
         }),
       });
       const data = await res.json();
-      console.log("data", data);
       const url = data.audioUrl;
       props.setMessages(data.updatedMessages);
       store.setAudioSrc(url);

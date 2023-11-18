@@ -17,7 +17,6 @@ export default function LoggedInLayout({
     if (store.audioSrc && audioRef.current) {
       audioRef.current.src = store.audioSrc;
       audioRef.current.load();
-      audioRef.current.play();
     }
     if (!store.audioSrc) {
       audioRef.current?.pause();

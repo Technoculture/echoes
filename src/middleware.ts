@@ -10,14 +10,11 @@ const clerkMiddleware = authMiddleware({
 });
 
 export async function middleware(req: NextRequest, event: NextFetchEvent) {
-  console.log("got into middleware");
   // Check if the request is from Zeplo
   if (req.headers.get("x-zeplo-secret") === env.ZEPLO_SECRET) {
     // Handle the request without Clerk's authMiddleware
-    console.log("got into if");
     // handleRequest(req, res);
   } else {
-    console.log("got into else of middleware");
     // If not from Zeplo, use Clerk's authMiddleware
     // const nextReq = new NextRequest(req);
     // const nextFetchEvent = new NextFetchEvent(req);
