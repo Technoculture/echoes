@@ -4,8 +4,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type Store = {
-  audioSrc: string;
-  setAudioSrc: (src: string) => void;
+  audioSrc: string | undefined;
+  setAudioSrc: (src: string | undefined) => void;
   reset: () => void;
 };
 
@@ -15,7 +15,7 @@ export const useStore = create<Store>()(
       audioSrc: "",
       setAudioSrc: (src) => set((state) => ({ ...state, audioSrc: src })),
       reset: () => {
-        set({ audioSrc: "" });
+        set({ audioSrc: undefined });
       },
     }),
     {

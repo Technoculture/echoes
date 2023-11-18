@@ -1,8 +1,9 @@
 import { env } from "@/app/env.mjs";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
-import { ChatLog } from "@/lib/types";
+import { ChatEntry, ChatLog } from "@/lib/types";
 import { saveAudio } from "@/utils/apiHelper";
+import { nanoid } from "ai";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
@@ -11,16 +12,19 @@ export const maxDuration = 60;
 
 const bodyobj = z.object({
   text: z.string().min(1),
-  messageId: z.string().min(1),
+  messageId: z.string().min(1).optional(),
   orgId: z.string().min(1),
   chatId: z.string().min(1),
+  index: z.coerce.number().min(0),
 });
 
 export async function POST(request: Request) {
-  const body = bodyobj.parse(await request.json());
+  const b = await request.json();
+  console.log("b", b);
+  const body = bodyobj.parse(b);
 
   const text = body.text;
-  const messageId = body.messageId;
+  let messageId = body.messageId;
   const orgId = body.orgId;
   const chatId = body.chatId;
   console.log("id of the message", body.messageId);
@@ -52,12 +56,26 @@ export async function POST(request: Request) {
     chatlog = JSON.parse(msg as string) as ChatLog;
   }
 
-  // finding the message with the given id if not found return last message from log
-  let message = chatlog.log.find((msg) => msg.id === messageId);
-  if (!message) {
-    message = chatlog.log[chatlog.log.length - 1];
-    message.id = messageId;
+  // find the message according to the index if no messageId is given
+  let message: ChatEntry | undefined;
+  if (!messageId) {
+    message = chatlog.log[body.index];
+    // update all the messages of chatlog.log to have an id using nanoid()
+    chatlog.log = chatlog.log.map((msg) => {
+      msg.id = msg.id ? msg.id : nanoid();
+      return msg;
+    });
+  } else {
+    // finding the message with the given id if not found return last message from log
+    message = chatlog.log.find((msg) => msg.id === messageId);
+    if (!message) {
+      message = chatlog.log[chatlog.log.length - 1];
+      message.id = messageId;
+    }
   }
+
+  messageId = messageId ? messageId : chatlog.log[body.index].id;
+
   // adding the audio to the message
   const audioUrl = await saveAudio({ buffer, chatId, messageId });
   message.audio = audioUrl;

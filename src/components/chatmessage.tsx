@@ -136,6 +136,7 @@ const ChatMessage = (props: ChatMessageProps) => {
       store.setAudioSrc(audioSrc);
       return;
     }
+    store.setAudioSrc(undefined);
     const text = props.chat.content;
     setIsFetchingAudioBuffer(true);
     try {
@@ -144,6 +145,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         body: JSON.stringify({
           text: text,
           messageId: id,
+          index: props.messageIndex,
           orgId: props.orgId,
           chatId: props.chatId,
           voice: "en-US",

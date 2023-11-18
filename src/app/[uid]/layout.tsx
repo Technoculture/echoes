@@ -19,6 +19,9 @@ export default function LoggedInLayout({
       audioRef.current.load();
       audioRef.current.play();
     }
+    if (!store.audioSrc) {
+      audioRef.current?.pause();
+    }
   }, [store.audioSrc]);
 
   return (
