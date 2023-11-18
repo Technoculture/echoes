@@ -1,9 +1,9 @@
 "use client";
 import { Header } from "@/components/header";
-export const dynamic = "force-dynamic",
-  revalidate = 0;
+// export const dynamic = "force-dynamic",
+// revalidate = 0;
 import useStore from "@/store";
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 
 export default function LoggedInLayout({
   children, // will be a page or nested layout
@@ -17,11 +17,13 @@ export default function LoggedInLayout({
     if (store.audioSrc && audioRef.current) {
       audioRef.current.src = store.audioSrc;
       audioRef.current.load();
+      audioRef.current.play();
     }
     if (!store.audioSrc) {
       audioRef.current?.pause();
     }
   }, [store.audioSrc]);
+  console.log("from nested layout");
 
   return (
     <div className="relative">

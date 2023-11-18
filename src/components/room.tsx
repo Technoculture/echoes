@@ -40,7 +40,10 @@ const RoomWrapper = (props: Props) => {
         <div className="flex space-between mb-2">
           <div className="flex items-center">
             <Button variant="outline" className="mr-2" asChild>
-              <Link onClick={() => setShowLoading(true)} href={`/${props.uid}`}>
+              <Link
+                onClick={() => setShowLoading(true)}
+                href={`/usr/${props.uid}`}
+              >
                 {showLoading ? (
                   <CircleNotch className="w-4 h-4 animate-spin" />
                 ) : (
