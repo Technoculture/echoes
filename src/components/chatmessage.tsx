@@ -41,6 +41,8 @@ const ChatMessage = (props: ChatMessageProps) => {
   } else {
     if (props.chat.role === "user") {
       userName = props.name;
+    } else if (props.chat.role === "assistant") {
+      userName = "Echo";
     } else {
       userName = props.chat.role;
     }

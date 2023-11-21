@@ -27,13 +27,13 @@ export default function LoggedInLayout({
 
   return (
     <div className="relative">
-      <Header>
+      <Header className="bg-black/40 backdrop-blur-md">
         <audio
           ref={audioRef}
           src={store.audioSrc}
           controls
           controlsList="nodownload noplaybackrate"
-          className="ml-2 px-1 h-4"
+          className="max-h-[60px]"
         ></audio>
       </Header>
       <div className="pl-5 pr-5 z-10 relative">{children}</div>

@@ -42,7 +42,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
         </div>
       ) : (
         <div className="relative">
-          <div className="sticky z-20 bg-background py-1.5 top-[72px] flex justify-between">
+          <div className="sticky z-20 bg-black/40 backdrop-blur-md py-1.5 top-[94px] flex justify-between">
             <Startnewchatbutton
               org_id={sessionClaims?.org_id as string}
               org_slug={sessionClaims?.org_slug as string}

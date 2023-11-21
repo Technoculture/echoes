@@ -31,7 +31,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
       <header
         className={cn(
           headerVariants({ variant, className }),
-          "z-50 bg-background sticky top-0",
+          "z-50 sticky top-0",
         )}
         ref={ref}
         {...props}
