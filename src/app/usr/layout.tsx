@@ -3,7 +3,9 @@ import { Header } from "@/components/header";
 // export const dynamic = "force-dynamic",
 // revalidate = 0;
 import useStore from "@/store";
+
 import { useRef, useEffect } from "react";
+import AudioPlayer from "@/components/audioplayer";
 
 export default function LoggedInLayout({
   children, // will be a page or nested layout
@@ -28,13 +30,7 @@ export default function LoggedInLayout({
   return (
     <div className="relative">
       <Header className="bg-black/40 backdrop-blur-md">
-        <audio
-          ref={audioRef}
-          src={store.audioSrc}
-          controls
-          controlsList="nodownload noplaybackrate"
-          className="max-h-[60px]"
-        ></audio>
+        <AudioPlayer />
       </Header>
       <div className="pl-5 pr-5 z-10 relative">{children}</div>
     </div>

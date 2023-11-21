@@ -1,0 +1,23 @@
+audio::-webkit-media-controls-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background: transparent; */
+}
+
+audio::-webkit-media-controls-play-button{
+  transform: scale(2.5);
+  /* background-color: black; */
+
+}
+audio::-webkit-media-controls-timeline-container,
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display,
+audio::-webkit-media-controls-mute-button,
+audio::-webkit-media-controls-volume-slider {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

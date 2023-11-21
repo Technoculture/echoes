@@ -135,7 +135,13 @@ const ChatMessage = (props: ChatMessageProps) => {
 
   const textToSpeech = async (id: string) => {
     if (audioSrc !== "") {
-      store.setAudioSrc(audioSrc);
+      const length = store.tracks.length;
+      store.queueTracks({
+        id: props.chat.id,
+        src: audioSrc,
+        title: props.chat.content,
+      });
+      store.playTrack(length);
       return;
     }
     const text = props.chat.content;
@@ -156,6 +162,13 @@ const ChatMessage = (props: ChatMessageProps) => {
       const url = data.audioUrl;
       props.setMessages(data.updatedMessages);
       store.setAudioSrc(url);
+      const length = store.tracks.length;
+      store.queueTracks({
+        id: props.chat.id,
+        src: url,
+        title: props.chat.content,
+      });
+      store.playTrack(length);
       setAudioSrc(url);
     } catch (err) {
       console.log(err);

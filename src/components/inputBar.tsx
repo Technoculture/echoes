@@ -166,7 +166,7 @@ const InputBar = (props: InputBarProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-grow">
+    <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
       <motion.div
         layout
         className="flex flex-grow bg-linear-900 p-2 pt-2 rounded-sm gap-2 "
