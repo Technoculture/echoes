@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,33 +9,46 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdownmeu";
 import { useStore } from "@/store";
-import { ChevronDown, Pause, Play } from "lucide-react";
+import { ChevronDown, Pause, Play, Trash2 } from "lucide-react";
 import { Slider } from "./slider";
 import { Button } from "./button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/tooltip";
 
 type Props = {};
 
 const AudioPlayer = (props: Props) => {
   const {
-    audioSrc,
-    currentTrackIndex,
+    currentTrackId,
     isPlaying,
     pause,
     play,
     playNextTrack,
     playTrack,
     queueTracks,
+    removeFromQueue,
     reset,
-    setAudioSrc,
     tracks,
   } = useStore();
   const audioRef = useRef<HTMLAudioElement>(null);
   const currentTrack =
-    currentTrackIndex !== null ? tracks[currentTrackIndex] : null;
+    currentTrackId !== null
+      ? tracks.find((t) => t.id === currentTrackId)
+      : null;
   // console.log("currentTrack", currentTrack)
 
+  useEffect(() => {
+    if (currentTrack) {
+      animationRef.current = requestAnimationFrame(whilePlaying);
+    }
+  }, [currentTrack]);
+
   const handlePlay = () => {
-    if (currentTrackIndex === null) {
+    if (currentTrackId === null) {
       console.log("no current track");
       playTrack(0);
     } else {
@@ -75,6 +88,7 @@ const AudioPlayer = (props: Props) => {
   const handleTrackClick = (index: number) => {
     console.log("track clicked", index);
     playTrack(index);
+    animationRef.current = requestAnimationFrame(whilePlaying);
   };
 
   // from pla
@@ -146,9 +160,11 @@ const AudioPlayer = (props: Props) => {
 
   const handleAudioEnded = () => {
     if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
       // setIsPlaying(false);
-      playNextTrack();
+      setCurrentTime(0);
+      setSliderValue(0);
+      const val = playNextTrack();
+      if (!val) cancelAnimationFrame(animationRef.current);
     }
   };
 
@@ -176,7 +192,7 @@ const AudioPlayer = (props: Props) => {
         <div className="flex gap-4 flex-grow">
           <div className="">{calculateTime(currentTime)}</div>
           <Slider
-            onValueChange={(value) => {
+            onValueChange={(value: number[]) => {
               setSliderValue(() => value[0]);
               changeRange(value[0]);
             }}
@@ -192,7 +208,7 @@ const AudioPlayer = (props: Props) => {
           {/* <Button className=" flex gap-2" onClick={backThirty}>
             <RotateCcw /> 30
           </Button> */}
-          <Button onClick={togglePlayPause}>
+          <Button disabled={!!!currentTrack} onClick={togglePlayPause}>
             {isPlaying ? <Pause /> : <Play />}
           </Button>
 
@@ -206,12 +222,37 @@ const AudioPlayer = (props: Props) => {
             <DropdownMenuLabel>Title</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {tracks.map((track: any, index) => (
-              <DropdownMenuItem
+              <div
+                className="flex flex-row justify-between items-center [&:not(:first-child)]:mt-2"
                 key={track.id}
-                onClick={() => handleTrackClick(index)}
               >
-                {track.title.split(" ").slice(0, 5).join(" ")}
-              </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleTrackClick(index)}
+                  className={
+                    currentTrackId === track.id
+                      ? "bg-background text-white"
+                      : ""
+                  }
+                >
+                  {track.title.split(" ").slice(0, 5).join(" ")}
+                </DropdownMenuItem>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => removeFromQueue(track)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Remove</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             ))}
           </div>
         </div>

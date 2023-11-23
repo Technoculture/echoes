@@ -18,13 +18,14 @@ type Store = {
   setAudioSrc: (src: string | undefined) => void;
   reset: () => void;
   tracks: track[];
-  currentTrackIndex: number | null;
+  currentTrackId: string | null;
   isPlaying: boolean;
   play: () => void;
   pause: () => void;
   playTrack: (index: number) => void;
   queueTracks: (track: track) => void;
-  playNextTrack: () => void;
+  removeFromQueue: (track: track) => void;
+  playNextTrack: () => Boolean;
 };
 
 export const useStore = create<Store>()(
@@ -35,20 +36,22 @@ export const useStore = create<Store>()(
       reset: () => {
         set({
           tracks: [] as track[],
-          currentTrackIndex: null,
+          currentTrackId: null,
           isPlaying: false,
         });
       },
       tracks: [] as track[],
-      currentTrackIndex: null,
+      currentTrackId: null,
       isPlaying: false,
       play: () => set({ isPlaying: true }),
       pause: () => set({ isPlaying: false }),
-      playTrack: (index) =>
+      playTrack: (index) => {
+        const { tracks } = get();
         set({
-          currentTrackIndex: index,
+          currentTrackId: tracks[index].id,
           isPlaying: true,
-        }),
+        });
+      },
       queueTracks: (track) => {
         const { tracks } = get();
         const isAlreadyAdded = tracks.find((t) => t.id === track.id);
@@ -58,14 +61,25 @@ export const useStore = create<Store>()(
           set({ tracks: [...tracks, track] });
         }
       },
+      removeFromQueue: (track) => {
+        const { tracks } = get();
+        const filteredTracks = tracks.filter((t) => t.id !== track.id);
+        set({ tracks: filteredTracks });
+      },
       playNextTrack: () => {
-        const { tracks, currentTrackIndex } = get();
-        const nextTrackIndex =
-          currentTrackIndex !== null ? currentTrackIndex + 1 : 0;
-        if (nextTrackIndex < tracks.length) {
-          set({ currentTrackIndex: nextTrackIndex });
+        const { tracks, currentTrackId } = get();
+
+        const currentTrackIndex =
+          currentTrackId !== null
+            ? tracks.findIndex((t) => t.id == currentTrackId)
+            : 0;
+        const nextTrackId = tracks[currentTrackIndex + 1]?.id;
+        if (currentTrackIndex + 1 < tracks.length) {
+          set({ currentTrackId: nextTrackId });
+          return true;
         } else {
-          set({ currentTrackIndex: null, isPlaying: false });
+          set({ currentTrackId: null, isPlaying: false });
+          return false;
         }
       },
     }),
