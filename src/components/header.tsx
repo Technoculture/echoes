@@ -23,20 +23,22 @@ const headerVariants = cva("w-full", {
 
 export interface HeaderProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof headerVariants> {}
+    VariantProps<typeof headerVariants> {
+  newChild?: React.ReactNode;
+}
 
 const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
-  ({ className, variant, ...props }: HeaderProps = {}, ref) => {
+  ({ className, newChild, variant, ...props }: HeaderProps = {}, ref) => {
     return (
       <header
         className={cn(
           headerVariants({ variant, className }),
-          "z-50 sticky top-0",
+          "z-50 sticky top-0 p-5 space-y-5",
         )}
         ref={ref}
         {...props}
       >
-        <div className="flex justify-between items-center p-5">
+        <div className="flex justify-between items-center">
           <Link
             href="/"
             className="gap-2 flex items-center cursor-pointer h-[32px]"
@@ -56,6 +58,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
           </SignedIn>
           <SignedOut></SignedOut>
         </div>
+        <div className="">{newChild}</div>
       </header>
     );
   },

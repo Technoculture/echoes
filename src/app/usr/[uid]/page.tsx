@@ -4,8 +4,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
-import { auth, OrganizationSwitcher } from "@clerk/nextjs";
-import Startnewchatbutton from "@/components/startnewchatbutton";
+import { auth } from "@clerk/nextjs";
 import ChatCardWrapper from "@/components/chatcardwrapper";
 // import Uploadzone from "@/components/uploadzone";
 
@@ -42,7 +41,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
         </div>
       ) : (
         <div className="relative">
-          <div className="sticky z-20 bg-black/40 backdrop-blur-md py-1.5 top-[72px] flex justify-between">
+          {/* <div className="sticky z-20 bg-black/40 backdrop-blur-md py-1.5 top-[72px] flex justify-between">
             <Startnewchatbutton
               org_id={sessionClaims?.org_id as string}
               org_slug={sessionClaims?.org_slug as string}
@@ -50,7 +49,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
             <div className="h-[32px]">
               <OrganizationSwitcher hidePersonal={true} />
             </div>
-          </div>
+          </div> */}
           <ChatCardWrapper
             initialData={orgConversations}
             org_id={sessionClaims?.org_id}
