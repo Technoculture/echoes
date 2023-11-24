@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     model: "tts-1",
     voice: "alloy",
     input: text,
+    response_format: "aac",
   });
 
   const buffer = Buffer.from(await mp3.arrayBuffer());

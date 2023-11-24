@@ -320,15 +320,15 @@ export const saveAudio = async ({
     new PutObjectCommand({
       Bucket: env.BUCKET_NAME,
       Body: buffer,
-      Key: `chataudio/${chatId}/${messageId}.mpeg`,
+      Key: `chataudio/${chatId}/${messageId}.mp3`,
       Metadata: {
-        "Content-Type": "audio/mpeg",
+        "Content-Type": "audio/mp4",
         "chat-id": chatId,
         "message-id": messageId,
       },
     }),
   );
 
-  const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mpeg`;
+  const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
   return audioUrl;
 };

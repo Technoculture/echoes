@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/navigationmenu";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
-
+import { ChevronRight, ChevronLeft } from "lucide-react";
 type Props = {};
 
 const AudioPlayer = (props: Props) => {
@@ -47,6 +47,11 @@ const AudioPlayer = (props: Props) => {
   useEffect(() => {
     if (currentTrack) {
       animationRef.current = requestAnimationFrame(whilePlaying);
+    } else {
+      setSliderMax(0);
+      setSliderValue(0);
+      setDuration(0);
+      audioRef.current?.load();
     }
   }, [currentTrack]);
 
@@ -104,6 +109,18 @@ const AudioPlayer = (props: Props) => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [sliderValue, setSliderValue] = useState<number>(0);
   const [sliderMax, setSliderMax] = useState<number>(0);
+  const [tracksToShow, setTracksToShow] = useState<any[]>(() =>
+    tracks.slice(0, 3),
+  );
+  const [pageNo, setPageNo] = useState<number>(1);
+
+  useEffect(() => {
+    if (pageNo === 1) {
+      setTracksToShow(tracks.slice(0, 3));
+    } else {
+      setTracksToShow(tracks.slice((pageNo - 1) * 3, 3 * pageNo));
+    }
+  }, [tracks, pageNo]);
 
   const calculateTime = (secs: number) => {
     const minutes = Math.floor(secs / 60);
@@ -119,10 +136,10 @@ const AudioPlayer = (props: Props) => {
     if (audioRef.current) {
       if (!prevValue) {
         handlePlay();
-        // audioRef.current.play();
+        audioRef.current.play();
         animationRef.current = requestAnimationFrame(whilePlaying);
       } else {
-        // audioRef.current.pause();
+        audioRef.current.pause();
         handlePause();
         if (animationRef.current) {
           cancelAnimationFrame(animationRef.current);
@@ -172,10 +189,10 @@ const AudioPlayer = (props: Props) => {
   };
 
   return (
-    <NavigationMenu>
+    <NavigationMenu className="">
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>
+        <NavigationMenuItem className="">
+          <NavigationMenuTrigger className="max-h-[32px] py-0 px-1">
             <audio
               ref={audioRef}
               src={currentTrack ? currentTrack?.src : undefined}
@@ -192,9 +209,17 @@ const AudioPlayer = (props: Props) => {
             ></audio>
             Playlist
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <li className="sm:row-span-3 relative ">
+          <NavigationMenuContent className="pb-4">
+            <div className="grid min-w-[300px] grid-cols-1 sm:grid-cols-2 gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+              <div className="grid grid-flow-col grid-rows-3  min-h-48">
+                <div className="relative row-span-2">
+                  <Image
+                    src={currentTrack?.imageUrl || logo}
+                    alt="Photo by Drew Beamer"
+                    fill
+                    className=" rounded-md object-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
+                  />
+                </div>
                 <div>
                   <div className="flex gap-4 flex-grow">
                     <div className="">{calculateTime(currentTime)}</div>
@@ -220,43 +245,63 @@ const AudioPlayer = (props: Props) => {
                     </Button>
                   </div>
                 </div>
-                <Image
-                  src={currentTrack?.imageUrl || logo}
-                  alt="Photo by Drew Beamer"
-                  fill
-                  className=" rounded-md object-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
-                />
-              </li>
-              {tracks.map((track: any, index) => (
-                <li
-                  className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center [&:not(:first-child)]:mt-2"
-                  key={track.id}
-                >
-                  <p onClick={() => handleTrackClick(index)}>
-                    {track.title.split(" ").slice(0, 5).join(" ")}
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                      {track.description.split(" ").slice(0, 5).join(" ")}
+              </div>
+              <div>
+                {tracksToShow.map((track: any, index) => (
+                  <div
+                    className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center [&:not(:first-child)]:mt-2"
+                    key={track.id}
+                  >
+                    <p onClick={() => handleTrackClick(index)}>
+                      {track.title.split(" ").slice(0, 5).join(" ")}
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        {track.description.split(" ").slice(0, 5).join(" ")}
+                      </p>
                     </p>
-                  </p>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => removeFromQueue(track)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Remove</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </li>
-              ))}
-            </ul>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeFromQueue(track)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Remove</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                ))}
+              </div>
+              <div className="absolute right-2 bottom-2 space-x-2">
+                <Button
+                  onClick={() => setPageNo((prev) => prev - 1)}
+                  disabled={pageNo <= 1 ? true : false}
+                  variant="outline"
+                  size="icon"
+                  className=""
+                >
+                  <ChevronLeft />
+                </Button>
+                <Button
+                  onClick={() => setPageNo((prev) => prev + 1)}
+                  disabled={
+                    pageNo >= Math.ceil(tracks.length / 3) || tracks.length < 3
+                      ? true
+                      : false
+                  }
+                  variant="outline"
+                  size="icon"
+                  className=""
+                >
+                  <ChevronRight />
+                </Button>
+              </div>
+            </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
