@@ -1,15 +1,8 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdownmeu";
+
 import { useStore } from "@/store";
-import { ChevronDown, Pause, Play, Trash2 } from "lucide-react";
+import { Pause, Play, X } from "lucide-react";
 import { Slider } from "./slider";
 import { Button } from "./button";
 import {
@@ -18,6 +11,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/tooltip";
+
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigationmenu";
+import Image from "next/image";
+import logo from "@/assets/logo.png";
 
 type Props = {};
 
@@ -169,95 +172,95 @@ const AudioPlayer = (props: Props) => {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-2 outline-none">
-        <audio
-          ref={audioRef}
-          src={currentTrack ? currentTrack?.src : undefined}
-          preload="metadata"
-          autoPlay={isPlaying}
-          onLoadedData={() => {
-            if (audioRef.current) {
-              const seconds = Math.floor(audioRef.current.duration);
-              setDuration(seconds);
-              setSliderMax(seconds);
-            }
-          }}
-          onEnded={handleAudioEnded}
-        ></audio>
-        Playlist
-        <ChevronDown />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className=" grid grid-cols-1 bg-background  min-w-[360px] max-w-[700px] px-4 py-2">
-        <div className="flex gap-4 flex-grow">
-          <div className="">{calculateTime(currentTime)}</div>
-          <Slider
-            onValueChange={(value: number[]) => {
-              setSliderValue(() => value[0]);
-              changeRange(value[0]);
-            }}
-            ref={progressBar}
-            max={sliderMax}
-            value={[sliderValue]}
-          />
-          <div className="">
-            {duration && !isNaN(duration) && calculateTime(duration)}
-          </div>
-        </div>
-        <div className="flex flex-row items-center gap-4 py-4 w-full">
-          {/* <Button className=" flex gap-2" onClick={backThirty}>
-            <RotateCcw /> 30
-          </Button> */}
-          <Button disabled={!!!currentTrack} onClick={togglePlayPause}>
-            {isPlaying ? <Pause /> : <Play />}
-          </Button>
-
-          {/* <Button className="flex gap-2" onClick={forwardThirty}>
-            30 <RotateCw />{" "}
-          </Button> */}
-        </div>
-        <div className="grid grid-cols-1">
-          {/* tracks */}
-          <div>
-            <DropdownMenuLabel>Title</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {tracks.map((track: any, index) => (
-              <div
-                className="flex flex-row justify-between items-center [&:not(:first-child)]:mt-2"
-                key={track.id}
-              >
-                <DropdownMenuItem
-                  onClick={() => handleTrackClick(index)}
-                  className={
-                    currentTrackId === track.id
-                      ? "bg-background text-white"
-                      : ""
-                  }
+    <NavigationMenu>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>
+            <audio
+              ref={audioRef}
+              src={currentTrack ? currentTrack?.src : undefined}
+              preload="metadata"
+              autoPlay={isPlaying}
+              onLoadedData={() => {
+                if (audioRef.current) {
+                  const seconds = Math.floor(audioRef.current.duration);
+                  setDuration(seconds);
+                  setSliderMax(seconds);
+                }
+              }}
+              onEnded={handleAudioEnded}
+            ></audio>
+            Playlist
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+              <li className="sm:row-span-3 relative ">
+                <div>
+                  <div className="flex gap-4 flex-grow">
+                    <div className="">{calculateTime(currentTime)}</div>
+                    <Slider
+                      onValueChange={(value: number[]) => {
+                        setSliderValue(() => value[0]);
+                        changeRange(value[0]);
+                      }}
+                      ref={progressBar}
+                      max={sliderMax}
+                      value={[sliderValue]}
+                    />
+                    <div className="">
+                      {duration && !isNaN(duration) && calculateTime(duration)}
+                    </div>
+                  </div>
+                  <div className="flex flex-row items-center gap-4 py-4 w-full">
+                    <Button
+                      disabled={!!!currentTrack}
+                      onClick={togglePlayPause}
+                    >
+                      {isPlaying ? <Pause /> : <Play />}
+                    </Button>
+                  </div>
+                </div>
+                <Image
+                  src={currentTrack?.imageUrl || logo}
+                  alt="Photo by Drew Beamer"
+                  fill
+                  className=" rounded-md object-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
+                />
+              </li>
+              {tracks.map((track: any, index) => (
+                <li
+                  className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center [&:not(:first-child)]:mt-2"
+                  key={track.id}
                 >
-                  {track.title.split(" ").slice(0, 5).join(" ")}
-                </DropdownMenuItem>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => removeFromQueue(track)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Remove</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            ))}
-          </div>
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+                  <p onClick={() => handleTrackClick(index)}>
+                    {track.title.split(" ").slice(0, 5).join(" ")}
+                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      {track.description.split(" ").slice(0, 5).join(" ")}
+                    </p>
+                  </p>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeFromQueue(track)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Remove</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </li>
+              ))}
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 };
 

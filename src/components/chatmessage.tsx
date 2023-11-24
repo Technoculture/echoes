@@ -21,6 +21,8 @@ interface ChatMessageProps {
   messages: Message[];
   setMessages: (messages: Message[]) => void;
   updateRoom: (data: any) => void;
+  chatTitle: string;
+  imageUrl: string;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -136,12 +138,15 @@ const ChatMessage = (props: ChatMessageProps) => {
   const textToSpeech = async (id: string) => {
     if (audioSrc !== "") {
       const length = store.tracks.length;
-      store.queueTracks({
+      const track = {
         id: props.chat.id,
         src: audioSrc,
-        title: props.chat.content,
-      });
-      store.playTrack(length);
+        title: props.chatTitle,
+        imageUrl: props.imageUrl,
+        description: props.chat.content,
+      };
+      store.queueTracks(track);
+      store.playTrackById(props.chat.id);
       return;
     }
     const text = props.chat.content;
@@ -166,7 +171,9 @@ const ChatMessage = (props: ChatMessageProps) => {
       store.queueTracks({
         id: props.chat.id,
         src: url,
-        title: props.chat.content,
+        title: props.chatTitle,
+        imageUrl: props.imageUrl,
+        description: props.chat.content,
       });
       store.playTrack(length);
       setAudioSrc(url);
@@ -175,6 +182,10 @@ const ChatMessage = (props: ChatMessageProps) => {
     }
     setIsFetchingAudioBuffer(false);
   };
+
+  const isTrackIndex = store.tracks.findIndex((t) => t.id === props.chatId);
+  const trackIndex = isTrackIndex !== -1 ? isTrackIndex : "";
+  console.log("trackIndex", trackIndex);
 
   return (
     <div
@@ -194,17 +205,20 @@ const ChatMessage = (props: ChatMessageProps) => {
             {userName}
           </p>
           {props.chat.role === "assistant" ? (
-            <Button
-              size="xs"
-              variant="ghost"
-              onClick={() => textToSpeech(props.chat.id)}
-            >
-              {isFetchingAudioBuffer ? (
-                <CircleNotch className="animate-spin" />
-              ) : (
-                <Play className="" />
-              )}
-            </Button>
+            <div className="flex items-center">
+              <Button
+                size="xs"
+                variant="ghost"
+                onClick={() => textToSpeech(props.chat.id)}
+              >
+                {isFetchingAudioBuffer ? (
+                  <CircleNotch className="animate-spin" />
+                ) : (
+                  <Play className="" />
+                )}
+              </Button>
+              <p>{trackIndex}</p>
+            </div>
           ) : null}
         </div>
         {props.chat.role !== "function" ? (

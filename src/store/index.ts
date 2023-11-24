@@ -6,6 +6,8 @@ import { persist } from "zustand/middleware";
 type track = {
   id: string;
   title: string;
+  description: string;
+  imageUrl: string;
   // artist: string;
   // album: string;
   // albumArt: string;
@@ -26,6 +28,7 @@ type Store = {
   queueTracks: (track: track) => void;
   removeFromQueue: (track: track) => void;
   playNextTrack: () => Boolean;
+  playTrackById: (id: string) => void;
 };
 
 export const useStore = create<Store>()(
@@ -49,6 +52,12 @@ export const useStore = create<Store>()(
         const { tracks } = get();
         set({
           currentTrackId: tracks[index].id,
+          isPlaying: true,
+        });
+      },
+      playTrackById: (id) => {
+        set({
+          currentTrackId: id,
           isPlaying: true,
         });
       },

@@ -21,6 +21,8 @@ interface ChatProps {
   chatId: string;
   username: string;
   org_slug: string;
+  chatTitle: string;
+  imageUrl: string;
 }
 
 export default function Chat(props: ChatProps) {
@@ -95,6 +97,8 @@ export default function Chat(props: ChatProps) {
                       messages={messages}
                       setMessages={setMessages}
                       updateRoom={updateRoomData}
+                      chatTitle={props.chatTitle}
+                      imageUrl={props.imageUrl}
                     />
                   </ContextWrapper>
                 );
@@ -126,6 +130,8 @@ export default function Chat(props: ChatProps) {
                       messages={messages}
                       setMessages={setMessages}
                       updateRoom={updateRoomData}
+                      chatTitle={props.chatTitle}
+                      imageUrl={props.imageUrl}
                     />
                   </ContextWrapper>
                 );

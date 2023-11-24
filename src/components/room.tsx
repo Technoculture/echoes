@@ -18,6 +18,8 @@ interface Props {
   username: string;
   chatAvatarData: ChatSchema;
   org_slug: string;
+  chatTitle: string;
+  imageUrl: string;
 }
 
 const RoomWrapper = (props: Props) => {
@@ -72,6 +74,8 @@ const RoomWrapper = (props: Props) => {
           uid={props.uid}
           username={props.username}
           org_slug={props.org_slug}
+          chatTitle={props.chatTitle}
+          imageUrl={props.imageUrl}
         />
       </div>
     </>
