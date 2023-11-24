@@ -33,7 +33,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
       <header
         className={cn(
           headerVariants({ variant, className }),
-          "z-50 sticky top-0 p-5 space-y-5",
+          "z-50 sticky top-0 p-5"
         )}
         ref={ref}
         {...props}
@@ -61,7 +61,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
         <div className="">{newChild}</div>
       </header>
     );
-  },
+  }
 );
 
 Header.displayName = "Header";
