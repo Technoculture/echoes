@@ -13,12 +13,12 @@ import {
 } from "@/components/tooltip";
 
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigationmenu";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 import { ChevronRight, ChevronLeft } from "lucide-react";
@@ -189,10 +189,10 @@ const AudioPlayer = (props: Props) => {
   };
 
   return (
-    <NavigationMenu className="">
-      <NavigationMenuList>
-        <NavigationMenuItem className="">
-          <NavigationMenuTrigger className="max-h-[32px] py-0 px-1">
+    <>
+      <Dialog>
+        <DialogTrigger asChild className="max-h-[32px]">
+          <Button variant="ghost">
             <audio
               ref={audioRef}
               src={currentTrack ? currentTrack?.src : undefined}
@@ -208,104 +208,101 @@ const AudioPlayer = (props: Props) => {
               onEnded={handleAudioEnded}
             ></audio>
             Playlist
-          </NavigationMenuTrigger>
-          <NavigationMenuContent className="pb-4">
-            <div className="grid min-w-[300px] grid-cols-1 sm:grid-cols-2 gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <div className="grid grid-flow-col grid-rows-3  min-h-48">
-                <div className="relative row-span-2">
-                  <Image
-                    src={currentTrack?.imageUrl || logo}
-                    alt="Photo by Drew Beamer"
-                    fill
-                    className=" rounded-md object-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
-                  />
-                </div>
-                <div>
-                  <div className="flex gap-4 flex-grow">
-                    <div className="">{calculateTime(currentTime)}</div>
-                    <Slider
-                      onValueChange={(value: number[]) => {
-                        setSliderValue(() => value[0]);
-                        changeRange(value[0]);
-                      }}
-                      ref={progressBar}
-                      max={sliderMax}
-                      value={[sliderValue]}
-                    />
-                    <div className="">
-                      {duration && !isNaN(duration) && calculateTime(duration)}
-                    </div>
-                  </div>
-                  <div className="flex flex-row items-center gap-4 py-4 w-full">
-                    <Button
-                      disabled={!!!currentTrack}
-                      onClick={togglePlayPause}
-                    >
-                      {isPlaying ? <Pause /> : <Play />}
-                    </Button>
-                  </div>
-                </div>
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <div className="grid sm:grid-cols-2 grid-cols[repeat(auto-fill, minmax(clamp(300px, 100vw / 4, 300px), 1fr))] gap-3 p-5">
+            <div className="grid grid-flow-col grid-rows-3  min-h-48">
+              <div className="relative row-span-2">
+                <Image
+                  src={currentTrack?.imageUrl || logo}
+                  alt="Photo by Drew Beamer"
+                  fill
+                  className=" rounded-md object-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
+                />
               </div>
               <div>
-                {tracksToShow.map((track: any, index) => (
-                  <div
-                    className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center [&:not(:first-child)]:mt-2"
-                    key={track.id}
-                  >
-                    <p onClick={() => handleTrackClick(index)}>
-                      {track.title.split(" ").slice(0, 5).join(" ")}
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        {track.description.split(" ").slice(0, 5).join(" ")}
-                      </p>
-                    </p>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeFromQueue(track)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Remove</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                <div className="flex gap-4 flex-grow">
+                  <div className="">{calculateTime(currentTime)}</div>
+                  <Slider
+                    onValueChange={(value: number[]) => {
+                      setSliderValue(() => value[0]);
+                      changeRange(value[0]);
+                    }}
+                    ref={progressBar}
+                    max={sliderMax}
+                    value={[sliderValue]}
+                  />
+                  <div className="">
+                    {duration && !isNaN(duration) && calculateTime(duration)}
                   </div>
-                ))}
-              </div>
-              <div className="absolute right-2 bottom-2 space-x-2">
-                <Button
-                  onClick={() => setPageNo((prev) => prev - 1)}
-                  disabled={pageNo <= 1 ? true : false}
-                  variant="outline"
-                  size="icon"
-                  className=""
-                >
-                  <ChevronLeft />
-                </Button>
-                <Button
-                  onClick={() => setPageNo((prev) => prev + 1)}
-                  disabled={
-                    pageNo >= Math.ceil(tracks.length / 3) || tracks.length < 3
-                      ? true
-                      : false
-                  }
-                  variant="outline"
-                  size="icon"
-                  className=""
-                >
-                  <ChevronRight />
-                </Button>
+                </div>
+                <div className="flex flex-row items-center gap-4 py-4 w-full">
+                  <Button disabled={!!!currentTrack} onClick={togglePlayPause}>
+                    {isPlaying ? <Pause /> : <Play />}
+                  </Button>
+                </div>
               </div>
             </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+            <div>
+              {tracksToShow.map((track: any, index) => (
+                <div
+                  className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center"
+                  key={track.id}
+                >
+                  <p onClick={() => handleTrackClick(index)}>
+                    {track.title.split(" ").slice(0, 5).join(" ")}
+                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      {track.description.split(" ").slice(0, 5).join(" ")}
+                    </p>
+                  </p>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeFromQueue(track)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Remove</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              ))}
+            </div>
+          </div>
+          <DialogFooter className="flex flex-row justify-end gap-2 px-5">
+            <Button
+              onClick={() => setPageNo((prev) => prev - 1)}
+              disabled={pageNo <= 1 ? true : false}
+              variant="ghost"
+              size="icon"
+              className=""
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              onClick={() => setPageNo((prev) => prev + 1)}
+              disabled={
+                pageNo >= Math.ceil(tracks.length / 3) || tracks.length < 3
+                  ? true
+                  : false
+              }
+              variant="ghost"
+              size="icon"
+              className=""
+            >
+              <ChevronRight />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
