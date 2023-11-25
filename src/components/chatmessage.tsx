@@ -106,7 +106,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   };
 
   const handleRegenerate = async (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     setIsRegenerating(true);
     const id = props.messageIndex; // id of the response to be regenerated

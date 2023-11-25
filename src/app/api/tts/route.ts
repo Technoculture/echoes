@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       .where(eq(chats.id, Number(chatId)))
       .run();
     return new NextResponse(
-      JSON.stringify({ audioUrl: audioUrl, updatedMessages: chatlog.log })
+      JSON.stringify({ audioUrl: audioUrl, updatedMessages: chatlog.log }),
     );
   } else {
     // summarize and generate audio for all messages

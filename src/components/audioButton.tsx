@@ -35,7 +35,7 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
       messages,
       ...props
     }: Props,
-    ref
+    ref,
   ) => {
     const [audioSrc, setAudioSrc] = React.useState<string>(audio || "");
 
@@ -133,7 +133,7 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
         )}
       </Button>
     );
-  }
+  },
 );
 
 AudioButton.displayName = "AudioButton";

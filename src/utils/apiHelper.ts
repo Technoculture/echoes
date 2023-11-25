@@ -34,7 +34,7 @@ const TOKEN_SIZE = {
 export const chooseModel = (
   isFast: boolean,
   chatHistory: BaseMessage[],
-  systemPrompt: string
+  systemPrompt: string,
 ): {
   error: boolean;
   model: string | undefined;
@@ -43,7 +43,7 @@ export const chooseModel = (
   const enc = encodingForModel("gpt-4");
   const txt = enc.encode(
     chatHistory.reduce((initial, msg) => initial + msg.content, systemPrompt),
-    "all"
+    "all",
   );
 
   const contextSize = txt.length;
@@ -67,7 +67,7 @@ export const chooseModel = (
 
 export const jsonToLangchain = (
   chatData: ChatEntry[],
-  system?: string
+  system?: string,
 ): BaseMessage[] => {
   let ret: BaseMessage[] = [];
   if (system) {
@@ -140,7 +140,7 @@ export async function getBufferFromUrl(openAiUrl: string) {
 async function createFolder(
   s3: S3Client,
   Bucket: string | undefined,
-  Key: string
+  Key: string,
 ) {
   const command = new PutObjectCommand({ Bucket, Key });
   return s3.send(command);
@@ -163,11 +163,11 @@ export async function putS3Object(inputParams: {
           "chat-id": inputParams.chatId,
           "chat-title": inputParams.chatTitle,
         },
-      })
+      }),
     );
     console.log(
       "Successfully uploaded object: " + env.BUCKET_NAME ||
-        "echoes2" + "/" + `cardimages/${inputParams.chatId}`
+        "echoes2" + "/" + `cardimages/${inputParams.chatId}`,
     );
     return data; // For unit tests.
   } catch (err) {
@@ -177,21 +177,21 @@ export async function putS3Object(inputParams: {
 
 export const generateChatImage = async (
   chatTitle: string,
-  chatId: string
+  chatId: string,
 ): Promise<string> => {
-  const prompt2 = `User
-  Task: Create a low contrast cover photo thumbnail for the key words in the scientific topic "${chatTitle}". Locate the key words in the biological context in which they are found in the body or nature.
-  
-  Instructions:
-  0. draw a low contrast dark IMAGE while Using poetic cinematic BLURS and a blurred FOREGROUND image showing the key concept in the title within its biological context.
-  1. The image should visually represent the scientific topic. FOCUS ONLY ON THE MOST IMPORTANT WORD IN THE TOPIC and its biological context.
-  2. The image MUST be scientifically meaningful and accurate.
-  3. The image should be in a landscape format with a 3:2 aspect ratio.
-  4. Use a colour scheme with DEEP BLACKS and very dark navy blue (rarely use vibrant lime green). No other colours are appreciated.
-  5. The visual style should be without text, resembling scientific illustrations. Aim for an ultra-realistic 4K quality, akin to visuals in the Nature Journal.
-  6. Including a human figure is optional. If included, depict scientists, specifically INDIAN scientists - either women in their early 20s or men in their late 40s. DO NOT SHOW ANY doctors.
-  
-  Always find out what the terms mentioned in the title mean before drawing them.`;
+  const prompt2 = `Task: Create a low contrast cover photo thumbnail focused on a key concept from the scientific topic "Mind-Gut Connection
+Unveiling the Secrets of Your Inner Ecosystem". The concept should be represented within its biological context in the body or nature.
+
+Instructions
+---
+Key Concept Visualization: Produce a low contrast, dark image. Incorporate poetic, cinematic blurs to emphasize the key concept in the title, depicted within its relevant biological setting.
+Scientific Accuracy: Ensure the image is scientifically accurate and meaningful, focusing exclusively on the most significant word in the topic and its biological implications.
+Format and Aspect Ratio: The image should be in a landscape orientation with a 3:2 aspect ratio, suitable for a cover photo thumbnail.
+Color Scheme: Employ a palette dominated by deep blacks. Use vibrant lime green sparingly for emphasis. Avoid other colors.
+Visual Style: Create a text-free visual resembling high-quality scientific illustrations. Target an ultra-realistic 4K quality, similar to visuals found in the Nature Journal.
+Human Element (Optional): You may include human figures. If so, depict Indian scientists engaged in research. Choose between women in their early 20s and men in their late 40s. Avoid representing doctors.
+Research and Contextual Understanding: Prior to creating the image, research to understand the terms mentioned in the title, ensuring accurate and contextually relevant depiction.
+This approach ensures clarity in representing the scientific topic, maintaining a balance between aesthetic appeal and scientific integrity.`;
   const Openai = new OpenAI({
     apiKey: env.OPEN_AI_API_KEY,
   });
@@ -250,7 +250,7 @@ export const generateChatImage = async (
 export const openAIChatModel = (
   model: string | undefined,
   streaming: boolean,
-  handlers?: any
+  handlers?: any,
 ): ChatOpenAI => {
   return new ChatOpenAI({
     modelName: model,
@@ -267,14 +267,14 @@ export const handleDBOperation = async (
   _chat: ChatEntry[],
   id: string,
   intermediateSteps: AgentStep[],
-  assistantReply: string
+  assistantReply: string,
 ) => {
   const intermediateStepMessages = (intermediateSteps ?? []).map(
     (intermediateStep: AgentStep) =>
       ({
         content: JSON.stringify(intermediateStep),
         role: "function",
-      }) as ChatEntry
+      }) as ChatEntry,
   ) as ChatEntry[]; // turning into appropriate messages
 
   // creating assistant message
@@ -347,7 +347,7 @@ export const saveAudioMessage = async ({
         "chat-id": chatId,
         "message-id": messageId,
       },
-    })
+    }),
   );
 
   const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
