@@ -34,7 +34,7 @@ const TOKEN_SIZE = {
 export const chooseModel = (
   isFast: boolean,
   chatHistory: BaseMessage[],
-  systemPrompt: string,
+  systemPrompt: string
 ): {
   error: boolean;
   model: string | undefined;
@@ -43,7 +43,7 @@ export const chooseModel = (
   const enc = encodingForModel("gpt-4");
   const txt = enc.encode(
     chatHistory.reduce((initial, msg) => initial + msg.content, systemPrompt),
-    "all",
+    "all"
   );
 
   const contextSize = txt.length;
@@ -67,7 +67,7 @@ export const chooseModel = (
 
 export const jsonToLangchain = (
   chatData: ChatEntry[],
-  system?: string,
+  system?: string
 ): BaseMessage[] => {
   let ret: BaseMessage[] = [];
   if (system) {
@@ -84,6 +84,27 @@ export const jsonToLangchain = (
     }
   });
   return ret;
+};
+export const jsonToLlama = (chatData: ChatEntry[]): string => {
+  let str = `System prompt: An executive summary generator. Given any chat, I will generate for you a point-by-point summary of the key findings and arguments.\n Essentially the whole prompt will be\nGenerate a point-by-point summary of the key findings and arguments in the following conversation between AI <AI> and the user <User>. \n\n The format of the chat is as follows.
+<User>...</User>
+<AI> … </AI>
+<User> … </User>
+
+Here is the chat:
+
+`;
+  chatData.forEach((item: ChatEntry) => {
+    if (item.hasOwnProperty("role")) {
+      if (item.role === "user") {
+        str += `<User>${item.content}</User>\n`;
+      } else if (item.role === "assistant") {
+        str += `<AI>${item.content}</AI>\n`;
+      }
+    }
+  });
+  str += "\n\n ... \nSummary:\n";
+  return str;
 };
 
 export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
@@ -119,7 +140,7 @@ export async function getBufferFromUrl(openAiUrl: string) {
 async function createFolder(
   s3: S3Client,
   Bucket: string | undefined,
-  Key: string,
+  Key: string
 ) {
   const command = new PutObjectCommand({ Bucket, Key });
   return s3.send(command);
@@ -142,11 +163,11 @@ export async function putS3Object(inputParams: {
           "chat-id": inputParams.chatId,
           "chat-title": inputParams.chatTitle,
         },
-      }),
+      })
     );
     console.log(
       "Successfully uploaded object: " + env.BUCKET_NAME ||
-        "echoes2" + "/" + `cardimages/${inputParams.chatId}`,
+        "echoes2" + "/" + `cardimages/${inputParams.chatId}`
     );
     return data; // For unit tests.
   } catch (err) {
@@ -156,7 +177,7 @@ export async function putS3Object(inputParams: {
 
 export const generateChatImage = async (
   chatTitle: string,
-  chatId: string,
+  chatId: string
 ): Promise<string> => {
   const prompt2 = `User
   Task: Create a low contrast cover photo thumbnail for the key words in the scientific topic "${chatTitle}". Locate the key words in the biological context in which they are found in the body or nature.
@@ -229,7 +250,7 @@ export const generateChatImage = async (
 export const openAIChatModel = (
   model: string | undefined,
   streaming: boolean,
-  handlers?: any,
+  handlers?: any
 ): ChatOpenAI => {
   return new ChatOpenAI({
     modelName: model,
@@ -246,14 +267,14 @@ export const handleDBOperation = async (
   _chat: ChatEntry[],
   id: string,
   intermediateSteps: AgentStep[],
-  assistantReply: string,
+  assistantReply: string
 ) => {
   const intermediateStepMessages = (intermediateSteps ?? []).map(
     (intermediateStep: AgentStep) =>
       ({
         content: JSON.stringify(intermediateStep),
         role: "function",
-      }) as ChatEntry,
+      }) as ChatEntry
   ) as ChatEntry[]; // turning into appropriate messages
 
   // creating assistant message
@@ -300,7 +321,7 @@ export const handleDBOperation = async (
   }
 };
 
-export const saveAudio = async ({
+export const saveAudioMessage = async ({
   buffer,
   chatId,
   messageId,
@@ -326,9 +347,35 @@ export const saveAudio = async ({
         "chat-id": chatId,
         "message-id": messageId,
       },
-    }),
+    })
   );
 
   const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
   return audioUrl;
+};
+
+export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {
+  const msg = jsonToLlama(chat);
+
+  const res = await fetch(env.SUMMARY_ENDPOINT_URL, {
+    headers: {
+      Authorization: `Bearer ${env.LLAMA_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      prompt: msg,
+      model: "togethercomputer/Llama-2-7B-32K-Instruct",
+      temperature: 0.4,
+      top_p: 0.7,
+      top_k: 50,
+      max_tokens: 1024,
+      repetition_penalty: 1.2,
+    }),
+  });
+  // call chatmodel with msgs
+  const data = await res.json();
+  const content = data.output.choices[0].text;
+  console.log("summarized content", content);
+  return content;
 };

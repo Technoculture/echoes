@@ -1,1 +1,20 @@
-{"version":"5","dialect":"sqlite","entries":[{"idx":1,"version":"5","when":1699717696182,"tag":"0001_dry_starbolt","breakpoints":false}]}
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1699717696182,
+      "tag": "0001_dry_starbolt",
+      "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1700892239331,
+      "tag": "0002_serious_guardsmen",
+      "breakpoints": false
+    }
+  ]
+}

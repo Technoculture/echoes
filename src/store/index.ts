@@ -7,7 +7,7 @@ type track = {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
+  imageUrl: string | null;
   // artist: string;
   // album: string;
   // albumArt: string;

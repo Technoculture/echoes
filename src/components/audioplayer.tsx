@@ -48,8 +48,8 @@ const AudioPlayer = (props: Props) => {
     if (currentTrack) {
       animationRef.current = requestAnimationFrame(whilePlaying);
     } else {
-      setSliderMax(0);
       setSliderValue(0);
+      setSliderMax(0);
       setDuration(0);
       audioRef.current?.load();
     }

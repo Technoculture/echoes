@@ -6,9 +6,10 @@ import { useState } from "react";
 import RenderMarkdown from "@/components/rendermarkdown";
 import { Button } from "@/components/button";
 import { MessageRole } from "@/lib/types";
-import { CircleNotch, Play } from "@phosphor-icons/react";
+import { CircleNotch } from "@phosphor-icons/react";
 import { IntermediateStep } from "./intermediatesteps";
 import useStore from "@/store";
+import AudioButton from "@/components/audioButton";
 // import "./audio.css";
 
 interface ChatMessageProps {
@@ -105,7 +106,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   };
 
   const handleRegenerate = async (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     setIsRegenerating(true);
     const id = props.messageIndex; // id of the response to be regenerated
@@ -135,53 +136,53 @@ const ChatMessage = (props: ChatMessageProps) => {
     setIsActionsOpen(false);
   };
 
-  const textToSpeech = async (id: string) => {
-    if (audioSrc !== "") {
-      const length = store.tracks.length;
-      const track = {
-        id: props.chat.id,
-        src: audioSrc,
-        title: props.chatTitle,
-        imageUrl: props.imageUrl,
-        description: props.chat.content,
-      };
-      store.queueTracks(track);
-      store.playTrackById(props.chat.id);
-      return;
-    }
-    const text = props.chat.content;
-    setIsFetchingAudioBuffer(true);
-    try {
-      const res = await fetch("/api/tts", {
-        method: "post",
-        body: JSON.stringify({
-          text: text,
-          messageId: id,
-          index: props.messageIndex,
-          orgId: props.orgId,
-          chatId: props.chatId,
-          voice: "en-US",
-        }),
-      });
-      const data = await res.json();
-      const url = data.audioUrl;
-      props.setMessages(data.updatedMessages);
-      store.setAudioSrc(url);
-      const length = store.tracks.length;
-      store.queueTracks({
-        id: props.chat.id,
-        src: url,
-        title: props.chatTitle,
-        imageUrl: props.imageUrl,
-        description: props.chat.content,
-      });
-      store.playTrack(length);
-      setAudioSrc(url);
-    } catch (err) {
-      console.log(err);
-    }
-    setIsFetchingAudioBuffer(false);
-  };
+  // const textToSpeech = async (id: string) => {
+  //   if (audioSrc !== "") {
+  //     const length = store.tracks.length;
+  //     const track = {
+  //       id: props.chat.id,
+  //       src: audioSrc,
+  //       title: props.chatTitle,
+  //       imageUrl: props.imageUrl,
+  //       description: props.chat.content,
+  //     };
+  //     store.queueTracks(track);
+  //     store.playTrackById(props.chat.id);
+  //     return;
+  //   }
+  //   const text = props.chat.content;
+  //   setIsFetchingAudioBuffer(true);
+  //   try {
+  //     const res = await fetch("/api/tts", {
+  //       method: "post",
+  //       body: JSON.stringify({
+  //         text: text,
+  //         messageId: id,
+  //         index: props.messageIndex,
+  //         orgId: props.orgId,
+  //         chatId: props.chatId,
+  //         voice: "en-US",
+  //       }),
+  //     });
+  //     const data = await res.json();
+  //     const url = data.audioUrl;
+  //     props.setMessages(data.updatedMessages);
+  //     store.setAudioSrc(url);
+  //     const length = store.tracks.length;
+  //     store.queueTracks({
+  //       id: props.chat.id,
+  //       src: url,
+  //       title: props.chatTitle,
+  //       imageUrl: props.imageUrl,
+  //       description: props.chat.content,
+  //     });
+  //     store.playTrack(length);
+  //     setAudioSrc(url);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  //   setIsFetchingAudioBuffer(false);
+  // };
 
   const isTrackIndex = store.tracks.findIndex((t) => t.id === props.chatId);
   const trackIndex = isTrackIndex !== -1 ? isTrackIndex : "";
@@ -206,7 +207,21 @@ const ChatMessage = (props: ChatMessageProps) => {
           </p>
           {props.chat.role === "assistant" ? (
             <div className="flex items-center">
-              <Button
+              <AudioButton
+                setMessages={props.setMessages}
+                audio={props.chat.audio as string}
+                chatId={props.chatId}
+                chatTitle={props.chatTitle}
+                description={props.chat.content}
+                id={props.chat.id}
+                imageUrl={props.imageUrl}
+                summarize={false}
+                orgId={props.orgId}
+                variant="ghost"
+                size="xs"
+                messageIndex={props.messageIndex}
+              />
+              {/* <Button
                 size="xs"
                 variant="ghost"
                 onClick={() => textToSpeech(props.chat.id)}
@@ -216,7 +231,7 @@ const ChatMessage = (props: ChatMessageProps) => {
                 ) : (
                   <Play className="" />
                 )}
-              </Button>
+              </Button> */}
               <p>{trackIndex}</p>
             </div>
           ) : null}
