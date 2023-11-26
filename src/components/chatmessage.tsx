@@ -33,8 +33,6 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
   const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
   const [audioSrc, setAudioSrc] = useState<string>(props.chat.audio || "");
-  const [isFetchingAudioBuffer, setIsFetchingAudioBuffer] =
-    useState<boolean>(false);
   const store = useStore();
 
   let userName = "";
@@ -136,54 +134,6 @@ const ChatMessage = (props: ChatMessageProps) => {
     setIsActionsOpen(false);
   };
 
-  // const textToSpeech = async (id: string) => {
-  //   if (audioSrc !== "") {
-  //     const length = store.tracks.length;
-  //     const track = {
-  //       id: props.chat.id,
-  //       src: audioSrc,
-  //       title: props.chatTitle,
-  //       imageUrl: props.imageUrl,
-  //       description: props.chat.content,
-  //     };
-  //     store.queueTracks(track);
-  //     store.playTrackById(props.chat.id);
-  //     return;
-  //   }
-  //   const text = props.chat.content;
-  //   setIsFetchingAudioBuffer(true);
-  //   try {
-  //     const res = await fetch("/api/tts", {
-  //       method: "post",
-  //       body: JSON.stringify({
-  //         text: text,
-  //         messageId: id,
-  //         index: props.messageIndex,
-  //         orgId: props.orgId,
-  //         chatId: props.chatId,
-  //         voice: "en-US",
-  //       }),
-  //     });
-  //     const data = await res.json();
-  //     const url = data.audioUrl;
-  //     props.setMessages(data.updatedMessages);
-  //     store.setAudioSrc(url);
-  //     const length = store.tracks.length;
-  //     store.queueTracks({
-  //       id: props.chat.id,
-  //       src: url,
-  //       title: props.chatTitle,
-  //       imageUrl: props.imageUrl,
-  //       description: props.chat.content,
-  //     });
-  //     store.playTrack(length);
-  //     setAudioSrc(url);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  //   setIsFetchingAudioBuffer(false);
-  // };
-
   const isTrackIndex = store.tracks.findIndex((t) => t.id === props.chatId);
   const trackIndex = isTrackIndex !== -1 ? isTrackIndex : "";
   console.log("trackIndex", trackIndex);
@@ -221,17 +171,6 @@ const ChatMessage = (props: ChatMessageProps) => {
                 size="xs"
                 messageIndex={props.messageIndex}
               />
-              {/* <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => textToSpeech(props.chat.id)}
-              >
-                {isFetchingAudioBuffer ? (
-                  <CircleNotch className="animate-spin" />
-                ) : (
-                  <Play className="" />
-                )}
-              </Button> */}
               <p>{trackIndex}</p>
             </div>
           ) : null}

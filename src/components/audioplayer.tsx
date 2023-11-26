@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 
 import Image from "next/image";
-import logo from "@/assets/logo.png";
+import img from "@/assets/audio_bg.webp";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 type Props = {};
 
@@ -215,7 +215,7 @@ const AudioPlayer = (props: Props) => {
             <div className="grid grid-flow-col grid-rows-3  min-h-48">
               <div className="relative row-span-2">
                 <Image
-                  src={currentTrack?.imageUrl || logo}
+                  src={currentTrack?.imageUrl || img}
                   alt="Photo by Drew Beamer"
                   fill
                   className=" rounded-md object-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
