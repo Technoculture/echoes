@@ -15,11 +15,12 @@ import Chatusers from "@/components/chatusersavatars";
 import { CircleNotch } from "@phosphor-icons/react";
 import { ChatLog } from "@/lib/types";
 import Image from "next/image";
+import AudioButton from "@/components//audioButton";
 
 type Props = {
   chat: Chat;
   uid: string;
-  org_id: string | undefined;
+  org_id: string;
   org_slug: string;
 };
 
@@ -40,7 +41,6 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
     });
     const data = await res.json();
     setImageUrl(data.url);
-    console.log("this is image url", data.url);
     setIsGeneratingImage(() => false);
   };
 
@@ -55,7 +55,6 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
     title = trimmed.split(":")[0];
     description = trimmed.split(":")[1];
   }
-  console.log("url", chat.image_url);
   const msg = chat.messages;
   const chatlog = JSON.parse(msg as string) as ChatLog;
   const firstMessage = chatlog.log[0].content;
@@ -87,6 +86,19 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
         <CardContent className="flex justify-between ">
           <Chatusers chat={chat} />
           <div className="flex gap-2">
+            {/* add Audio Summarization Button */}
+            <AudioButton
+              chatId={String(chat.id)} // id to recognise chat
+              chatTitle={title}
+              description={description}
+              id={String(chat.id)} // id for the track
+              imageUrl={chat.image_url}
+              messages={chatlog.log}
+              summarize={true}
+              orgId={org_id}
+              audio={chat.audio}
+              variant="outline"
+            />
             {!imageUrl && (
               <span>
                 <button

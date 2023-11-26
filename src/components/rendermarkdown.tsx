@@ -99,7 +99,7 @@ const components: Components = {
   code({ node, inline, className, style, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
     return (
-      <ScrollArea className="w-[90vw]">
+      <ScrollArea className="max-w-[90vw]">
         {!inline && match ? (
           <div style={dark}>
             <SyntaxHighlighter

@@ -11,6 +11,7 @@ import { systemPrompt } from "@/utils/prompts";
 import { Message } from "ai";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+export const maxDuration = 30;
 
 type regenerateBody = {
   preMessages: Message[];

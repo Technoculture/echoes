@@ -5,6 +5,9 @@ export const env = createEnv({
   server: {
     // OpenAI
     OPEN_AI_API_KEY: z.string().min(10),
+    // LLaMA-2-7B-32K-Instruct (7B) from https://api.together.xyz
+    SUMMARY_ENDPOINT_URL: z.string().min(1),
+    LLAMA_API_KEY: z.string().min(1),
     // Azure OpenAI
     // AZURE_OPENAI_API_KEY: z.string().min(1),
     // AZURE_OPENAI_API_VERSION: z.string().min(1),
@@ -33,6 +36,9 @@ export const env = createEnv({
     AWS_REGION: z.string().min(1),
     BUCKET_NAME: z.string().min(1),
     IMAGE_PREFIX_URL: z.string().min(1),
+    // zeplo (message queue)
+    ZEPLO_TOKEN: z.string().min(1),
+    ZEPLO_SECRET: z.string().min(1),
   },
 
   client: {
@@ -45,16 +51,22 @@ export const env = createEnv({
 
   runtimeEnv: {
     // Clerk (Auth)
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
-    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL:
+      process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:
+      process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
     // Upstash (Redis)
     REDIS_URL: process.env.REDIS_URL,
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
+    // LLaMA-2-7B-32K-Instruct (7B) from https://api.together.xyz
+    SUMMARY_ENDPOINT_URL: process.env.SUMMARY_ENDPOINT_URL,
+    LLAMA_API_KEY: process.env.LLAMA_API_KEY,
     // Azure OpenAI
     // AZURE_OPENAI_API_KEY: process.env.AZURE_OPENAI_API_KEY,
     // AZURE_OPENAI_API_VERSION: process.env.AZURE_OPENAI_API_VERSION,
@@ -78,6 +90,8 @@ export const env = createEnv({
     AWS_REGION: process.env.AWS_REGION,
     BUCKET_NAME: process.env.BUCKET_NAME,
     IMAGE_PREFIX_URL: process.env.IMAGE_PREFIX_URL,
+    // zeplo
+    ZEPLO_TOKEN: process.env.ZEPLO_TOKEN,
+    ZEPLO_SECRET: process.env.ZEPLO_SECRET,
   },
 });
-

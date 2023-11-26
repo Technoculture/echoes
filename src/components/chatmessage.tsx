@@ -1,3 +1,4 @@
+"use client";
 import { Message } from "ai";
 import TextareaAutosize from "react-textarea-autosize";
 import ChatMessageActions from "@/components/chatmessageactions";
@@ -5,8 +6,11 @@ import { useState } from "react";
 import RenderMarkdown from "@/components/rendermarkdown";
 import { Button } from "@/components/button";
 import { MessageRole } from "@/lib/types";
-import { CircleNotch, Play } from "@phosphor-icons/react";
+import { CircleNotch } from "@phosphor-icons/react";
 import { IntermediateStep } from "./intermediatesteps";
+import useStore from "@/store";
+import AudioButton from "@/components/audioButton";
+// import "./audio.css";
 
 interface ChatMessageProps {
   name: string;
@@ -18,6 +22,8 @@ interface ChatMessageProps {
   messages: Message[];
   setMessages: (messages: Message[]) => void;
   updateRoom: (data: any) => void;
+  chatTitle: string;
+  imageUrl: string;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -26,9 +32,10 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
   const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
-  const [audioSrc, setAudioSrc] = useState<string>("");
+  const [audioSrc, setAudioSrc] = useState<string>(props.chat.audio || "");
   const [isFetchingAudioBuffer, setIsFetchingAudioBuffer] =
     useState<boolean>(false);
+  const store = useStore();
 
   let userName = "";
   if (props?.chat.name) {
@@ -37,6 +44,8 @@ const ChatMessage = (props: ChatMessageProps) => {
   } else {
     if (props.chat.role === "user") {
       userName = props.name;
+    } else if (props.chat.role === "assistant") {
+      userName = "Echo";
     } else {
       userName = props.chat.role;
     }
@@ -127,24 +136,57 @@ const ChatMessage = (props: ChatMessageProps) => {
     setIsActionsOpen(false);
   };
 
-  const textToSpeech = async () => {
-    const text = props.chat.content;
-    setIsFetchingAudioBuffer(true);
-    try {
-      const res = await fetch("/api/tts", {
-        method: "post",
-        body: JSON.stringify({ text: text, voice: "en-US" }),
-      });
-      const arrayBuffer = await res.arrayBuffer();
-      const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-      const url = URL.createObjectURL(blob);
-      console.log("generated url", url);
-      setAudioSrc(url);
-    } catch (err) {
-      console.log(err);
-    }
-    setIsFetchingAudioBuffer(false);
-  };
+  // const textToSpeech = async (id: string) => {
+  //   if (audioSrc !== "") {
+  //     const length = store.tracks.length;
+  //     const track = {
+  //       id: props.chat.id,
+  //       src: audioSrc,
+  //       title: props.chatTitle,
+  //       imageUrl: props.imageUrl,
+  //       description: props.chat.content,
+  //     };
+  //     store.queueTracks(track);
+  //     store.playTrackById(props.chat.id);
+  //     return;
+  //   }
+  //   const text = props.chat.content;
+  //   setIsFetchingAudioBuffer(true);
+  //   try {
+  //     const res = await fetch("/api/tts", {
+  //       method: "post",
+  //       body: JSON.stringify({
+  //         text: text,
+  //         messageId: id,
+  //         index: props.messageIndex,
+  //         orgId: props.orgId,
+  //         chatId: props.chatId,
+  //         voice: "en-US",
+  //       }),
+  //     });
+  //     const data = await res.json();
+  //     const url = data.audioUrl;
+  //     props.setMessages(data.updatedMessages);
+  //     store.setAudioSrc(url);
+  //     const length = store.tracks.length;
+  //     store.queueTracks({
+  //       id: props.chat.id,
+  //       src: url,
+  //       title: props.chatTitle,
+  //       imageUrl: props.imageUrl,
+  //       description: props.chat.content,
+  //     });
+  //     store.playTrack(length);
+  //     setAudioSrc(url);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  //   setIsFetchingAudioBuffer(false);
+  // };
+
+  const isTrackIndex = store.tracks.findIndex((t) => t.id === props.chatId);
+  const trackIndex = isTrackIndex !== -1 ? isTrackIndex : "";
+  console.log("trackIndex", trackIndex);
 
   return (
     <div
@@ -164,28 +206,48 @@ const ChatMessage = (props: ChatMessageProps) => {
             {userName}
           </p>
           {props.chat.role === "assistant" ? (
-            <Button size="xs" variant="ghost" onClick={textToSpeech}>
-              {isFetchingAudioBuffer ? (
-                <CircleNotch className="animate-spin" />
-              ) : (
-                <Play className="" />
-              )}
-            </Button>
-          ) : null}
-          {props.chat.role === "assistant" && audioSrc !== "" ? (
-            <audio src={audioSrc} controls className="ml-2 px-1 h-4"></audio>
+            <div className="flex items-center">
+              <AudioButton
+                setMessages={props.setMessages}
+                audio={props.chat.audio as string}
+                chatId={props.chatId}
+                chatTitle={props.chatTitle}
+                description={props.chat.content}
+                id={props.chat.id}
+                imageUrl={props.imageUrl}
+                summarize={false}
+                orgId={props.orgId}
+                variant="ghost"
+                size="xs"
+                messageIndex={props.messageIndex}
+              />
+              {/* <Button
+                size="xs"
+                variant="ghost"
+                onClick={() => textToSpeech(props.chat.id)}
+              >
+                {isFetchingAudioBuffer ? (
+                  <CircleNotch className="animate-spin" />
+                ) : (
+                  <Play className="" />
+                )}
+              </Button> */}
+              <p>{trackIndex}</p>
+            </div>
           ) : null}
         </div>
-        <ChatMessageActions
-          isEditing={isEditing}
-          setEditing={setIsEditing}
-          role={props.chat.role}
-          content={props.chat.content}
-          handleRegenerate={handleRegenerate}
-          isRegenerating={isRegenerating}
-          open={isActionsOpen}
-          setOpen={setIsActionsOpen}
-        />
+        {props.chat.role !== "function" ? (
+          <ChatMessageActions
+            isEditing={isEditing}
+            setEditing={setIsEditing}
+            role={props.chat.role}
+            content={props.chat.content}
+            handleRegenerate={handleRegenerate}
+            isRegenerating={isRegenerating}
+            open={isActionsOpen}
+            setOpen={setIsActionsOpen}
+          />
+        ) : null}
       </div>
       {props.chat.role === "function" ? (
         <IntermediateStep message={props.chat} />

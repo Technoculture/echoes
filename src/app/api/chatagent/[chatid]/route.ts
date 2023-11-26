@@ -15,7 +15,7 @@ import { NextResponse } from "next/server";
 import { SerpAPI } from "langchain/tools";
 import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { BufferMemory, ChatMessageHistory } from "langchain/memory";
-import { StreamingTextResponse } from "ai";
+import { StreamingTextResponse, nanoid } from "ai";
 import { AgentStep } from "langchain/schema";
 const apiKey = process.env.SERP_API_KEY;
 
@@ -84,7 +84,6 @@ export async function POST(
     tools,
     openai_chat_model,
     {
-      // agentType: "chat-conversational-react-description",
       agentType: "openai-functions",
       memory: new BufferMemory({
         memoryKey: "chat_history",
@@ -119,7 +118,9 @@ export async function POST(
         toolResponse.observation = output;
         intermediateSteps.push(toolResponse); // managing intermediate steps
         const obj = JSON.stringify(toolResponse);
-        ctrl.enqueue(obj); // sending tool output to stream
+        // ctrl.enqueue(encoder.encode(obj)); // sending tool output to stream
+        ctrl.enqueue(encoder.encode(`$__JSON_START__${obj}__JSON_END__`)); // sending tool output to stream
+        ctrl.enqueue(`\n\n`); // sending tool output to stream
         toolResponse = {} as AgentStep;
       },
       async handleAgentAction(action, runId, parentRunId, tags) {
@@ -127,14 +128,7 @@ export async function POST(
         console.log("handleAgentAction action", action);
       },
       async handleAgentEnd(action, runId, parentRunId, tags) {
-        try {
-          console.log("agent ended 1 assistantReply", assistantReply);
-          ctrl.close();
-          // await handleDBOperation(_chat, id, intermediateSteps, assistantReply);
-          console.log("agent ended 2");
-        } catch (err) {
-          console.error("error in handleAgentEnd", err);
-        }
+        console.log("agent ended 1 assistantReply", assistantReply);
       },
       async handleLLMStart(
         llm,
@@ -167,9 +161,50 @@ export async function POST(
       ) {
         // console.log("chatModelStart", messages)
       },
+      handleChainStart(
+        chain,
+        inputs,
+        runId,
+        parentRunId,
+        tags,
+        metadata,
+        runType,
+        name,
+      ) {
+        console.log("chain started", chain, inputs);
+      },
+      async handleChainEnd(output, runId, parentRunId, tags, runType) {
+        const intermediateStepMessages: ChatEntry[] = (
+          output.intermediateSteps ?? []
+        ).map((intermediateStep: AgentStep, i: number) => {
+          return {
+            id: nanoid(),
+            content: JSON.stringify(intermediateStep),
+            role: "function",
+          } as ChatEntry;
+        });
+
+        const assistantMessage = {
+          id: nanoid(),
+          role: "assistant",
+          content: output.output,
+        } as ChatEntry;
+
+        const messages = [...intermediateStepMessages, assistantMessage];
+        // append to _chat and save to db
+        _chat.push(...intermediateStepMessages, assistantMessage);
+        await db
+          .update(chats)
+          .set({
+            messages: JSON.stringify({ log: _chat }),
+            updatedAt: new Date(),
+          })
+          .where(eq(chats.id, Number(id)))
+          .run();
+        ctrl.close();
+      },
     },
   ]);
 
   return new StreamingTextResponse(readableStream);
-  // console.info("info", openai_chat_model.lc_kwargs);
 }

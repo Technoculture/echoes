@@ -85,6 +85,27 @@ export const jsonToLangchain = (
   });
   return ret;
 };
+export const jsonToLlama = (chatData: ChatEntry[]): string => {
+  let str = `System prompt: An executive summary generator. Given any chat, I will generate for you a point-by-point summary of the key findings and arguments.\n Essentially the whole prompt will be\nGenerate a point-by-point summary of the key findings and arguments in the following conversation between AI <AI> and the user <User>. \n\n The format of the chat is as follows.
+<User>...</User>
+<AI> … </AI>
+<User> … </User>
+
+Here is the chat:
+
+`;
+  chatData.forEach((item: ChatEntry) => {
+    if (item.hasOwnProperty("role")) {
+      if (item.role === "user") {
+        str += `<User>${item.content}</User>\n`;
+      } else if (item.role === "assistant") {
+        str += `<AI>${item.content}</AI>\n`;
+      }
+    }
+  });
+  str += "\n\n ... \nSummary:\n";
+  return str;
+};
 
 export const generateTitle = async (chat: ChatEntry[]): Promise<string> => {
   console.log;
@@ -129,13 +150,19 @@ export async function putS3Object(inputParams: {
   s3: S3Client;
   Body: Buffer;
   chatId: string;
+  chatTitle: string;
 }) {
   try {
     const data = await inputParams.s3.send(
       new PutObjectCommand({
         Bucket: env.BUCKET_NAME,
         Body: inputParams.Body,
-        Key: `cardimages/${inputParams.chatId}`,
+        Key: `cardimages/${inputParams.chatId}.png`,
+        Metadata: {
+          "Content-Type": "image/png",
+          "chat-id": inputParams.chatId,
+          "chat-title": inputParams.chatTitle,
+        },
       }),
     );
     console.log(
@@ -152,37 +179,19 @@ export const generateChatImage = async (
   chatTitle: string,
   chatId: string,
 ): Promise<string> => {
-  //   const prompt = `
-  //   Given a chat between echoes (an ai chatbot for biotech research and a scientist) - GENERATE A COVER PHOTO THUMBNAIL.\n
-  // Needs to be a landscape image with a 3x2 aspect ratio.\n
-  // Colour scheme: Dark is preferred as the image is to be embedded in a UI with black and dark navy blue along with a vibrant lime green accent.\n
-  // NO OTHER COLOURS ALLOWED!\n
-  // Low key image with deep blacks.
-  // Visual style: can be ultra-realistic 4k, or anime.
-  // Not always necessary to show a human being.
-  // If a human is being shown, show scientists and never doctors.
-  // Always show scientists as Indians - either women in their early 20s or men in their late 40s.
-  // Do not make generic images.
-  // Try to make it as specific to the user's question as possible!
-  // STRIVE TO MAKE HIGHLY SCIENTIFICALLY ACCURATE IMAGES.
+  const prompt2 = `Task: Create a low contrast cover photo thumbnail focused on a key concept from the scientific topic "Mind-Gut Connection
+Unveiling the Secrets of Your Inner Ecosystem". The concept should be represented within its biological context in the body or nature.
 
-  // —-
-
-  // Chat Question:
-  // ${chatQuestion}
-  // `;
-
-  const prompt2 = `Task: Create a cover photo thumbnail for the scientific topic: "title: ${chatTitle}"
-
-Instructions:
-1. The image should visually represent the scientific question in detail.
-2. Ensure scientific accuracy is paramount; this is critical.
-3. The image should be in a landscape format with a 3:2 aspect ratio.
-4. Use a color scheme of dark tones, compatible with a UI featuring black, dark navy blue, slate white, and vibrant lime green accents. No other colors are permitted. Aim for a low-key image with deep blacks.
-5. The visual style should be without text, resembling scientific illustrations. Aim for an ultra-realistic 4K quality, akin to visuals in the Nature Journal.
-6. Including a human figure is optional. If included, depict scientists, specifically Indian scientists - either women in their early 20s or men in their late 40s. Avoid depicting doctors.
-
-Always find out what the terms mentioned in the title mean before drawing them.`;
+Instructions
+---
+Key Concept Visualization: Produce a low contrast, dark image. Incorporate poetic, cinematic blurs to emphasize the key concept in the title, depicted within its relevant biological setting.
+Scientific Accuracy: Ensure the image is scientifically accurate and meaningful, focusing exclusively on the most significant word in the topic and its biological implications.
+Format and Aspect Ratio: The image should be in a landscape orientation with a 3:2 aspect ratio, suitable for a cover photo thumbnail.
+Color Scheme: Employ a palette dominated by deep blacks. Use vibrant lime green sparingly for emphasis. Avoid other colors.
+Visual Style: Create a text-free visual resembling high-quality scientific illustrations. Target an ultra-realistic 4K quality, similar to visuals found in the Nature Journal.
+Human Element (Optional): You may include human figures. If so, depict Indian scientists engaged in research. Choose between women in their early 20s and men in their late 40s. Avoid representing doctors.
+Research and Contextual Understanding: Prior to creating the image, research to understand the terms mentioned in the title, ensuring accurate and contextually relevant depiction.
+This approach ensures clarity in representing the scientific topic, maintaining a balance between aesthetic appeal and scientific integrity.`;
   const Openai = new OpenAI({
     apiKey: env.OPEN_AI_API_KEY,
   });
@@ -211,8 +220,9 @@ Always find out what the terms mentioned in the title mean before drawing them.`
       s3: s3,
       Body: buffer,
       chatId,
+      chatTitle,
     });
-    const image_s3_url = `${env.IMAGE_PREFIX_URL}cardimages/${chatId}`;
+    const image_s3_url = `${env.IMAGE_PREFIX_URL}cardimages/${chatId}.png`;
     console.log("generated image s3 url", image_s3_url);
     return image_s3_url;
   }
@@ -309,4 +319,63 @@ export const handleDBOperation = async (
       .where(eq(chats.id, Number(id)))
       .run();
   }
+};
+
+export const saveAudioMessage = async ({
+  buffer,
+  chatId,
+  messageId,
+}: {
+  buffer: Buffer;
+  chatId: string;
+  messageId: string;
+}): Promise<string> => {
+  const s3 = new S3Client({
+    region: env.AWS_REGION,
+    credentials: {
+      accessKeyId: env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
+  const data = await s3.send(
+    new PutObjectCommand({
+      Bucket: env.BUCKET_NAME,
+      Body: buffer,
+      Key: `chataudio/${chatId}/${messageId}.mp3`,
+      Metadata: {
+        "Content-Type": "audio/mp4",
+        "chat-id": chatId,
+        "message-id": messageId,
+      },
+    }),
+  );
+
+  const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
+  return audioUrl;
+};
+
+export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {
+  const msg = jsonToLlama(chat);
+
+  const res = await fetch(env.SUMMARY_ENDPOINT_URL, {
+    headers: {
+      Authorization: `Bearer ${env.LLAMA_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      prompt: msg,
+      model: "togethercomputer/Llama-2-7B-32K-Instruct",
+      temperature: 0.4,
+      top_p: 0.7,
+      top_k: 50,
+      max_tokens: 1024,
+      repetition_penalty: 1.2,
+    }),
+  });
+  // call chatmodel with msgs
+  const data = await res.json();
+  const content = data.output.choices[0].text;
+  console.log("summarized content", content);
+  return content;
 };

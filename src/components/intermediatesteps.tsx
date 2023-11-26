@@ -12,13 +12,13 @@ export function IntermediateStep(props: { message: Message }) {
 
   return (
     <div
-      className={`ml-auto bg-green-600 rounded px-4 py-2 max-w-[80%] mb-8 whitespace-pre-wrap flex flex-col cursor-pointer`}
+      className={`mx-auto bg-transparent text-xs rounded px-4 py-2 max-w-[80%] whitespace-pre-wrap flex flex-col cursor-pointer`}
     >
       <div
-        className={`text-right ${expanded ? "w-full" : ""}`}
+        className={`text-right mx-auto`}
         onClick={(e) => setExpanded(!expanded)}
       >
-        <code className="mr-2 bg-slate-600 px-2 py-1 rounded hover:text-blue-600">
+        <code className="mr-2 bg-slate-600 px-2 py-1 rounded">
           🛠️ <b>{parsedInput?.action.tool}</b>
         </code>
         <span className={expanded ? "hidden" : ""}>🔽</span>
@@ -46,7 +46,7 @@ export function IntermediateStep(props: { message: Message }) {
           </code>
         </div>
         <div
-          className={`bg-slate-600 rounded p-4 mt-1 max-w-0 ${
+          className={`bg-slate-600 overflow-auto rounded p-4 mt-1 max-w-0 ${
             expanded ? "max-w-full" : "transition-[max-width] delay-100"
           }`}
         >

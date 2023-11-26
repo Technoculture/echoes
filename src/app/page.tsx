@@ -61,7 +61,7 @@ export default function Home() {
               asChild
             ></Button>
           </Header>
-          <div className="relative y-0 flex flex-col flex-grow p-20 h-screen justify-center items-center gap-2 text-center">
+          <div className="absolute top-0 w-full y-0 flex flex-col flex-grow p-20 h-screen justify-center items-center gap-2 text-center">
             <div className="absolute inset-0 -z-5">
               <Image
                 src="/isometric.png"

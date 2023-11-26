@@ -18,7 +18,7 @@ const Startnewchatbutton = (props: Props) => {
       method: "POST",
     });
     const data = await res.json();
-    router.push(`/${props.org_slug}/chat/${Number(data.newChatId)}`);
+    router.push(`/usr/${props.org_slug}/chat/${Number(data.newChatId)}`);
   };
 
   return (

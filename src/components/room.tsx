@@ -9,7 +9,6 @@ import Link from "next/link";
 import Chatusers from "@/components/chatusersavatars";
 import Chat from "@/components/chat";
 import { CircleNotch, ArrowLeft } from "@phosphor-icons/react";
-// import {useRouter} from 'next/navigation'
 
 interface Props {
   orgId: string;
@@ -19,14 +18,14 @@ interface Props {
   username: string;
   chatAvatarData: ChatSchema;
   org_slug: string;
+  chatTitle: string;
+  imageUrl: string;
 }
 
 const RoomWrapper = (props: Props) => {
   const [showLoading, setShowLoading] = useState(false);
   const others = useOthers();
   const me = useMyPresence();
-  // const router = useRouter();
-  // const room = useRoom()
 
   // getting the ids of all the active (presence) users
   const userWithIds = others.filter((o) => o.presence.id !== null);
@@ -37,34 +36,16 @@ const RoomWrapper = (props: Props) => {
   liveUsersIds.push(me[0].id as string);
 
   const incomingChatData = useStorage((root) => root.chat);
-
-  console.log("this is initialized data", incomingChatData);
-  // console.log("others", others)
-  // useEffect(() => {
-  const userCount = others.length;
-  console.log("this is count of live Users", others, userCount);
-  // }, [others])
-
-  // const goBack = async () => {
-
-  //   // checking the room state
-  //   if(others.length === 0){
-  //     // list?.clear()
-  //     const data = await room.getStorage()
-  //     await data.root.delete("chat")
-  //     console.log("cleared the list")
-  //   }
-
-  //   router.push(`/${props.uid}`);
-  // }
-
   return (
     <>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full">
         <div className="flex space-between mb-2">
           <div className="flex items-center">
             <Button variant="outline" className="mr-2" asChild>
-              <Link onClick={() => setShowLoading(true)} href={`/${props.uid}`}>
+              <Link
+                onClick={() => setShowLoading(true)}
+                href={`/usr/${props.uid}`}
+              >
                 {showLoading ? (
                   <CircleNotch className="w-4 h-4 animate-spin" />
                 ) : (
@@ -73,7 +54,6 @@ const RoomWrapper = (props: Props) => {
               </Link>
             </Button>
 
-            {/* <Chatusers allPresenceIds={ids2} chat={props.chatAvatarData} /> */}
             <Chatusers
               allPresenceIds={liveUsersIds}
               chatLive={
@@ -82,9 +62,6 @@ const RoomWrapper = (props: Props) => {
                   : props.chat.log
               }
             />
-            {/* <Button variant="outline" className="mr-2">
-            <PlusIcon className="h-4 w-4" />
-          </Button> */}
           </div>
 
           <div className="grow" />
@@ -97,6 +74,8 @@ const RoomWrapper = (props: Props) => {
           uid={props.uid}
           username={props.username}
           org_slug={props.org_slug}
+          chatTitle={props.chatTitle}
+          imageUrl={props.imageUrl}
         />
       </div>
     </>

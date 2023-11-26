@@ -21,6 +21,8 @@ interface ChatProps {
   chatId: string;
   username: string;
   org_slug: string;
+  chatTitle: string;
+  imageUrl: string;
 }
 
 export default function Chat(props: ChatProps) {
@@ -43,6 +45,8 @@ export default function Chat(props: ChatProps) {
     handleSubmit,
     append,
     setMessages,
+    isLoading,
+    data,
   } = useChat({
     api: `/api/chatmodel/${props.chatId}`,
     // initialMessages: props.chat.log as Message[],
@@ -60,6 +64,7 @@ export default function Chat(props: ChatProps) {
       updateRoomAsCompleted(error.message);
       setIsChatCompleted(true);
     },
+    sendExtraMessageFields: true,
   });
 
   useEffect(() => {
@@ -69,7 +74,7 @@ export default function Chat(props: ChatProps) {
   }, [messages]);
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 max-w-[700px] mx-auto">
       <div className="grid grid-cols-1">
         {props.liveChat
           ? props.liveChat.map((entry, index) => {
@@ -92,6 +97,8 @@ export default function Chat(props: ChatProps) {
                       messages={messages}
                       setMessages={setMessages}
                       updateRoom={updateRoomData}
+                      chatTitle={props.chatTitle}
+                      imageUrl={props.imageUrl}
                     />
                   </ContextWrapper>
                 );
@@ -123,6 +130,8 @@ export default function Chat(props: ChatProps) {
                       messages={messages}
                       setMessages={setMessages}
                       updateRoom={updateRoomData}
+                      chatTitle={props.chatTitle}
+                      imageUrl={props.imageUrl}
                     />
                   </ContextWrapper>
                 );
