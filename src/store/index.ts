@@ -76,7 +76,7 @@ export const useStore = create<Store>()(
         const { tracks } = get();
         const filteredTracks = tracks.filter((t) => t.id !== track.id);
         if (filteredTracks.length === 0) {
-          set({ currentTrackId: null, isPlaying: false });
+          set({ currentTrackId: null, isPlaying: false, tracks: [] });
         } else {
           set({ tracks: filteredTracks });
         }
