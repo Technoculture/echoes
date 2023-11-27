@@ -145,7 +145,7 @@ const ChatMessage = (props: ChatMessageProps) => {
       }
     >
       <div className="grow flex justify-between ">
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <p
             className={
               props.chat.role === "user"
@@ -156,7 +156,7 @@ const ChatMessage = (props: ChatMessageProps) => {
             {userName}
           </p>
           {props.chat.role === "assistant" ? (
-            <div className="flex items-center">
+            <div className="flex items-center flex-grow">
               <AudioButton
                 setMessages={props.setMessages}
                 audio={props.chat.audio as string}
@@ -168,10 +168,10 @@ const ChatMessage = (props: ChatMessageProps) => {
                 summarize={false}
                 orgId={props.orgId}
                 variant="ghost"
-                size="xs"
+                size="sm"
+                className="text-xs"
                 messageIndex={props.messageIndex}
               />
-              <p>{trackIndex}</p>
             </div>
           ) : null}
         </div>

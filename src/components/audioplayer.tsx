@@ -22,6 +22,7 @@ import {
 import Image from "next/image";
 import img from "@/assets/audio_bg.webp";
 import { ChevronRight, ChevronLeft } from "lucide-react";
+import { calculateTime } from "@/utils/helpers";
 type Props = {};
 
 const AudioPlayer = (props: Props) => {
@@ -110,7 +111,7 @@ const AudioPlayer = (props: Props) => {
   const [sliderValue, setSliderValue] = useState<number>(0);
   const [sliderMax, setSliderMax] = useState<number>(0);
   const [tracksToShow, setTracksToShow] = useState<any[]>(() =>
-    tracks.slice(0, 3),
+    tracks.slice(0, 3)
   );
   const [pageNo, setPageNo] = useState<number>(1);
 
@@ -121,14 +122,6 @@ const AudioPlayer = (props: Props) => {
       setTracksToShow(tracks.slice((pageNo - 1) * 3, 3 * pageNo));
     }
   }, [tracks, pageNo]);
-
-  const calculateTime = (secs: number) => {
-    const minutes = Math.floor(secs / 60);
-    const returnedMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
-    const seconds = Math.floor(secs % 60);
-    const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-    return `${returnedMinutes}:${returnedSeconds}`;
-  };
 
   const togglePlayPause = () => {
     const prevValue = isPlaying;

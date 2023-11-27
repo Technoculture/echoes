@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, ButtonProps } from "./button";
 import useStore from "@/store";
 import { CircleNotch, Play } from "@phosphor-icons/react";
 import { ChatEntry } from "@/lib/types";
-
+import { Pause } from "lucide-react";
+import getBlobDuration from "get-blob-duration";
+import { calculateTime } from "@/utils/helpers";
 interface Props extends ButtonProps {
   id: string;
   description: string;
@@ -33,11 +35,13 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
       setMessages,
       messageIndex,
       messages,
+      children,
       ...props
     }: Props,
-    ref,
+    ref
   ) => {
     const [audioSrc, setAudioSrc] = React.useState<string>(audio || "");
+    const [duration, setDuration] = React.useState<string>("");
 
     const store = useStore();
     const [isFetchingAudioBuffer, setIsFetchingAudioBuffer] =
@@ -124,16 +128,49 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
       }
     };
 
+    useEffect(() => {
+      if (audio) {
+        const duration = getBlobDuration(audio as string).then((duration) => {
+          console.log("duration", duration);
+          setDuration(calculateTime(duration));
+        });
+      }
+    }, []);
+
+    const currentTrack = store.currentTrackId;
+
     return (
-      <Button ref={ref} {...props} onClick={() => textToSpeech(id)}>
+      <Button
+        ref={ref}
+        {...props}
+        onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+          e.stopPropagation();
+          textToSpeech(id);
+        }}
+      >
         {isFetchingAudioBuffer ? (
-          <CircleNotch className="animate-spin" />
+          <>
+            Generating Audio{" "}
+            <CircleNotch className="ml-2 animate-spin h-4 w-4" />
+          </>
+        ) : currentTrack === id && store.isPlaying ? (
+          <>
+            Pause <Pause className="ml-2 h-4 w-4" />
+          </>
+        ) : audioSrc ? (
+          <>
+            {" "}
+            Speak ({duration}) <Play className="ml-2 h-4 w-4" />
+          </>
         ) : (
-          <Play className="" />
+          <>
+            {" "}
+            Speak <Play className="ml-2 h-4 w-4" />
+          </>
         )}
       </Button>
     );
-  },
+  }
 );
 
 AudioButton.displayName = "AudioButton";
