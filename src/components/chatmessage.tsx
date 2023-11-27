@@ -134,10 +134,6 @@ const ChatMessage = (props: ChatMessageProps) => {
     setIsActionsOpen(false);
   };
 
-  const isTrackIndex = store.tracks.findIndex((t) => t.id === props.chatId);
-  const trackIndex = isTrackIndex !== -1 ? isTrackIndex : "";
-  console.log("trackIndex", trackIndex);
-
   return (
     <div
       className={

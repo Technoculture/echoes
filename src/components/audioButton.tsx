@@ -7,6 +7,7 @@ import { ChatEntry } from "@/lib/types";
 import { Pause } from "lucide-react";
 import getBlobDuration from "get-blob-duration";
 import { calculateTime } from "@/utils/helpers";
+import { useMutation, QueryClient } from "@tanstack/react-query";
 interface Props extends ButtonProps {
   id: string;
   description: string;
@@ -38,7 +39,7 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
       children,
       ...props
     }: Props,
-    ref
+    ref,
   ) => {
     const [audioSrc, setAudioSrc] = React.useState<string>(audio || "");
     const [duration, setDuration] = React.useState<string>("");
@@ -46,6 +47,110 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
     const store = useStore();
     const [isFetchingAudioBuffer, setIsFetchingAudioBuffer] =
       React.useState<boolean>(false);
+
+    const queryClient = new QueryClient();
+
+    const {
+      mutate: summarizationMutate,
+      data: summarizationData,
+      isLoading: isSummarizationLoading,
+      isError: isSummarizationError,
+    } = useMutation({
+      mutationFn: async ({
+        messages,
+        chatId,
+        orgId,
+        voice,
+      }: {
+        messages?: ChatEntry[];
+        orgId: string;
+        chatId: string;
+        voice: string;
+      }) => {
+        const res = await fetch("/api/tts?summariz=true", {
+          method: "POST",
+          body: JSON.stringify({
+            messages: messages,
+            orgId: orgId,
+            chatId: chatId,
+            voice: voice,
+          }),
+        });
+
+        const data = await res.json();
+        return data;
+      },
+      onSuccess: (data) => {
+        const url = data.audioUrl;
+        const length = store.tracks.length;
+        queryClient.invalidateQueries(["projects"]);
+        store.queueTracks({
+          id: id,
+          src: url,
+          title: chatTitle,
+          imageUrl: imageUrl,
+          description: description,
+        });
+        store.playTrack(length);
+        setAudioSrc(url);
+        // setIsFetchingAudioBuffer(false);
+      },
+      onError: (err) => {},
+    });
+    const {
+      mutate: messageMutate,
+      data: messageData,
+      isLoading: isMessageLoading,
+      isError: isMessageError,
+    } = useMutation({
+      mutationFn: async ({
+        text,
+        chatId,
+        index,
+        messageId,
+        orgId,
+        voice,
+      }: {
+        text: string;
+        messageId: string;
+        index: number;
+        orgId: string;
+        chatId: string;
+        voice: string;
+      }) => {
+        const res = await fetch("/api/tts", {
+          method: "post",
+          body: JSON.stringify({
+            text: text,
+            messageId: messageId,
+            index: index,
+            orgId: orgId,
+            chatId: chatId,
+            voice: voice,
+          }),
+        });
+        const data = await res.json();
+        return data;
+      },
+      onSuccess: (data) => {
+        const url = data.audioUrl;
+        if (setMessages) {
+          setMessages(data.updatedMessages);
+        }
+        store.setAudioSrc(url);
+        const length = store.tracks.length;
+        store.queueTracks({
+          id: id,
+          src: url,
+          title: chatTitle,
+          imageUrl: imageUrl,
+          description: description,
+        });
+        store.playTrack(length);
+        setAudioSrc(url);
+      },
+      onError: (err) => {},
+    });
 
     const textToSpeech = async (id: string) => {
       if (audioSrc !== "") {
@@ -58,73 +163,38 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
           imageUrl: imageUrl,
           description: description,
         };
+        if (currentTrack === id) {
+          if (store.isPlaying) {
+            store.pause();
+          } else {
+            store.play();
+          }
+          return;
+        }
         store.queueTracks(track);
+        console.log("in if");
         store.playTrackById(id);
         return;
       }
+      console.log("after if");
       if (!summarize && setMessages) {
         const text = description;
-        setIsFetchingAudioBuffer(true);
-        try {
-          const res = await fetch("/api/tts", {
-            method: "post",
-            body: JSON.stringify({
-              text: text,
-              messageId: id,
-              index: messageIndex,
-              orgId: orgId,
-              chatId: chatId,
-              voice: "en-US",
-            }),
-          });
-          const data = await res.json();
-          const url = data.audioUrl;
-          setMessages(data.updatedMessages);
-          store.setAudioSrc(url);
-          const length = store.tracks.length;
-          store.queueTracks({
-            id: id,
-            src: url,
-            title: chatTitle,
-            imageUrl: imageUrl,
-            description: description,
-          });
-          store.playTrack(length);
-          setAudioSrc(url);
-        } catch (err) {
-          console.log(err);
-        }
-        setIsFetchingAudioBuffer(false);
-      } else {
-        // summarize
-        try {
-          setIsFetchingAudioBuffer(true);
-          const res = await fetch("/api/tts?summariz=true", {
-            method: "POST",
-            body: JSON.stringify({
-              messages: messages,
-              orgId: orgId,
-              chatId: chatId,
-              voice: "en-US",
-            }),
-          });
 
-          const data = await res.json();
-          const url = data.audioUrl;
-          const length = store.tracks.length;
-          store.queueTracks({
-            id: id,
-            src: url,
-            title: chatTitle,
-            imageUrl: imageUrl,
-            description: description,
-          });
-          store.playTrack(length);
-          setAudioSrc(url);
-          setIsFetchingAudioBuffer(false);
-        } catch (err) {
-          console.log(err);
-        }
+        messageMutate({
+          text: text,
+          messageId: id,
+          index: messageIndex as number,
+          orgId: orgId,
+          chatId: chatId,
+          voice: "en-US",
+        });
+      } else {
+        summarizationMutate({
+          messages: messages,
+          chatId: chatId,
+          orgId: orgId,
+          voice: "en-US",
+        });
       }
     };
 
@@ -148,15 +218,21 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
           textToSpeech(id);
         }}
       >
-        {isFetchingAudioBuffer ? (
+        {isSummarizationLoading || isMessageLoading ? (
           <>
             Generating Audio{" "}
             <CircleNotch className="ml-2 animate-spin h-4 w-4" />
           </>
-        ) : currentTrack === id && store.isPlaying ? (
-          <>
-            Pause <Pause className="ml-2 h-4 w-4" />
-          </>
+        ) : currentTrack === id ? (
+          store.isPlaying ? (
+            <>
+              Pause <Pause className="ml-2 h-4 w-4" />
+            </>
+          ) : (
+            <>
+              Play <Play className="ml-2 h-4 w-4" />
+            </>
+          )
         ) : audioSrc ? (
           <>
             {" "}
@@ -170,7 +246,7 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
         )}
       </Button>
     );
-  }
+  },
 );
 
 AudioButton.displayName = "AudioButton";

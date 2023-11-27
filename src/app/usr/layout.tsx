@@ -34,7 +34,6 @@ export default function LoggedInLayout({
       audioRef.current?.pause();
     }
   }, [store.audioSrc]);
-  console.log("from nested layout", team);
 
   return (
     <div className="relative">

@@ -22,6 +22,7 @@ type Store = {
   tracks: track[];
   currentTrackId: string | null;
   isPlaying: boolean;
+  setIsPlaying: (isPlaying: boolean) => void;
   play: () => void;
   pause: () => void;
   playTrack: (index: number) => void;
@@ -46,6 +47,7 @@ export const useStore = create<Store>()(
       tracks: [] as track[],
       currentTrackId: null,
       isPlaying: false,
+      setIsPlaying: (isPlaying) => set({ isPlaying }),
       play: () => set({ isPlaying: true }),
       pause: () => set({ isPlaying: false }),
       playTrack: (index) => {
@@ -73,7 +75,11 @@ export const useStore = create<Store>()(
       removeFromQueue: (track) => {
         const { tracks } = get();
         const filteredTracks = tracks.filter((t) => t.id !== track.id);
-        set({ tracks: filteredTracks });
+        if (filteredTracks.length === 0) {
+          set({ currentTrackId: null, isPlaying: false });
+        } else {
+          set({ tracks: filteredTracks });
+        }
       },
       playNextTrack: () => {
         const { tracks, currentTrackId } = get();
