@@ -72,13 +72,6 @@ const components: Components = {
     );
   },
   p: ({ children, node, ...props }) => {
-    if (children.length === 1 && children.toString().includes("#")) {
-      const str = children.toString();
-      let strChunks = str.split(" ");
-      return (
-        <p className="leading-normal [&:not(:first-child)]:mt-6">{children}</p>
-      );
-    }
     return (
       <p className="leading-normal [&:not(:first-child)]:my-4">{children}</p>
     );
@@ -99,25 +92,27 @@ const components: Components = {
   code({ node, inline, className, style, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
     return (
-      <ScrollArea className="max-w-[90vw]">
+      <>
         {!inline && match ? (
-          <div style={dark}>
-            <SyntaxHighlighter
-              style={atomDark}
-              language={match[1]}
-              PreTag="div"
-              showLineNumbers
-              {...props}
-            >
-              {String(children).replace(/\n$/, "")}
-            </SyntaxHighlighter>
-          </div>
+          <ScrollArea className="max-w-[90vw]">
+            <div style={dark}>
+              <SyntaxHighlighter
+                style={atomDark}
+                language={match[1]}
+                PreTag="div"
+                showLineNumbers
+                {...props}
+              >
+                {String(children).replace(/\n$/, "")}
+              </SyntaxHighlighter>
+            </div>
+          </ScrollArea>
         ) : (
-          <code className={className} {...props}>
+          <span className="inline" {...props}>
             {children}
-          </code>
+          </span>
         )}
-      </ScrollArea>
+      </>
     );
   },
   small: ({ children }) => {

@@ -16,6 +16,7 @@ import { CircleNotch } from "@phosphor-icons/react";
 import { ChatLog } from "@/lib/types";
 import Image from "next/image";
 import AudioButton from "@/components//audioButton";
+import { useRouter } from "next/navigation";
 
 type Props = {
   chat: Chat;
@@ -43,6 +44,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
     setImageUrl(data.url);
     setIsGeneratingImage(() => false);
   };
+  const router = useRouter();
 
   // generate Avatar's of all the users
   // filter all the distinct users from the chat.messages.log => will get all the user's id
@@ -61,11 +63,33 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
   const chatTitle = chat.title || firstMessage;
 
   return (
-    <div className="relative">
+    <div
+      className="relative cursor-pointer"
+      onClick={() => {
+        setShowLoading(true);
+        router.push(`${org_slug}/chat/${chat.id}`);
+      }}
+    >
       <Card className="relative overflow-hidden hover:backdrop-blur-sm ">
         <CardHeader className="h-36 overflow-y-hidden overflow-hidden">
           {/* <div className=" absolute opacity-100 "> */}
-          <CardTitle className="">{title}</CardTitle>
+          <CardTitle className="">
+            {title}{" "}
+            <AudioButton
+              chatId={String(chat.id)} // id to recognise chat
+              chatTitle={title}
+              description={description}
+              id={String(chat.id)} // id for the track
+              imageUrl={chat.image_url}
+              messages={chatlog.log}
+              summarize={true}
+              orgId={org_id}
+              audio={chat.audio}
+              variant="ghost"
+              size="sm"
+              className="text-xs"
+            />
+          </CardTitle>
           <CardDescription className="text-foreground">
             {description === "" ? (
               <span>
@@ -86,19 +110,6 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
         <CardContent className="flex justify-between ">
           <Chatusers chat={chat} />
           <div className="flex gap-2">
-            {/* add Audio Summarization Button */}
-            <AudioButton
-              chatId={String(chat.id)} // id to recognise chat
-              chatTitle={title}
-              description={description}
-              id={String(chat.id)} // id for the track
-              imageUrl={chat.image_url}
-              messages={chatlog.log}
-              summarize={true}
-              orgId={org_id}
-              audio={chat.audio}
-              variant="outline"
-            />
             {!imageUrl && (
               <span>
                 <button

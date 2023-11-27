@@ -62,7 +62,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   return (
     <div>
-      <div className="grid md:grid-cols-4 gap-2">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
         {allCards?.map((chat, i) => {
           return (
             <div key={chat.id} ref={allCards.length - 1 === i ? ref : null}>

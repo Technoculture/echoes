@@ -179,8 +179,7 @@ export const generateChatImage = async (
   chatTitle: string,
   chatId: string,
 ): Promise<string> => {
-  const prompt2 = `Task: Create a low contrast cover photo thumbnail focused on a key concept from the scientific topic "Mind-Gut Connection
-Unveiling the Secrets of Your Inner Ecosystem". The concept should be represented within its biological context in the body or nature.
+  const prompt2 = `Task: Create a low contrast cover photo thumbnail focused on a key concept from the scientific topic ${chatTitle}. The concept should be represented within its biological context in the body or nature.
 
 Instructions
 ---
