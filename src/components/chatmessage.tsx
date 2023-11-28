@@ -2,7 +2,7 @@
 import { Message } from "ai";
 import TextareaAutosize from "react-textarea-autosize";
 import ChatMessageActions from "@/components/chatmessageactions";
-import { useState } from "react";
+import { useState,useRef } from "react";
 import RenderMarkdown from "@/components/rendermarkdown";
 import { Button } from "@/components/button";
 import { MessageRole } from "@/lib/types";
@@ -36,6 +36,17 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isFetchingAudioBuffer, setIsFetchingAudioBuffer] =
     useState<boolean>(false);
   const store = useStore();
+  const cadContainerRef = useRef(null);
+
+  const handleScroll = () => {
+    const { scrollLeft, scrollWidth, clientWidth } = cadContainerRef.current;
+
+    if (scrollLeft === scrollWidth - clientWidth) {
+      // Scroll has reached the end
+      console.log('Scroll reached the end');
+      // Disable scrolling (you may want to set a state variable here)
+    }
+  };
 
   let userName = "";
   if (props?.chat.name) {
@@ -191,7 +202,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   return (
     <div
       className={
-        "flex-col flex-grow box-border overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
+        "flex-col flex-grow box-border overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring "
       }
     >
       <div className="grow flex justify-between ">
