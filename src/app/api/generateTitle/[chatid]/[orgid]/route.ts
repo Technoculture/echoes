@@ -8,7 +8,7 @@ import { ChatEntry } from "@/lib/types";
 export const revalidate = 0; // disable cache
 export async function POST(
   request: Request,
-  params: { params: { chatid: string; orgid: string } },
+  params: { params: { chatid: string; orgid: string } }
 ) {
   const chatId = params.params.chatid;
   let orgId = params.params.orgid;
@@ -26,12 +26,12 @@ export async function POST(
       headers: {
         "x-zeplo-secret": env.ZEPLO_SECRET,
       },
-    },
+    }
   );
   await db
     .update(chats)
     .set({ title: fullResponse })
     .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))))
     .run();
-  return new NextResponse(fullResponse);
+  return new NextResponse(JSON.stringify({ title: fullResponse }));
 }

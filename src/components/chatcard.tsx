@@ -13,10 +13,11 @@ import {
 } from "@/components/card";
 import Chatusers from "@/components/chatusersavatars";
 import { CircleNotch } from "@phosphor-icons/react";
-import { ChatLog } from "@/lib/types";
+import { ChatEntry, ChatLog } from "@/lib/types";
 import Image from "next/image";
 import AudioButton from "@/components//audioButton";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   chat: Chat;
@@ -26,13 +27,31 @@ type Props = {
 };
 
 const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
+  const queryClient = useQueryClient();
   const [showLoading, setShowLoading] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageUrl, setImageUrl] = useState(chat.image_url);
-  const generateTitle = async () => {
+  const generateTitle = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    const chatlog = JSON.parse(chat.messages as string) as ChatLog;
+    console.log("chatlog", chatlog.log);
+    const msgs = chatlog.log as ChatEntry[];
+    console.log("messages", msgs);
+    const chats = msgs.slice(0, 2);
     const res = await fetch(`/api/generateTitle/${chat.id}/${org_id}`, {
       method: "POST",
+      body: JSON.stringify({ chat: chats }),
     });
+    const data = await res.json();
+    await queryClient.invalidateQueries({
+      queryKey: ["projects"],
+      exact: true,
+      refetchType: "all",
+    });
+    setTitle(data.title.replace('"', "").replace('"', "").split(":")[0]);
+    setDescription(data.title.replace('"', "").replace('"', "").split(":")[1]);
   };
   const generateImage = async (chatTitle: string) => {
     setIsGeneratingImage(() => true);
@@ -50,13 +69,24 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
   // filter all the distinct users from the chat.messages.log => will get all the user's id
   // have to get the user's list and then again filter the users of particular Chat
   // then from the imgUrl on the user object generate the image
-  let title = "";
-  let description = "";
-  if (chat.title) {
-    const trimmed = chat.title?.replace('"', "").replace('"', "");
-    title = trimmed.split(":")[0];
-    description = trimmed.split(":")[1];
-  }
+  const [title, setTitle] = useState(() => {
+    if (chat.title) {
+      const trimmed = chat.title?.replace('"', "").replace('"', "");
+      let t = trimmed.split(":")[0];
+      return t ? t : "";
+    } else {
+      return "";
+    }
+  });
+  const [description, setDescription] = useState(() => {
+    if (chat.title) {
+      const trimmed = chat.title?.replace('"', "").replace('"', "");
+      let d = trimmed.split(":")[1];
+      return d ? d : "";
+    } else {
+      return "";
+    }
+  });
   const msg = chat.messages;
   const chatlog = JSON.parse(msg as string) as ChatLog;
   const firstMessage = chatlog.log[0].content;
@@ -91,7 +121,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
             />
           </CardTitle>
           <CardDescription className="text-foreground">
-            {description === "" ? (
+            {title === "" ? (
               <span>
                 No title{" "}
                 <button
