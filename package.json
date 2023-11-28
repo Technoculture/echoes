@@ -62,6 +62,7 @@
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "framer-motion": "10.16.2",
+    "get-blob-duration": "^1.2.0",
     "iconoir-react": "6.8.0",
     "js-tiktoken": "1.0.7",
     "langchain": "0.0.180",

@@ -22,6 +22,8 @@ jobs:
           TURSO_DB_URL: ${{secrets.TURSO_DB_URL}}
           TURSO_DB_AUTH_TOKEN: ${{secrets.TURSO_DB_AUTH_TOKEN}}
           OPEN_AI_API_KEY: ${{secrets.OPEN_AI_API_KEY}}
+          SUMMARY_ENDPOINT_URL: ${{secrets.SUMMARY_ENDPOINT_URL}}
+          LLAMA_API_KEY: ${{secrets.LLAMA_API_KEY}}
           AZURE_OPENAI_API_KEY: ${{secrets.AZURE_OPENAI_API_KEY}}
           AZURE_OPENAI_API_VERSION: ${{secrets.AZURE_OPENAI_API_VERSION}}
           AZURE_OPENAI_API_INSTANCE_NAME: ${{secrets.AZURE_OPENAI_API_INSTANCE_NAME}}
@@ -47,7 +49,6 @@ jobs:
           NEXT_PUBLIC_CLERK_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_SIGN_UP_URL}}
           NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL}}
           NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL}}
-
 
       - name: Formatting Check
         run: npm run format-check
