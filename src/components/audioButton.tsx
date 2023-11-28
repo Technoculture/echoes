@@ -210,6 +210,7 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
     const currentTrack = store.currentTrackId;
 
     return (
+      <div className="ml-7 flex flex-row">
       <Button
         ref={ref}
         {...props}
@@ -245,6 +246,7 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
           </>
         )}
       </Button>
+      </div>
     );
   },
 );
