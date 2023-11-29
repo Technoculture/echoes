@@ -1,7 +1,9 @@
-# Echoes
-Collaboration platform for research teams and AI agents.
+# ragents
+Research Agents.
 
-Aim is to add lots of "agents" in line with "Baby AGI" and similar projects for objective seeking agents that can be used for research purposes.
+Provides access to ChatGPT with traceability for research purposes.
+
+Aim is to add lots of "agents" in like with "Baby AGI" and similar projects for objective seeking agents that can be used for research purposes.
 
 - Create a `.env` file in the root directory
   ```
