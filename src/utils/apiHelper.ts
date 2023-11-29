@@ -17,7 +17,6 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import axios from "axios";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { RunTree, RunTreeConfig } from "langsmith";
-
 export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
   gptTurbo: "gpt-3.5-turbo" as const,
@@ -351,7 +350,6 @@ export const saveAudioMessage = async ({
   );
 
   const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
-
   return audioUrl;
 };
 
