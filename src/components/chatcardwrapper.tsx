@@ -28,7 +28,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
       `/api/getPaginatedChats/${org_id}?page=${pageParam}`,
       {
         method: "GET",
-      }
+      },
     );
     const chats = await response.json();
     console.log(chats);

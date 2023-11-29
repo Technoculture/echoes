@@ -32,7 +32,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageUrl, setImageUrl] = useState(chat.image_url);
   const generateTitle = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     const chatlog = JSON.parse(chat.messages as string) as ChatLog;

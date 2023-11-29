@@ -15,8 +15,8 @@ import { eq } from "drizzle-orm";
 import OpenAI from "openai";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import axios from "axios";
-
-// import { BaseCallbackHandler } from "langchain/dist/callbacks/base";
+import { ChatCompletionMessageParam } from "openai/resources";
+import { RunTree, RunTreeConfig } from "langsmith";
 
 export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
@@ -86,12 +86,12 @@ export const jsonToLangchain = (
   return ret;
 };
 export const jsonToLlama = (chatData: ChatEntry[]): string => {
-  let str = `System prompt: An executive summary generator. Given any chat, I will generate for you a point-by-point summary of the key findings and arguments.\n Essentially the whole prompt will be\nGenerate a point-by-point summary of the key findings and arguments in the following conversation between AI <AI> and the user <User>. \n\n The format of the chat is as follows.
+  let str = `You are An executive summary generator. Given any chat, You will generate for me a point-by-point summary of the key findings and arguments.\n Essentially the whole prompt will be\nGenerate a point-by-point summary of the key findings and arguments in the following conversation between AI <AI> and the user <User>. \n\n The format of the chat is as follows.
 <User>...</User>
 <AI> … </AI>
 <User> … </User>
 
-Here is the chat:
+Here is the chat:\n
 
 `;
   chatData.forEach((item: ChatEntry) => {
@@ -103,7 +103,8 @@ Here is the chat:
       }
     }
   });
-  str += "\n\n ... \nSummary:\n";
+  str +=
+    "\n\n ... \nGiven the chat between ai and human above, Here is an executive summary:\n";
   return str;
 };
 
@@ -350,31 +351,47 @@ export const saveAudioMessage = async ({
   );
 
   const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
+
   return audioUrl;
 };
 
 export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {
+  const msgs = chat
+    .filter((chat) => ["user", "assistant", "system"].includes(chat.role))
+    .map((chat) => ({ role: chat.role, content: chat.content }));
   const msg = jsonToLlama(chat);
 
-  const res = await fetch(env.SUMMARY_ENDPOINT_URL, {
-    headers: {
-      Authorization: `Bearer ${env.LLAMA_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-    body: JSON.stringify({
-      prompt: msg,
-      model: "togethercomputer/Llama-2-7B-32K-Instruct",
-      temperature: 0.4,
+  const parentRunConfig: RunTreeConfig = {
+    name: "SummarizeChat",
+    run_type: "llm",
+    inputs: {
+      model: "HuggingFaceH4/zephyr-7b-beta",
+      messages: msgs as ChatCompletionMessageParam[],
       top_p: 0.7,
-      top_k: 50,
-      max_tokens: 1024,
-      repetition_penalty: 1.2,
-    }),
+      max_tokens: 512,
+    },
+    serialized: {},
+  };
+  const parentRun = new RunTree(parentRunConfig);
+
+  const openai = new OpenAI({
+    baseURL: env.ANYSCALE_API_BASE,
+    apiKey: env.ANYSCALE_API_KEY,
   });
-  // call chatmodel with msgs
-  const data = await res.json();
-  const content = data.output.choices[0].text;
-  console.log("summarized content", content);
-  return content;
+  const stream: OpenAI.Chat.ChatCompletion =
+    await openai.chat.completions.create({
+      model: "HuggingFaceH4/zephyr-7b-beta",
+      messages: [
+        { role: "user", content: msg },
+      ] as ChatCompletionMessageParam[],
+      top_p: 0.7,
+      max_tokens: 512,
+    });
+  console.log("response format", stream);
+
+  await parentRun.end({
+    output: stream,
+  });
+  await parentRun.postRun();
+  return stream.choices[0].message.content as string;
 };

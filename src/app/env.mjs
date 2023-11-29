@@ -8,6 +8,8 @@ export const env = createEnv({
     // LLaMA-2-7B-32K-Instruct (7B) from https://api.together.xyz
     SUMMARY_ENDPOINT_URL: z.string().min(1),
     LLAMA_API_KEY: z.string().min(1),
+    ANYSCALE_API_BASE: z.string().min(1),
+    ANYSCALE_API_KEY: z.string().min(1),
     // Azure OpenAI
     // AZURE_OPENAI_API_KEY: z.string().min(1),
     // AZURE_OPENAI_API_VERSION: z.string().min(1),
@@ -67,6 +69,8 @@ export const env = createEnv({
     // LLaMA-2-7B-32K-Instruct (7B) from https://api.together.xyz
     SUMMARY_ENDPOINT_URL: process.env.SUMMARY_ENDPOINT_URL,
     LLAMA_API_KEY: process.env.LLAMA_API_KEY,
+    ANYSCALE_API_BASE: process.env.ANYSCALE_API_BASE,
+    ANYSCALE_API_KEY: process.env.ANYSCALE_API_KEY,
     // Azure OpenAI
     // AZURE_OPENAI_API_KEY: process.env.AZURE_OPENAI_API_KEY,
     // AZURE_OPENAI_API_VERSION: process.env.AZURE_OPENAI_API_VERSION,
