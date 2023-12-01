@@ -49,6 +49,8 @@ jobs:
           NEXT_PUBLIC_CLERK_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_SIGN_UP_URL}}
           NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL}}
           NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: ${{secrets.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL}}
+          NEXT_PUBLIC_ALGOLIA_API_KEY: ${{secrets.NEXT_PUBLIC_ALGOLIA_API_KEY}}
+          NEXT_PUBLIC_ALGOLIA_APP_ID: ${{secrets.NEXT_PUBLIC_ALGOLIA_APP_ID}}
 
       - name: Formatting Check
         run: npm run format-check
