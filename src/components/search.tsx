@@ -15,8 +15,11 @@ import { Button } from "@/components/button";
 import algoliasearch from "algoliasearch";
 import { env } from "@/app/env.mjs";
 import Link from "next/link";
+import { timestampToDate } from "@/utils/helpers";
 
-type Props = {};
+type Props = {
+  orgSlug: string;
+};
 
 const Search = (props: Props) => {
   const [open, setOpen] = useState(false);
@@ -27,17 +30,32 @@ const Search = (props: Props) => {
     () =>
       algoliasearch(
         env.NEXT_PUBLIC_ALGOLIA_APP_ID,
-        env.NEXT_PUBLIC_ALGOLIA_API_KEY,
+        env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
       ),
     [],
   );
 
-  const index = useMemo(() => client.initIndex("test_index"), []);
+  const index = useMemo(
+    () => client.initIndex(env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME),
+    [],
+  );
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "/") {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []); // open command bar with / key
 
   useEffect(() => {
-    index.search(value, { hitsPerPage: 8 }).then((response) => {
-      setResults(response.hits);
-    });
+    index
+      .search(value, { hitsPerPage: 8, filters: `orgSlug: "${props.orgSlug}"` })
+      .then((response) => {
+        setResults(response.hits);
+      });
   }, [value]);
 
   return (
@@ -68,21 +86,30 @@ const Search = (props: Props) => {
             {results.length &&
               results.map((result: any) => (
                 <Link
-                  href={`/usr/technoculture/chat/${result.chatId}/#${result.objectID}`} // needs to be updated
+                  href={
+                    result.id
+                      ? `/usr/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
+                      : `/usr/${props.orgSlug}/chat/${result.chatId}`
+                  } // needs to be updated
                   onClick={() => setOpen(false)}
                   key={result.objectID}
                 >
                   <CommandItem className="pointer-events-auto">
-                    <div className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center">
-                      <div>
-                        {result.chatTitle
-                          .replace('"', "")
-                          .replace('"', "")
-                          .split(" ")
-                          .slice(0, 5)
-                          .join(" ")}
-                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          {result.content.split(" ").slice(0, 5).join(" ")}
+                    <div className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none text-accent-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center">
+                      <div className="flex flex-col gap-2">
+                        <div className="">
+                          {result.chatTitle
+                            .replace('"', "")
+                            .replace('"', "")
+                            .split(" ")
+                            .slice(0, 5)
+                            .join(" ")}
+                          <p className=" ml-1 line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {result.content.split(" ").slice(0, 5).join(" ")}
+                          </p>
+                        </div>
+                        <p className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                          Last Updated At : {timestampToDate(result.updatedAt)}
                         </p>
                       </div>
                     </div>

@@ -47,8 +47,9 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().min(1),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().min(1),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().min(1),
-    NEXT_PUBLIC_ALGOLIA_API_KEY: z.string().min(1),
+    NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: z.string().min(1),
     NEXT_PUBLIC_ALGOLIA_APP_ID: z.string().min(1),
+    NEXT_PUBLIC_ALGOLIA_INDEX_NAME: z.string().min(1),
   },
 
   runtimeEnv: {
@@ -63,8 +64,10 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:
       process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
     // Algolia (Search)
-    NEXT_PUBLIC_ALGOLIA_API_KEY: process.env.NEXT_PUBLIC_ALGOLIA_API_KEY,
+    NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY:
+      process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
     NEXT_PUBLIC_ALGOLIA_APP_ID: process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+    NEXT_PUBLIC_ALGOLIA_INDEX_NAME: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME,
     // Upstash (Redis)
     REDIS_URL: process.env.REDIS_URL,
     // OpenAI

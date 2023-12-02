@@ -25,6 +25,8 @@ export default function LoggedInLayout({
   const pathname = usePathname();
   const { orgSlug, orgId } = useAuth();
 
+  console.log("orgSlug", orgSlug);
+
   useEffect(() => {
     if (store.audioSrc && audioRef.current) {
       audioRef.current.src = store.audioSrc;
@@ -55,12 +57,12 @@ export default function LoggedInLayout({
           className="bg-black/40 backdrop-blur-md"
         >
           <AudioPlayer />
-          <Search />
+          <Search orgSlug={orgSlug as string} />
         </Header>
       ) : (
         <Header newChild className="bg-black/40 backdrop-blur-md">
           <AudioPlayer />
-          <Search />
+          <Search orgSlug={orgSlug as string} />
         </Header>
       )}
       <div className="pl-5 pr-5 z-10 relative">{children}</div>
