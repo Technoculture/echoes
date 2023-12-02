@@ -16,6 +16,7 @@ import algoliasearch from "algoliasearch";
 import { env } from "@/app/env.mjs";
 import Link from "next/link";
 import { timestampToDate } from "@/utils/helpers";
+import UserAvatar from "@/components/useravatars";
 
 type Props = {
   orgSlug: string;
@@ -94,8 +95,8 @@ const Search = (props: Props) => {
                   onClick={() => setOpen(false)}
                   key={result.objectID}
                 >
-                  <CommandItem className="pointer-events-auto">
-                    <div className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none text-accent-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center">
+                  <CommandItem className="pointer-events-auto w-full">
+                    <div className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none text-accent-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center w-full">
                       <div className="flex flex-col gap-2">
                         <div className="">
                           {result.chatTitle
@@ -112,6 +113,7 @@ const Search = (props: Props) => {
                           Last Updated At : {timestampToDate(result.updatedAt)}
                         </p>
                       </div>
+                      <UserAvatar role={result.role} userData={result.name} />
                     </div>
                   </CommandItem>
                 </Link>

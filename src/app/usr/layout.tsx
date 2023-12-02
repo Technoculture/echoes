@@ -25,8 +25,6 @@ export default function LoggedInLayout({
   const pathname = usePathname();
   const { orgSlug, orgId } = useAuth();
 
-  console.log("orgSlug", orgSlug);
-
   useEffect(() => {
     if (store.audioSrc && audioRef.current) {
       audioRef.current.src = store.audioSrc;
