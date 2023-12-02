@@ -2,7 +2,7 @@ import { StreamingTextResponse, LangChainStream, nanoid } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { CHAT_COMPLETION_CONTENT, ChatLog } from "@/lib/types";
+import { CHAT_COMPLETION_CONTENT, ChatEntry, ChatLog } from "@/lib/types";
 import { systemPrompt } from "@/utils/prompts";
 import {
   chooseModel,
@@ -12,6 +12,7 @@ import {
 } from "@/utils/apiHelper";
 import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
+import { auth } from "@clerk/nextjs";
 export const revalidate = 0; // disable cache
 
 export const maxDuration = 60;
@@ -21,6 +22,8 @@ export async function POST(
   params: { params: { chatid: string } },
 ) {
   const body = await request.json();
+  const { orgSlug } = await auth();
+  console.log("orgSlug", orgSlug);
 
   const _chat = body.messages;
   const isFast = body.isFast;
@@ -39,7 +42,6 @@ export async function POST(
     return;
   }
   const msgs = jsonToLangchain(_chat, systemPrompt);
-  console.log("msgs", msgs[0]);
 
   const model = OPEN_AI_MODELS.gpt4Turbo;
   const { error } = chooseModel(isFast, msgs, systemPrompt);
@@ -66,6 +68,27 @@ export async function POST(
     );
   }
 
+  const postToAlgolia = ({
+    chats,
+    chatId,
+    orgSlug,
+  }: {
+    chats: ChatEntry[];
+    chatId: number;
+    orgSlug: string;
+  }) => {
+    fetch(
+      `https://zeplo.to/https://${urlArray[2]}/api/addToSearch?_token=${env.ZEPLO_TOKEN}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ chats, chatId, orgSlug }),
+        headers: {
+          "x-zeplo-secret": env.ZEPLO_SECRET,
+        },
+      },
+    );
+  };
+
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
       const latestReponse = {
@@ -82,6 +105,7 @@ export async function POST(
         if (_chat.length === 1) {
           console.log("got in 1 length case");
           _chat.push(latestReponse);
+
           fetch(
             `https://zeplo.to/https://${urlArray[2]}/api/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
             // `https://zeplo.to/https://echoes-ksyl6ee7h-tcr.vercel.app/api/generateTitle/1318/org_2SaqWIpmGf4bkmTGoFpc6kk1RDx?_token=ihaLqOwKwvWqtYaMPqHR8QGko3a2lstVqJuYXg`,
@@ -94,6 +118,11 @@ export async function POST(
               // headers: [...cookiesArray],
             },
           );
+          postToAlgolia({
+            chats: _chat,
+            chatId: Number(id),
+            orgSlug: orgSlug as string,
+          }); // add to search index
           await db
             .update(chats)
             .set({
@@ -103,6 +132,11 @@ export async function POST(
             .run();
         } else {
           _chat.push(latestReponse);
+          postToAlgolia({
+            chats: [_chat[_chat.length - 2], latestReponse],
+            chatId: Number(id),
+            orgSlug: orgSlug as string,
+          }); // add to search index
           await db
             .update(chats)
             .set({
@@ -113,23 +147,6 @@ export async function POST(
             .run();
         }
       }
-      // handling user's personal chat
-      //  else {
-      //   // it means it is the first message in a specific chat id
-      //   if (_chat.length === 1) {
-      //     _chat.push(latestReponse);
-      //     await db.insert(chats).values({
-      //       user_id: String(userId),
-      //       messages: JSON.stringify({ log: _chat } as ChatLog),
-      //     });
-      //   } else {
-      //     _chat.push(latestReponse);
-      //     await db
-      //       .update(chats)
-      //       .set({ messages: JSON.stringify({ log: _chat }) })
-      //       .where(eq(chats.id, Number(id)));
-      //   }
-      // }
     },
   });
 
@@ -145,6 +162,5 @@ export async function POST(
   // });
   // modelWithFallback.invoke(msgs);
   openai_chat_model.call(msgs);
-  console.info("info", openai_chat_model.lc_kwargs);
   return new StreamingTextResponse(stream);
 }
