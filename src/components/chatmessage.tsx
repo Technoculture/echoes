@@ -188,6 +188,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         <IntermediateStep message={props.chat} />
       ) : !isEditing ? (
         <div
+          id={props.chat.id}
           className={
             isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
           }
