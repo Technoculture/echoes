@@ -1,17 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import ChatMessage from "@/components/chatmessage";
-import {
-  AIType,
-  CHAT_COMPLETION_CONTENT,
-  ChatEntry,
-  ChatLog,
-} from "@/lib/types";
+import { AIType, ChatEntry, ChatLog } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
-import { ContextWrapper } from "@/components/contextwrapper";
 import Startnewchatbutton from "@/components/startnewchatbutton";
+import ChatMessageCombinator from "./chatmessagecombinator";
 
 interface ChatProps {
   orgId: string;
@@ -37,6 +31,7 @@ export default function Chat(props: ChatProps) {
 
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
+  const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
   const {
     messages,
     input,
@@ -73,10 +68,60 @@ export default function Chat(props: ChatProps) {
     }
   }, [messages]);
 
+  useEffect(() => {
+    let mainArray: Message[][] = [];
+    let subarray: Message[] = [];
+    console.log("props.liveChat", props.liveChat?.length);
+    let length = props.liveChat?.length as number;
+    if (props.liveChat && props.liveChat.length > 0) {
+      props.liveChat.forEach((message, index) => {
+        console.log("index", index, "message", message);
+        if (message.role === "user") {
+          if (index === 0) {
+            subarray.push(message as Message);
+          } else {
+            mainArray.push(subarray);
+            subarray = [];
+            subarray.push(message as Message);
+          }
+        } else if (index === length - 1) {
+          subarray.push(message as Message);
+          mainArray.push(subarray);
+        } else {
+          subarray.push(message as Message);
+        }
+      });
+      setCalculatedMessages(mainArray);
+
+      console.log("aggregate", mainArray);
+      // console.log("subarrary", subarray);
+    } else {
+      if (messages && messages.length) {
+        messages.forEach((message, index) => {
+          if (message.role === "user") {
+            if (index === 0) {
+              subarray.push(message as Message);
+            } else {
+              mainArray.push(subarray);
+              subarray = [];
+              subarray.push(message as Message);
+            }
+          } else if (index === messages.length - 1) {
+            subarray.push(message as Message);
+            mainArray.push(subarray);
+          } else {
+            subarray.push(message as Message);
+          }
+        });
+        setCalculatedMessages(mainArray);
+      }
+    }
+  }, [props.liveChat, props.liveChat?.length, props.dbChat, messages]);
+
   return (
-    <div className="flex flex-col gap-1 max-w-[700px] mx-auto">
-      <div className="grid grid-cols-1 gap-2">
-        {props.liveChat
+    <div className="flex flex-col gap-1 mx-auto">
+      {/* <div className="grid grid-cols-1 gap-2"> */}
+      {/* {props.liveChat
           ? props.liveChat.map((entry, index) => {
               if (entry.role !== "system") {
                 return (
@@ -136,8 +181,24 @@ export default function Chat(props: ChatProps) {
                   </ContextWrapper>
                 );
               }
-            })}
-      </div>
+            })} */}
+
+      <ChatMessageCombinator
+        calculatedMessages={calculatedMessages}
+        messages={messages}
+        chatId={props.chatId}
+        orgId={props.orgId}
+        name={props.username}
+        uid={props.uid}
+        setMessages={setMessages}
+        updateRoomData={updateRoomData}
+        chatTitle={props.chatTitle}
+        imageUrl={props.imageUrl}
+        isChatCompleted={isChatCompleted}
+        setIsChatCompleted={setIsChatCompleted}
+        append={append}
+      />
+      {/* </div> */}
       {isChatCompleted && (
         <div>
           <Startnewchatbutton org_slug={props.org_slug} org_id={props.orgId} />
