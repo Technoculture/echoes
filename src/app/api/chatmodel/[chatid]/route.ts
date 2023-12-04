@@ -13,6 +13,7 @@ import {
 import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
+import axios from "axios";
 export const revalidate = 0; // disable cache
 
 export const maxDuration = 60;
@@ -106,47 +107,26 @@ export async function POST(
           console.log("got in 1 length case");
           _chat.push(latestReponse);
 
-          fetch(`https://zeplo.to/step?_token=${env.ZEPLO_TOKEN}`, {
-            method: "POST",
-            body: JSON.stringify([
-              {
-                url: `https://${urlArray[2]}/api/generateTitle/${id}/${orgId}?_step=A`,
-                body: JSON.stringify({ chat: _chat }),
-                headers: {
-                  "x-zeplo-secret": env.ZEPLO_SECRET,
-                },
+          axios.post(`https://zeplo.to/step?_token=${env.ZEPLO_TOKEN}`, [
+            {
+              url: `https://${urlArray[2]}/api/generateTitle/${id}/${orgId}?_step=A`,
+              body: JSON.stringify({ chat: _chat }),
+              headers: {
+                "x-zeplo-secret": env.ZEPLO_SECRET,
               },
-              {
-                url: `https://zeplo.to/https://${urlArray[2]}/api/addToSearch?_step=B&_requires=A`,
-                body: JSON.stringify({
-                  chats: _chat,
-                  chatId: Number(id),
-                  orgSlug: orgSlug as string,
-                }),
-                headers: {
-                  "x-zeplo-secret": env.ZEPLO_SECRET,
-                },
+            },
+            {
+              url: `https://${urlArray[2]}/api/addToSearch?_step=B&_requires=A`,
+              body: JSON.stringify({
+                chats: _chat,
+                chatId: Number(id),
+                orgSlug: orgSlug as string,
+              }),
+              headers: {
+                "x-zeplo-secret": env.ZEPLO_SECRET,
               },
-            ]),
-          });
-
-          // fetch(
-          //   `https://zeplo.to/https://${urlArray[2]}/api/generateTitle/${id}/${orgId}?_token=${env.ZEPLO_TOKEN}`,
-          //   // `https://zeplo.to/https://echoes-ksyl6ee7h-tcr.vercel.app/api/generateTitle/1318/org_2SaqWIpmGf4bkmTGoFpc6kk1RDx?_token=ihaLqOwKwvWqtYaMPqHR8QGko3a2lstVqJuYXg`,
-          //   {
-          //     method: "POST",
-          //     body: JSON.stringify({ chat: _chat }),
-          //     headers: {
-          //       "x-zeplo-secret": env.ZEPLO_SECRET,
-          //     },
-          //     // headers: [...cookiesArray],
-          //   },
-          // );
-          // postToAlgolia({
-          //   chats: _chat,
-          //   chatId: Number(id),
-          //   orgSlug: orgSlug as string,
-          // }); // add to search index
+            },
+          ]);
           await db
             .update(chats)
             .set({
