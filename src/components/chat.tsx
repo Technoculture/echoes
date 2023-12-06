@@ -32,6 +32,8 @@ export default function Chat(props: ChatProps) {
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
+  const [triggerPatentSearch, setTriggerPatentSearch] =
+    useState<boolean>(false);
   const {
     messages,
     input,
@@ -58,6 +60,12 @@ export default function Chat(props: ChatProps) {
       console.log("got the error", error);
       updateRoomAsCompleted(error.message);
       setIsChatCompleted(true);
+    },
+    onResponse(response) {
+      console.log("got the response", response);
+    },
+    onFinish(message) {
+      console.log("got the finish", message);
     },
     sendExtraMessageFields: true,
   });
@@ -92,9 +100,6 @@ export default function Chat(props: ChatProps) {
         }
       });
       setCalculatedMessages(mainArray);
-
-      console.log("aggregate", mainArray);
-      // console.log("subarrary", subarray);
     } else {
       if (messages && messages.length) {
         messages.forEach((message, index) => {

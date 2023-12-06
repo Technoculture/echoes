@@ -39,6 +39,8 @@ export const env = createEnv({
     // zeplo (message queue)
     ZEPLO_TOKEN: z.string().min(1),
     ZEPLO_SECRET: z.string().min(1),
+    // PQAI API
+    PQAI_API_KEY: z.string().min(1),
   },
 
   client: {
@@ -93,5 +95,7 @@ export const env = createEnv({
     // zeplo
     ZEPLO_TOKEN: process.env.ZEPLO_TOKEN,
     ZEPLO_SECRET: process.env.ZEPLO_SECRET,
+    // PQAI API
+    PQAI_API_KEY: process.env.PQAI_API_KEY,
   },
 });

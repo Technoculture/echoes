@@ -3,6 +3,10 @@ import { ContextWrapper } from "@/components/contextwrapper";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { CHAT_COMPLETION_CONTENT } from "@/lib/types";
 import ChatMessage from "@/components/chatmessage";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/button";
+import PatentData from "@/components/patentdata";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -19,7 +23,7 @@ type Props = {
   setIsChatCompleted: React.Dispatch<SetStateAction<boolean>>;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions | undefined
+    chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
 };
 
@@ -38,14 +42,57 @@ const ChatMessageCombinator = ({
   uid,
   imageUrl,
 }: Props) => {
+  const [isPatentSearch, setIsPatentSearch] = React.useState<boolean>(false);
+  const handlePatentSearch = async ({
+    id,
+    msgs,
+    lastMessageIndex,
+  }: {
+    id: string;
+    msgs: Message[];
+    lastMessageIndex: number;
+  }) => {
+    // console.log("id", id);
+    // console.log("msgs", msgs);
+
+    const query = msgs.map((msg) => msg.content).join(" ");
+    // console.log("uery", query);
+    setIsPatentSearch(true);
+
+    const res = await fetch(`/api/patentsearch`, {
+      method: "POST",
+      body: JSON.stringify({
+        msgs: msgs,
+        orgId: orgId,
+        chatId: chatId,
+        lastMessageIndex: lastMessageIndex,
+      }),
+    });
+
+    const data = await res.json();
+
+    // console.log("data", data);
+
+    setMessages(data.data);
+    updateRoomData(data.data);
+    setIsPatentSearch(false);
+  };
+
+  let messageIndex = 0;
   return (
     <div>
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 gap-2 ">
         {calculatedMessages.map((msgs, index) => {
+          const patentMessage = msgs.find(
+            (msg) => msg.subRole === "patent-search",
+          );
+          console.log("patentMessage", patentMessage);
           return (
             <div
               key={index}
-              className="max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-cols-2"
+              className={cn(
+                "max-w-[700px]  grid grid-cols-1 xl:max-w-none xl:grid-cols-2 ",
+              )}
             >
               {msgs.map((msg, idx) => {
                 if (index === messages.length - 1 && !isChatCompleted) {
@@ -54,29 +101,68 @@ const ChatMessageCombinator = ({
                     setIsChatCompleted(true);
                   }
                 }
+                messageIndex++;
+                const msgIdx = messageIndex;
+                if (msg.subRole === "patent-search") return null;
                 return (
-                  <ContextWrapper
-                    append={append}
-                    username={name}
-                    userId={uid}
+                  <div
                     key={msg.id || index}
+                    className={cn(
+                      idx !== 0 &&
+                        "sticky top-0 max-h-screen overflow-y-scroll",
+                    )}
                   >
-                    <ChatMessage
-                      // calculate the index to be same as if calculatedMessages were
-                      messageIndex={index + idx + 1} // needs to be updated
-                      chatId={chatId}
-                      orgId={orgId}
-                      uid={uid}
-                      name={name}
-                      chat={msg as Message}
+                    <ContextWrapper
+                      append={append}
+                      username={name}
+                      userId={uid}
                       key={msg.id || index}
-                      messages={messages}
-                      setMessages={setMessages}
-                      updateRoom={updateRoomData}
-                      chatTitle={chatTitle}
-                      imageUrl={imageUrl}
-                    />
-                  </ContextWrapper>
+                    >
+                      <ChatMessage
+                        // calculate the index to be same as if calculatedMessages were
+                        messageIndex={msgIdx} // needs to be updated
+                        chatId={chatId}
+                        orgId={orgId}
+                        uid={uid}
+                        name={name}
+                        chat={msg as Message}
+                        key={msg.id || index}
+                        messages={messages}
+                        setMessages={setMessages}
+                        updateRoom={updateRoomData}
+                        chatTitle={chatTitle}
+                        imageUrl={imageUrl}
+                      />
+                    </ContextWrapper>
+                    <div className={cn("hidden xl:block")}>
+                      {idx === 0 ? (
+                        patentMessage ? (
+                          // <div>{patentMessage.content}</div>
+                          <PatentData message={patentMessage} />
+                        ) : (
+                          <Button
+                            disabled={isPatentSearch}
+                            onClick={() =>
+                              handlePatentSearch({
+                                id: msg.id,
+                                msgs: msgs,
+                                lastMessageIndex: msgIdx,
+                              })
+                            }
+                          >
+                            {isPatentSearch ? (
+                              <>
+                                <Loader2 className="mr-2 animate-spin" />{" "}
+                                Searching...
+                              </>
+                            ) : (
+                              "Search For Patents"
+                            )}
+                          </Button>
+                        )
+                      ) : null}
+                    </div>
+                  </div>
                 );
               })}
             </div>
