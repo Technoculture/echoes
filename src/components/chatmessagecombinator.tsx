@@ -91,7 +91,7 @@ const ChatMessageCombinator = ({
             <div
               key={index}
               className={cn(
-                "max-w-[700px]  grid grid-cols-1 xl:max-w-none xl:grid-cols-2 ",
+                "max-w-[700px]  grid grid-cols-1 xl:max-w-none xl:grid-cols-2 gap-2 ",
               )}
             >
               {msgs.map((msg, idx) => {
@@ -134,7 +134,9 @@ const ChatMessageCombinator = ({
                         imageUrl={imageUrl}
                       />
                     </ContextWrapper>
-                    <div className={cn("hidden xl:block")}>
+                    <div
+                    // className={cn("hidden xl:block")}
+                    >
                       {idx === 0 ? (
                         patentMessage ? (
                           // <div>{patentMessage.content}</div>
