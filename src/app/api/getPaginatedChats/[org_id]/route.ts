@@ -19,7 +19,7 @@ export async function GET(
   console.log("page", page);
   console.log("orgId", org_id);
   // need to improve the logic
-  const offset = 4;
+  const offset = 5;
   const skip = offset * page;
 
   let orgConversations = await db

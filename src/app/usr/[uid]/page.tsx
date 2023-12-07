@@ -75,7 +75,7 @@ const getConversations = async ({
     .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
     .orderBy(desc(chats.updatedAt))
     .offset(offset)
-    .limit(4)
+    .limit(5)
     .all();
   return orgConversations;
 };

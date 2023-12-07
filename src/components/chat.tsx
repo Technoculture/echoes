@@ -87,6 +87,7 @@ export default function Chat(props: ChatProps) {
                     key={entry.id || index}
                   >
                     <ChatMessage
+                      isLoading={isLoading}
                       messageIndex={index}
                       chatId={props.chatId}
                       orgId={props.orgId}
@@ -120,6 +121,7 @@ export default function Chat(props: ChatProps) {
                     key={entry.id || index}
                   >
                     <ChatMessage
+                      isLoading={isLoading}
                       messageIndex={index}
                       chatId={props.chatId}
                       orgId={props.orgId}

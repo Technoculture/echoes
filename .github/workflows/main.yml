@@ -24,6 +24,8 @@ jobs:
           OPEN_AI_API_KEY: ${{secrets.OPEN_AI_API_KEY}}
           SUMMARY_ENDPOINT_URL: ${{secrets.SUMMARY_ENDPOINT_URL}}
           LLAMA_API_KEY: ${{secrets.LLAMA_API_KEY}}
+          ANYSCALE_API_KEY: ${{secrets.ANYSCALE_API_KEY}}
+          ANYSCALE_API_BASE: ${{secrets.ANYSCALE_API_BASE}}
           AZURE_OPENAI_API_KEY: ${{secrets.AZURE_OPENAI_API_KEY}}
           AZURE_OPENAI_API_VERSION: ${{secrets.AZURE_OPENAI_API_VERSION}}
           AZURE_OPENAI_API_INSTANCE_NAME: ${{secrets.AZURE_OPENAI_API_INSTANCE_NAME}}
