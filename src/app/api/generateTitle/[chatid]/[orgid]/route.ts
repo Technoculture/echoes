@@ -33,5 +33,5 @@ export async function POST(
     .set({ title: fullResponse })
     .where(and(eq(chats.id, Number(chatId)), eq(chats.user_id, String(orgId))))
     .run();
-  return new NextResponse(fullResponse);
+  return new NextResponse(JSON.stringify({ title: fullResponse }));
 }

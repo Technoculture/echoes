@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import * as z from "zod";
-export const maxDuration = 120;
+export const maxDuration = 180;
 
 const bodyobj = z.object({
   text: z.string().min(1).optional(),

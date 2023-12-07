@@ -24,6 +24,7 @@ interface ChatMessageProps {
   updateRoom: (data: any) => void;
   chatTitle: string;
   imageUrl: string;
+  isLoading: boolean;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -153,21 +154,26 @@ const ChatMessage = (props: ChatMessageProps) => {
           </p>
           {props.chat.role === "assistant" ? (
             <div className="flex items-center flex-grow">
-              <AudioButton
-                setMessages={props.setMessages}
-                audio={props.chat.audio as string}
-                chatId={props.chatId}
-                chatTitle={props.chatTitle}
-                description={props.chat.content}
-                id={props.chat.id}
-                imageUrl={props.imageUrl}
-                summarize={false}
-                orgId={props.orgId}
-                variant="ghost"
-                size="sm"
-                className="text-xs"
-                messageIndex={props.messageIndex}
-              />
+              {!(
+                props.messageIndex === props.messages.length - 1 &&
+                props.isLoading
+              ) && (
+                <AudioButton
+                  setMessages={props.setMessages}
+                  audio={props.chat.audio as string}
+                  chatId={props.chatId}
+                  chatTitle={props.chatTitle}
+                  description={props.chat.content}
+                  id={props.chat.id}
+                  imageUrl={props.imageUrl}
+                  summarize={false}
+                  orgId={props.orgId}
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs"
+                  messageIndex={props.messageIndex}
+                />
+              )}
             </div>
           ) : null}
         </div>
@@ -188,6 +194,7 @@ const ChatMessage = (props: ChatMessageProps) => {
         <IntermediateStep message={props.chat} />
       ) : !isEditing ? (
         <div
+          id={props.chat.id}
           className={
             isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
           }

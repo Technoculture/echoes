@@ -50,7 +50,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
             />
             <h1 className="text-gray-200 align-middle">Echoes</h1>
           </Link>
-          {props.children}
+          <div className="flex gap-2">{props.children}</div>
           <SignedIn>
             <div className="flex justify-end w-[87px]">
               <UserButton />

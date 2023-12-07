@@ -37,7 +37,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
-      queryKey: ["projects", initialData],
+      queryKey: ["projects"],
       queryFn: fetchChats,
       getNextPageParam: (lastPage, pages) =>
         lastPage.length < 4 ? undefined : pages.length,

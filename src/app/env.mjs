@@ -8,6 +8,8 @@ export const env = createEnv({
     // LLaMA-2-7B-32K-Instruct (7B) from https://api.together.xyz
     SUMMARY_ENDPOINT_URL: z.string().min(1),
     LLAMA_API_KEY: z.string().min(1),
+    ANYSCALE_API_BASE: z.string().min(1),
+    ANYSCALE_API_KEY: z.string().min(1),
     // Azure OpenAI
     // AZURE_OPENAI_API_KEY: z.string().min(1),
     // AZURE_OPENAI_API_VERSION: z.string().min(1),
@@ -41,6 +43,7 @@ export const env = createEnv({
     ZEPLO_SECRET: z.string().min(1),
     // PQAI API
     PQAI_API_KEY: z.string().min(1),
+    ALGOLIA_WRITE_API_KEY: z.string().min(1),
   },
 
   client: {
@@ -49,6 +52,9 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().min(1),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().min(1),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().min(1),
+    NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: z.string().min(1),
+    NEXT_PUBLIC_ALGOLIA_APP_ID: z.string().min(1),
+    NEXT_PUBLIC_ALGOLIA_INDEX_NAME: z.string().min(1),
   },
 
   runtimeEnv: {
@@ -62,6 +68,12 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL:
       process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL,
+    // Algolia (Search)
+    NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY:
+      process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY,
+    NEXT_PUBLIC_ALGOLIA_APP_ID: process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+    NEXT_PUBLIC_ALGOLIA_INDEX_NAME: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME,
+    ALGOLIA_WRITE_API_KEY: process.env.ALGOLIA_WRITE_API_KEY,
     // Upstash (Redis)
     REDIS_URL: process.env.REDIS_URL,
     // OpenAI
@@ -69,6 +81,8 @@ export const env = createEnv({
     // LLaMA-2-7B-32K-Instruct (7B) from https://api.together.xyz
     SUMMARY_ENDPOINT_URL: process.env.SUMMARY_ENDPOINT_URL,
     LLAMA_API_KEY: process.env.LLAMA_API_KEY,
+    ANYSCALE_API_BASE: process.env.ANYSCALE_API_BASE,
+    ANYSCALE_API_KEY: process.env.ANYSCALE_API_KEY,
     // Azure OpenAI
     // AZURE_OPENAI_API_KEY: process.env.AZURE_OPENAI_API_KEY,
     // AZURE_OPENAI_API_VERSION: process.env.AZURE_OPENAI_API_VERSION,

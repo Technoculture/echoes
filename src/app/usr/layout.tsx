@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { OrganizationSwitcher, useAuth } from "@clerk/nextjs";
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import useSlotStore from "@/store/slots";
+import Search from "@/components/search";
 
 export default function LoggedInLayout({
   children,
@@ -54,10 +55,12 @@ export default function LoggedInLayout({
           className="bg-black/40 backdrop-blur-md"
         >
           <AudioPlayer />
+          <Search orgSlug={orgSlug as string} />
         </Header>
       ) : (
         <Header newChild className="bg-black/40 backdrop-blur-md">
           <AudioPlayer />
+          <Search orgSlug={orgSlug as string} />
         </Header>
       )}
       <div className="pl-5 pr-5 z-10 relative">{children}</div>
