@@ -5,7 +5,7 @@ import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import { useMutation } from "../../liveblocks.config";
 import Startnewchatbutton from "@/components/startnewchatbutton";
-import ChatMessageCombinator from "./chatmessagecombinator";
+import ChatMessageCombinator from "@/components/chatmessagecombinator";
 
 interface ChatProps {
   orgId: string;
@@ -203,6 +203,7 @@ export default function Chat(props: ChatProps) {
         isChatCompleted={isChatCompleted}
         setIsChatCompleted={setIsChatCompleted}
         append={append}
+        isLoading={isLoading}
       />
       {/* </div> */}
       {isChatCompleted && (

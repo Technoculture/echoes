@@ -26,6 +26,7 @@ type Props = {
     message: Message | CreateMessage,
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
+  isLoading: boolean;
 };
 
 const ChatMessageCombinator = ({
@@ -42,6 +43,7 @@ const ChatMessageCombinator = ({
   orgId,
   uid,
   imageUrl,
+  isLoading,
 }: Props) => {
   const [isPatentSearch, setIsPatentSearch] = React.useState<boolean>(false);
   const preferences = usePreferences();
@@ -130,6 +132,7 @@ const ChatMessageCombinator = ({
                         updateRoom={updateRoomData}
                         chatTitle={chatTitle}
                         imageUrl={imageUrl}
+                        isLoading={isLoading}
                       />
                     </ContextWrapper>
                     <div
