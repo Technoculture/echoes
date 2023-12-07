@@ -1,7 +1,13 @@
 import { z } from "zod";
 //import { MessageType } from "langchain/schema";
 
-export type ChatRole = "user" | "assistant" | "system" | "tester" | "function";
+export type ChatRole =
+  | "user"
+  | "assistant"
+  | "system"
+  | "tester"
+  | "function"
+  | "patent-search";
 // Basically ChatEntry is equivalent to Message from 'vercel-ai-sdk
 export type ChatEntry = {
   id: string;
@@ -54,3 +60,25 @@ export type MessageRole = "function" | "user" | "assistant" | "system";
 // export type MessageRole = Pick<Message, "role">
 
 export type AIType = "universal" | "oligoai" | "agent";
+
+export enum Type {
+  Patent = "patent",
+}
+
+export interface Result {
+  id: string;
+  type: Type;
+  publication_id: string;
+  title: string;
+  abstract: string;
+  publication_date: Date;
+  www_link: string;
+  owner: string;
+  image: string;
+  alias: string;
+  inventors: string[];
+  score: number;
+  snippet: null;
+  mapping: null;
+  index: string;
+}

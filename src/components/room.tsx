@@ -9,6 +9,8 @@ import Link from "next/link";
 import Chatusers from "@/components/chatusersavatars";
 import Chat from "@/components/chat";
 import { CircleNotch, ArrowLeft } from "@phosphor-icons/react";
+import { Eye, EyeOff } from "lucide-react";
+import usePreferences from "@/store/userPreferences";
 
 interface Props {
   orgId: string;
@@ -26,6 +28,9 @@ const RoomWrapper = (props: Props) => {
   const [showLoading, setShowLoading] = useState(false);
   const others = useOthers();
   const me = useMyPresence();
+
+  const preferences = usePreferences();
+  // const [showSubRoll, setShowSubRoll] = useState(() => );
 
   // getting the ids of all the active (presence) users
   const userWithIds = others.filter((o) => o.presence.id !== null);
@@ -65,6 +70,16 @@ const RoomWrapper = (props: Props) => {
           </div>
 
           <div className="grow" />
+          <Button
+            onClick={() => preferences.toggleShowSubRoll()}
+            variant="outline"
+          >
+            {preferences.showSubRoll ? (
+              <Eye className="h-4 w-4" />
+            ) : (
+              <EyeOff className="h-4 w-4" />
+            )}
+          </Button>
         </div>
         <Chat
           orgId={props.orgId}

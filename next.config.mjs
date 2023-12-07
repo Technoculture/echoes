@@ -3,19 +3,24 @@ import "./src/app/env.mjs";
 const nextConfig = {
   experimental: {
     // appDir: true,
-    serverActions: true
+    serverActions: true,
   },
   images: {
-    domains: ['oaidalleapiprodscus.blob.core.windows.net', 'echoes-images.s3.ap-south-1.amazonaws.com', 'd7ftvotrexusa.cloudfront.net'],
+    domains: [
+      "oaidalleapiprodscus.blob.core.windows.net",
+      "echoes-images.s3.ap-south-1.amazonaws.com",
+      "d7ftvotrexusa.cloudfront.net",
+      "api.projectpq.ai",
+    ],
   },
   redirects: async () => {
     return [
       {
-        source: '/home',
-        destination: '/',
+        source: "/home",
+        destination: "/",
         permanent: true,
       },
-    ]
+    ];
   },
 };
 
