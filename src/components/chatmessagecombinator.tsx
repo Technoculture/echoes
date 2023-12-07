@@ -88,7 +88,6 @@ const ChatMessageCombinator = ({
           const patentMessage = msgs.find(
             (msg) => msg.subRole === "patent-search",
           );
-          console.log("patentMessage", patentMessage);
           return (
             <div
               key={index}

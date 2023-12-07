@@ -83,7 +83,6 @@ export default function Chat(props: ChatProps) {
     let length = props.liveChat?.length as number;
     if (props.liveChat && props.liveChat.length > 0) {
       props.liveChat.forEach((message, index) => {
-        console.log("index", index, "message", message);
         if (message.role === "user") {
           if (index === 0) {
             subarray.push(message as Message);
