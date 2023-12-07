@@ -54,6 +54,7 @@
     "@types/react-dom": "18.0.11",
     "@uploadthing/react": "5.2.0",
     "@upstash/redis": "^1.24.3",
+    "ably": "^1.2.48",
     "ai": "2.2.20",
     "axios": "^1.6.1",
     "class-variance-authority": "0.6.0",
