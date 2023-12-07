@@ -108,9 +108,7 @@ const ChatMessageCombinator = ({
                 return (
                   <div
                     key={msg.id || index}
-                    className={cn(
-                      idx === 0 ? "xl:w-[450px]" : "max-w-[700px]",
-                    )}
+                    className={cn(idx === 0 ? "xl:w-[450px]" : "max-w-[700px]")}
                   >
                     <ContextWrapper
                       append={append}
