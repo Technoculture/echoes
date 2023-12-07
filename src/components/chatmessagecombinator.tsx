@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/button";
 import PatentData from "@/components/patentdata";
 import { Loader2 } from "lucide-react";
+import usePreferences from "@/store/userPreferences";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -43,6 +44,7 @@ const ChatMessageCombinator = ({
   imageUrl,
 }: Props) => {
   const [isPatentSearch, setIsPatentSearch] = React.useState<boolean>(false);
+  const preferences = usePreferences();
   const handlePatentSearch = async ({
     id,
     msgs,
@@ -138,30 +140,32 @@ const ChatMessageCombinator = ({
                     // className={cn("hidden xl:block")}
                     >
                       {idx === 0 ? (
-                        patentMessage ? (
-                          // <div>{patentMessage.content}</div>
-                          <PatentData message={patentMessage} />
-                        ) : (
-                          <Button
-                            disabled={isPatentSearch}
-                            onClick={() =>
-                              handlePatentSearch({
-                                id: msg.id,
-                                msgs: msgs,
-                                lastMessageIndex: msgIdx,
-                              })
-                            }
-                          >
-                            {isPatentSearch ? (
-                              <>
-                                <Loader2 className="mr-2 animate-spin" />{" "}
-                                Searching...
-                              </>
-                            ) : (
-                              "Search For Patents"
-                            )}
-                          </Button>
-                        )
+                        preferences.showSubRoll ? (
+                          patentMessage ? (
+                            // <div>{patentMessage.content}</div>
+                            <PatentData message={patentMessage} />
+                          ) : (
+                            <Button
+                              disabled={isPatentSearch}
+                              onClick={() =>
+                                handlePatentSearch({
+                                  id: msg.id,
+                                  msgs: msgs,
+                                  lastMessageIndex: msgIdx,
+                                })
+                              }
+                            >
+                              {isPatentSearch ? (
+                                <>
+                                  <Loader2 className="mr-2 animate-spin" />{" "}
+                                  Searching...
+                                </>
+                              ) : (
+                                "Search For Patents"
+                              )}
+                            </Button>
+                          )
+                        ) : null
                       ) : null}
                     </div>
                   </div>
