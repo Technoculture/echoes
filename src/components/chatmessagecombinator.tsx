@@ -107,10 +107,10 @@ const ChatMessageCombinator = ({
                 return (
                   <div
                     key={msg.id || index}
-                    className={cn(
-                      idx !== 0 &&
-                        "sticky top-0 max-h-screen overflow-y-scroll",
-                    )}
+                    // className={cn(
+                    //   idx !== 0 &&
+                    //     "sticky top-0 max-h-screen overflow-y-scroll",
+                    // )}
                   >
                     <ContextWrapper
                       append={append}
