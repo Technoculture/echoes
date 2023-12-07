@@ -92,7 +92,7 @@ const ChatMessageCombinator = ({
             <div
               key={index}
               className={cn(
-                "max-w-[700px]  grid grid-cols-1 xl:max-w-none xl:grid-cols-2 gap-2 ",
+                "max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto ",
               )}
             >
               {msgs.map((msg, idx) => {
@@ -108,10 +108,9 @@ const ChatMessageCombinator = ({
                 return (
                   <div
                     key={msg.id || index}
-                    // className={cn(
-                    //   idx !== 0 &&
-                    //     "sticky top-0 max-h-screen overflow-y-scroll",
-                    // )}
+                    className={cn(
+                      idx === 0 ? "xl:max-w-[500px]" : "max-w-[700px]",
+                    )}
                   >
                     <ContextWrapper
                       append={append}
@@ -153,6 +152,7 @@ const ChatMessageCombinator = ({
                                   lastMessageIndex: msgIdx,
                                 })
                               }
+                              className="mx-4 my-3"
                             >
                               {isPatentSearch ? (
                                 <>
