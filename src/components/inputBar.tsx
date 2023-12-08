@@ -52,6 +52,7 @@ interface InputBarProps {
   messages: Message[];
   orgId: string;
   setMessages: (messages: Message[]) => void;
+  isLoading: boolean;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -62,7 +63,6 @@ const InputBar = (props: InputBarProps) => {
 
   const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
   // using local state for development purposes
-  const [isTyping, setIsTyping] = useState<boolean>(false);
 
   console.log(
     "presenceData",
@@ -71,8 +71,6 @@ const InputBar = (props: InputBarProps) => {
       .map((p) => p.data.username)
       .join(", "),
   );
-  // console.log("presenceData", isTyping);
-  // console.log("updateStatus", updateStatus);
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (props.value.trim() === "") {
@@ -181,21 +179,37 @@ const InputBar = (props: InputBarProps) => {
   };
 
   useEffect(() => {
-    if (props.value) {
+    if (!props.isLoading) {
       const timer = setTimeout(() => {
         updateStatus({
           isTyping: false,
           username: props.username,
           id: props.userId,
         });
-        setIsTyping(false);
       }, 1000);
       return () => clearTimeout(timer);
     }
   }, [props.value]);
+
+  useEffect(() => {
+    if (props.isLoading) {
+      updateStatus({
+        isTyping: true,
+        username: "Echo",
+        id: props.userId,
+      });
+      console.log("echo is typing");
+    } else {
+      updateStatus({
+        isTyping: false,
+        username: "Echo",
+        id: props.userId,
+      });
+      console.log("echo is not typing");
+    }
+  }, [props.isLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     props.onChange(e);
-    setIsTyping(true);
     updateStatus({
       isTyping: true,
       username: props.username,

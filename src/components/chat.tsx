@@ -237,6 +237,7 @@ export default function Chat(props: ChatProps) {
         setInput={setInput}
         append={append}
         isChatCompleted={isChatCompleted}
+        isLoading={isLoading}
       />
     </div>
   );
