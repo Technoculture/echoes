@@ -37,6 +37,7 @@ export default function Chat(props: ChatProps) {
     queryKey: ["chats", props.chatId],
     queryFn: chatFetcher,
     initialData: props.dbChat,
+    refetchOnWindowFocus: false,
   });
 
   const {

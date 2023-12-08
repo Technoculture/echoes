@@ -205,7 +205,7 @@ const InputBar = (props: InputBarProps) => {
           id: props.userId,
         });
         // setDisableInputs(false);
-      }, 1000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [props.value]);
@@ -274,34 +274,18 @@ const InputBar = (props: InputBarProps) => {
               className="relative w-full"
             >
               {presenceData
-                .filter((p) => p.data.id !== props.userId)
                 .some((p) => p.data.isTyping) && (
-                <div className="flex items-center absolute top-[-100%] left-[50%] translate-x-[-50%] h-full z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+                <div className="flex items-center absolute top-[-120%] left-[50%] translate-x-[-50%] h-full z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
                   <div className="flex items-center justify-center gap-4 h-8 ">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
                     <p className="">
                       <span className="text-foreground">
                         {presenceData
-                          .filter(
-                            (p) =>
-                              p.data.isTyping && p.data.id !== props.userId,
-                          )
                           .map((p) => p.data.username)
                           .join(", ")}
                       </span>{" "}
                       is typing
                     </p>
-                    {/* <svg
-                      className="absolute text-white h-4 left-0 -bottom-2"
-                      x="0px"
-                      y="0px"
-                      viewBox="0 0 255 255"
-                    >
-                      <polygon
-                        className="fill-current"
-                        points="0,0 127.5,127.5 255,0"
-                      />
-                    </svg> */}
                   </div>
                 </div>
               )}

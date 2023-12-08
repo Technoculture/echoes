@@ -53,7 +53,7 @@ const Chatusersavatars = ({
             .map((user, index) => (
               <Avatar
                 className={cn(
-                  "w-9 h-9",
+                  "",
                   "mr-4",
                   liveUserIds && liveUserIds.includes(user.id)
                     ? "border-2 border-green-600"

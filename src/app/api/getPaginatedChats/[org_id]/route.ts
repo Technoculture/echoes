@@ -19,7 +19,7 @@ export async function GET(
   console.log("page", page);
   console.log("orgId", org_id);
   // need to improve the logic
-  const offset = 5;
+  const offset = 25;
   const skip = offset * page;
 
   let orgConversations = await db
@@ -28,7 +28,7 @@ export async function GET(
     .where(and(eq(chats.user_id, String(org_id)), ne(chats.messages, "NULL")))
     .orderBy(desc(chats.updatedAt))
     .offset(skip)
-    .limit(4)
+    .limit(25)
     .all();
   return NextResponse.json({ conversations: orgConversations });
 }

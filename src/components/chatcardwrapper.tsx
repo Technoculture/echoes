@@ -40,7 +40,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
       queryKey: ["projects"],
       queryFn: fetchChats,
       getNextPageParam: (lastPage, pages) =>
-        lastPage.length < 4 ? undefined : pages.length,
+        lastPage.length < 25 ? undefined : pages.length,
       initialData: {
         pageParams: [0],
         pages: [initialData],
