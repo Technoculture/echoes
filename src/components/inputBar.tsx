@@ -6,6 +6,7 @@ import {
   Dispatch,
   FormEvent,
   SetStateAction,
+  useEffect,
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
@@ -18,6 +19,7 @@ import { AIType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePresence } from "ably/react";
 function isJSON(str: any) {
   let obj: any;
   try {
@@ -58,6 +60,19 @@ const InputBar = (props: InputBarProps) => {
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
 
+  const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
+  // using local state for development purposes
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+
+  console.log(
+    "presenceData",
+    presenceData
+      .filter((p) => p.data.isTyping)
+      .map((p) => p.data.username)
+      .join(", "),
+  );
+  // console.log("presenceData", isTyping);
+  // console.log("updateStatus", updateStatus);
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (props.value.trim() === "") {
@@ -165,6 +180,28 @@ const InputBar = (props: InputBarProps) => {
     }
   };
 
+  useEffect(() => {
+    if (props.value) {
+      const timer = setTimeout(() => {
+        updateStatus({
+          isTyping: false,
+          username: props.username,
+          id: props.userId,
+        });
+        setIsTyping(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [props.value]);
+  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    props.onChange(e);
+    setIsTyping(true);
+    updateStatus({
+      isTyping: true,
+      username: props.username,
+      id: props.userId,
+    });
+  };
   return (
     <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
       <motion.div
@@ -202,6 +239,38 @@ const InputBar = (props: InputBarProps) => {
               exit={{ y: 50, opacity: 0, transition: { duration: 0.5 } }}
               className="relative w-full"
             >
+              {presenceData
+                .filter((p) => p.data.id !== props.userId)
+                .some((p) => p.data.isTyping) && (
+                <div className="flex items-center absolute top-[-100%] left-0 h-full z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
+                  <div className="flex items-center justify-center gap-4 h-8 ">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
+                    <p className="">
+                      <span className="text-foreground">
+                        {presenceData
+                          .filter(
+                            (p) =>
+                              p.data.isTyping && p.data.id !== props.userId,
+                          )
+                          .map((p) => p.data.username)
+                          .join(", ")}
+                      </span>{" "}
+                      is typing
+                    </p>
+                    {/* <svg
+                      className="absolute text-white h-4 left-0 -bottom-2"
+                      x="0px"
+                      y="0px"
+                      viewBox="0 0 255 255"
+                    >
+                      <polygon
+                        className="fill-current"
+                        points="0,0 127.5,127.5 255,0"
+                      />
+                    </svg> */}
+                  </div>
+                </div>
+              )}
               <TextareaAutosize
                 disabled={
                   props.isChatCompleted ||
@@ -213,7 +282,7 @@ const InputBar = (props: InputBarProps) => {
                 placeholder={isTranscribing ? "" : "Type your message here..."}
                 autoFocus
                 value={props.value}
-                onChange={props.onChange}
+                onChange={handleInputChange}
                 className="flex-none resize-none rounded-sm grow w-full bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm disabled:text-muted"
               />
               <Loader2

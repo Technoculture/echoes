@@ -35,7 +35,7 @@ const RoomWrapper = (props: Props) => {
     `channel_${props.chatId}`,
     {
       id: props.uid,
-      data: props.username,
+      username: props.username,
       isTyping: false,
     },
   );
