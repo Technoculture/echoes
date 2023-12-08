@@ -21,7 +21,6 @@ interface ChatMessageProps {
   orgId: string;
   messages: Message[];
   setMessages: (messages: Message[]) => void;
-  updateRoom: (data: any) => void;
   chatTitle: string;
   imageUrl: string;
   isLoading: boolean;
@@ -67,7 +66,6 @@ const ChatMessage = (props: ChatMessageProps) => {
         });
 
         props.setMessages(tempMessages);
-        props.updateRoom(tempMessages);
       } catch (err) {
         console.log("err", err);
         setEditText(props.chat.content);
@@ -88,7 +86,6 @@ const ChatMessage = (props: ChatMessageProps) => {
 
         const data = await res.json();
         props.setMessages(data.updatedMessages);
-        props.updateRoom(data.updatedMessages);
       } catch (err) {
         console.log("line 94", err);
       }
@@ -126,7 +123,6 @@ const ChatMessage = (props: ChatMessageProps) => {
 
       const data = await res.json();
       props.setMessages(data.updatedMessages);
-      props.updateRoom(data.updatedMessages);
     } catch (err) {
       console.log(err);
     }

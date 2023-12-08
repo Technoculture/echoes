@@ -1,13 +1,7 @@
 import { z } from "zod";
 //import { MessageType } from "langchain/schema";
 
-export type ChatRole =
-  | "user"
-  | "assistant"
-  | "system"
-  | "tester"
-  | "function"
-  | "patent-search";
+export type ChatRole = "user" | "assistant" | "system" | "function";
 // Basically ChatEntry is equivalent to Message from 'vercel-ai-sdk
 export type ChatEntry = {
   id: string;

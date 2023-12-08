@@ -74,7 +74,7 @@ export const jsonToLangchain = (
   }
 
   chatData.forEach((item: ChatEntry) => {
-    if (item.hasOwnProperty("role")) {
+    if (item.hasOwnProperty("role") && !item.hasOwnProperty("subRole")) {
       if (item.role === "user") {
         ret.push(new HumanMessage(item.content));
       } else if (item.role === "assistant") {

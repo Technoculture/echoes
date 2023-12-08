@@ -55,6 +55,8 @@ export const env = createEnv({
     NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY: z.string().min(1),
     NEXT_PUBLIC_ALGOLIA_APP_ID: z.string().min(1),
     NEXT_PUBLIC_ALGOLIA_INDEX_NAME: z.string().min(1),
+    // Ably (Realtime)
+    NEXT_PUBLIC_ABLY_API_KEY: z.string().min(1),
   },
 
   runtimeEnv: {
@@ -74,6 +76,8 @@ export const env = createEnv({
     NEXT_PUBLIC_ALGOLIA_APP_ID: process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
     NEXT_PUBLIC_ALGOLIA_INDEX_NAME: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME,
     ALGOLIA_WRITE_API_KEY: process.env.ALGOLIA_WRITE_API_KEY,
+    // Ably (Realtime)
+    NEXT_PUBLIC_ABLY_API_KEY: process.env.NEXT_PUBLIC_ABLY_API_KEY,
     // Upstash (Redis)
     REDIS_URL: process.env.REDIS_URL,
     // OpenAI

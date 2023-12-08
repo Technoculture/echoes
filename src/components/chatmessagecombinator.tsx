@@ -8,6 +8,8 @@ import { Button } from "@/components/button";
 import PatentData from "@/components/patentdata";
 import { Loader2 } from "lucide-react";
 import usePreferences from "@/store/userPreferences";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -19,7 +21,6 @@ type Props = {
   chatTitle: string;
   imageUrl: string;
   setMessages: (messages: Message[]) => void;
-  updateRoomData: (data: any) => void;
   isChatCompleted: boolean;
   setIsChatCompleted: React.Dispatch<SetStateAction<boolean>>;
   append: (
@@ -37,7 +38,6 @@ const ChatMessageCombinator = ({
   setIsChatCompleted,
   append,
   setMessages,
-  updateRoomData,
   chatId,
   chatTitle,
   orgId,
@@ -45,42 +45,26 @@ const ChatMessageCombinator = ({
   imageUrl,
   isLoading,
 }: Props) => {
-  const [isPatentSearch, setIsPatentSearch] = React.useState<boolean>(false);
   const preferences = usePreferences();
-  const handlePatentSearch = async ({
-    id,
-    msgs,
-    lastMessageIndex,
-  }: {
-    id: string;
-    msgs: Message[];
-    lastMessageIndex: number;
-  }) => {
-    // console.log("id", id);
-    // console.log("msgs", msgs);
+  const queryClient = useQueryClient();
 
-    const query = msgs.map((msg) => msg.content).join(" ");
-    // console.log("uery", query);
-    setIsPatentSearch(true);
-
-    const res = await fetch(`/api/patentsearch`, {
-      method: "POST",
-      body: JSON.stringify({
-        msgs: msgs,
+  const mutation = useMutation(
+    async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
+      const res = await axios.post(`/api/patentsearch`, {
+        msgs: data.msgs,
         orgId: orgId,
         chatId: chatId,
-        lastMessageIndex: lastMessageIndex,
-      }),
-    });
-
-    const data = await res.json();
-
-    // console.log("data", data);
-
-    setMessages(data.data);
-    updateRoomData(data.data);
-    setIsPatentSearch(false);
-  };
+        lastMessageIndex: data.lastMessageIndex,
+      });
+      const result = res.data;
+    },
+    {
+      onSuccess: () => {
+        // Invalidate and refetch
+        queryClient.invalidateQueries(["chats", chatId]);
+      },
+    },
+  );
 
   let messageIndex = 0;
   return (
@@ -99,7 +83,6 @@ const ChatMessageCombinator = ({
             >
               {msgs.map((msg, idx) => {
                 if (index === messages.length - 1 && !isChatCompleted) {
-                  // track a state to disable all the fields
                   if (messages[index].content === CHAT_COMPLETION_CONTENT) {
                     setIsChatCompleted(true);
                   }
@@ -110,7 +93,7 @@ const ChatMessageCombinator = ({
                 return (
                   <div
                     key={msg.id || index}
-                    className={cn(idx === 0 ? "xl:w-[450px]" : "max-w-[700px]")}
+                    className={cn(idx === 0 ? "xl:w-[450px]" : "xl:w-[700px]")}
                   >
                     <ContextWrapper
                       append={append}
@@ -129,33 +112,30 @@ const ChatMessageCombinator = ({
                         key={msg.id || index}
                         messages={messages}
                         setMessages={setMessages}
-                        updateRoom={updateRoomData}
                         chatTitle={chatTitle}
                         imageUrl={imageUrl}
                         isLoading={isLoading}
                       />
                     </ContextWrapper>
-                    <div
-                    // className={cn("hidden xl:block")}
-                    >
+                    <div>
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
                           patentMessage ? (
-                            // <div>{patentMessage.content}</div>
                             <PatentData message={patentMessage} />
                           ) : (
                             <Button
-                              disabled={isPatentSearch}
+                              disabled={mutation.isLoading}
                               onClick={() =>
-                                handlePatentSearch({
+                                mutation.mutate({
                                   id: msg.id,
                                   msgs: msgs,
                                   lastMessageIndex: msgIdx,
                                 })
                               }
-                              className="mx-4 my-3"
+                              className={cn("mx-4 my-3", isLoading && "hidden")}
                             >
-                              {isPatentSearch ? (
+                              {mutation.isLoading &&
+                              mutation.variables?.id === msg.id ? (
                                 <>
                                   <Loader2 className="mr-2 animate-spin" />{" "}
                                   Searching...

@@ -1,17 +1,16 @@
 "use client";
 
-import { Chat } from "@/lib/db/schema";
 import { ChatEntry } from "@/lib/types";
-import { ChatLog } from "@/lib/types";
-import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
-// import { Button, buttonVariants } from "./button";
-// import { Popover } from "./popover";
-// import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { cn } from "@/lib/utils";
+import { Loader2, RefreshCcw } from "lucide-react";
 interface Props {
-  chat?: Chat;
-  chatLive?: ChatEntry[];
-  allPresenceIds?: Array<string>;
+  allPresenceIds: Array<string>;
+  liveUserIds?: Array<string>;
+  chatId: number;
+  chatCreatorId: string;
 }
 
 interface UserAvatarData {
@@ -19,129 +18,77 @@ interface UserAvatarData {
   img: string;
 }
 
-const Chatusersavatars = ({ chat, chatLive, allPresenceIds }: Props) => {
-  const [users, setUsers] = useState<Array<UserAvatarData>>(
-    [] as UserAvatarData[],
-  );
+const Chatusersavatars = ({
+  chatId,
+  allPresenceIds,
+  liveUserIds,
+  chatCreatorId,
+}: Props) => {
+  const { data, isLoading, isError, refetch, isRefetching } = useQuery({
+    queryKey: [`chat-user-avatars_${chatId}`, allPresenceIds],
+    queryFn: () => getUsers(allPresenceIds),
+    refetchInterval: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
   const getUsers = async (ids: Array<string>) => {
-    const users = await fetch("/api/getUsers", {
-      method: "POST",
-      body: JSON.stringify({ ids: ids }),
+    const res = await axios.post("/api/getUsers", {
+      ids: ids,
     });
-    const data = await users.json();
-    setUsers(data.users);
+    return res.data.users as UserAvatarData[];
   };
 
-  useEffect(() => {
-    if (chat && chat.messages !== null) {
-      const chatArray = (JSON.parse(chat.messages as string) as ChatLog)?.log;
-      const ids = getUserIdList(chatArray);
-      if (ids.length) {
-        getUsers(ids);
-      }
-    }
-    if (chatLive) {
-      const ids = getUserIdList(chatLive);
-      // include ids of users who have not participated in the chat but viewing the chat
-      const viewersIds = allPresenceIds?.filter((id) => !ids?.includes(id));
-      if (ids.length) {
-        if (viewersIds) {
-          getUsers([...ids, ...viewersIds]);
-        } else {
-          getUsers([...ids]);
-        }
-      }
-    }
-  }, [chat, chatLive?.length, allPresenceIds?.length]);
-
   return (
-    <div className="flex">
-      {users.length > 0 ? (
-        users.length === 1 ? (
-          // handle first user and other seperately
-          users.map((user) => (
-            <Avatar
-              className={`mr-2 w-9 h-9 ${
-                allPresenceIds
-                  ? allPresenceIds.includes(user.id)
-                    ? "border-2 border-green-600"
-                    : ""
-                  : null
-              }`}
-              key={user.id}
-            >
-              <AvatarImage src={user?.img} alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          ))
-        ) : (
-          <div className="flex">
-            {
+    <div>
+      {isLoading ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : isError ? (
+        <div onClick={() => refetch()}>
+          <RefreshCcw className="h-4 w-4" />
+        </div>
+      ) : (
+        <div className="flex">
+          {data
+            .filter((user) => user.id === chatCreatorId)
+            .map((user, index) => (
               <Avatar
-                className={`mr-2 w-9 h-9 ${
-                  allPresenceIds
-                    ? allPresenceIds.includes(users[0].id)
-                      ? "border-2 border-green-600"
-                      : ""
-                    : null
-                }`}
-                key={users[0]?.id}
+                className={cn(
+                  "",
+                  "mr-4",
+                  liveUserIds && liveUserIds.includes(user.id)
+                    ? "border-2 border-green-600"
+                    : "",
+                )}
+                key={user.id}
               >
-                <AvatarImage src={users[0]?.img} alt="@shadcn" />
+                <AvatarImage src={user.img} alt="@shadcn" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-            }
-            <div className="ml-2 flex">
-              {users.slice(1, 4).map((user) => (
-                <Avatar
-                  className={` -ml-2 w-9 h-9 ${
-                    allPresenceIds
-                      ? allPresenceIds.includes(user.id)
-                        ? "border-2 border-green-600"
-                        : ""
-                      : null
-                  } `}
-                  key={user.id}
-                >
-                  <AvatarImage src={user?.img} alt="@shadcn" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              ))}
-            </div>
-            {/* <Popover>
-              <PopoverTrigger>
-                <Button className={buttonVariants({ variant: "secondary" })}>
-                  Others
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <div className="px-2 py-1 tracking-tighter">
-                  {users.slice(1).map((user) => (
-                    <Avatar className=" -ml-1 w-9 h-9" key={user.id}>
-                      <AvatarImage src={user?.img} alt="@shadcn" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover> */}
-          </div>
-        )
-      ) : null}
+            ))}
+          {data
+            .filter((user) => user.id !== chatCreatorId)
+            .map((user, index) => (
+              <Avatar
+                className={cn(
+                  "w-9 h-9",
+                  "-ml-2",
+                  liveUserIds && liveUserIds.includes(user.id)
+                    ? "border-2 border-green-600"
+                    : "",
+                )}
+                key={user.id}
+              >
+                <AvatarImage src={user.img} alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            ))}
+        </div>
+      )}
     </div>
   );
 };
 
 export default Chatusersavatars;
-
-export const getChatCreator = (chatMessages: string): string => {
-  const firstEntry = (JSON.parse(chatMessages as string) as ChatLog)?.log[0];
-  const creator = firstEntry.name
-    ? firstEntry.name.split(",")[0]
-    : "Unknown Creator";
-  return creator;
-};
 
 export const getUserIdList = (chatMessages: ChatEntry[]): Array<string> => {
   // const chatArray = (JSON.parse(chatMessages as string) as ChatLog)?.log;

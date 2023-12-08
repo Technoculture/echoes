@@ -5,11 +5,14 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const ids = body?.ids;
 
-  const users = await clerkClient.users.getUserList({ userId: ids });
-  const requiredData = users.map((user) => ({
-    id: user.id,
-    img: user.imageUrl,
-  }));
-
-  return new NextResponse(JSON.stringify({ users: requiredData }));
+  if (ids.length) {
+    const users = await clerkClient.users.getUserList({ userId: ids });
+    const requiredData = users.map((user) => ({
+      id: user.id,
+      img: user.imageUrl,
+    }));
+    return new NextResponse(JSON.stringify({ users: requiredData }));
+  } else {
+    return new NextResponse(JSON.stringify({ users: [] }));
+  }
 }

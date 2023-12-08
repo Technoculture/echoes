@@ -11,26 +11,32 @@ import {
   CardContent,
   CardTitle,
 } from "@/components/card";
-import Chatusers from "@/components/chatusersavatars";
+import Chatusers, { getUserIdList } from "@/components/chatusersavatars";
 import { CircleNotch } from "@phosphor-icons/react";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import Image from "next/image";
 import AudioButton from "@/components//audioButton";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+// import { dynamicBlurDataUrl } from "@/utils/helpers";
 
 type Props = {
   chat: Chat;
   uid: string;
   org_id: string;
   org_slug: string;
+  priority: boolean;
 };
 
-const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
+const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
   const queryClient = useQueryClient();
   const [showLoading, setShowLoading] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageUrl, setImageUrl] = useState(chat.image_url);
+  // const [blurDataUrl, setBlurDataUrl] = useState(async () => {
+  //   const data = await dynamicBlurDataUrl(chat.image_url as string);
+  //   return data
+  // });
   const generateTitle = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -92,6 +98,10 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
   const firstMessage = chatlog.log[0].content;
   const chatTitle = chat.title || firstMessage;
 
+  // extracts chatentry from chatlog
+  const chats = JSON.parse(chat.messages as string) as ChatLog;
+  const userIds = getUserIdList(chats.log);
+
   return (
     <div
       className="relative cursor-pointer"
@@ -138,7 +148,11 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
           {/* </div> */}
         </CardHeader>
         <CardContent className="flex justify-between ">
-          <Chatusers chat={chat} />
+          <Chatusers
+            allPresenceIds={userIds}
+            chatId={chat.id}
+            chatCreatorId={userIds[0]}
+          />
           <div className="flex gap-2">
             {!imageUrl && (
               <span>
@@ -173,9 +187,16 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
       </Card>
       {imageUrl && (
         <Image
+          quality={30}
+          // placeholder="blur"
+          // blurDataURL={blurDataUrl as string}
           src={imageUrl}
           alt="Photo by Drew Beamer"
           fill
+          sizes="(max-width: 640px) 100vw,
+          (max-width: 1024px) 50vw,
+           (max-width: 1200px) 33vw, 20vw"
+          priority={priority}
           className="absolute rounded-md object-cover bg-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
         />
       )}
