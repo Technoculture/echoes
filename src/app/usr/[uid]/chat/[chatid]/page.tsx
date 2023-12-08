@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { auth, currentUser } from "@clerk/nextjs";
-import RoomProvider from "@/components/roomprovider";
 import RoomWrapper from "@/components/room";
+import { AblyChannelProvider } from "@/components/ablyprovider";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
@@ -53,9 +53,7 @@ export default async function Page({
   }
 
   return (
-    // Room Provider
-    <RoomProvider roomId={params.chatid} initialData={chatlog.log} uid={userId}>
-      {/* Actual Room Handling */}
+    <AblyChannelProvider clientId={`room_${params.chatid}`}>
       <RoomWrapper
         orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
         chat={chatlog}
@@ -67,6 +65,6 @@ export default async function Page({
         chatTitle={fetchedChat[0]?.title as string}
         imageUrl={fetchedChat[0]?.image_url as string}
       ></RoomWrapper>
-    </RoomProvider>
+    </AblyChannelProvider>
   );
 }

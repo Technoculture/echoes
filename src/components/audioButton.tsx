@@ -172,11 +172,9 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
           return;
         }
         store.queueTracks(track);
-        console.log("in if");
         store.playTrackById(id);
         return;
       }
-      console.log("after if");
       if (!summarize && setMessages) {
         const text = description;
 
@@ -201,7 +199,6 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
     useEffect(() => {
       if (audio) {
         const duration = getBlobDuration(audio as string).then((duration) => {
-          console.log("duration", duration);
           setDuration(calculateTime(duration));
         });
       }

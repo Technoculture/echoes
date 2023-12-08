@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { AIType, ChatEntry, ChatLog } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
-import { useMutation } from "../../liveblocks.config";
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import ChatMessageCombinator from "@/components/chatmessagecombinator";
 
@@ -20,14 +19,27 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
-  const updateRoomData = useMutation(({ storage }, data) => {
-    storage.set("chat", data);
-  }, []);
+  // const updateRoomData = useMutation(({ storage }, data) => {
+  //   storage.set("chat", data);
+  // }, []);
 
-  const updateRoomAsCompleted = useMutation(({ storage }, newMessage) => {
-    const list = storage.get("chat");
-    list.push(JSON.parse(newMessage));
-  }, []);
+  // const updateRoomAsCompleted = useMutation(({ storage }, newMessage) => {
+  //   const list = storage.get("chat");
+  //   list.push(JSON.parse(newMessage));
+  // }, []);
+
+  // write down updateRoomData dummy without storage
+
+  // console.log("presenceData", presenceData)
+  // const state = useChannelStateListener({ channelName: "room_5" })
+  // console.log("state", state)
+  const updateRoomData = (data: any) => {
+    console.log("updateRoomData", data);
+  };
+  // same for updateRoomAsCompleted
+  const updateRoomAsCompleted = (message: string) => {
+    console.log("updateRoomAsCompleted", message);
+  };
 
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
@@ -47,10 +59,10 @@ export default function Chat(props: ChatProps) {
   } = useChat({
     api: `/api/chatmodel/${props.chatId}`,
     // initialMessages: props.chat.log as Message[],
-    initialMessages:
-      props.liveChat !== null
-        ? (props.liveChat as Message[])
-        : (props.dbChat?.log as Message[]),
+    initialMessages: props.dbChat?.log as Message[],
+    // props.liveChat !== null
+    //   ? (props.liveChat as Message[])
+    //   : (props.dbChat?.log as Message[]),
     body: {
       orgId: props.orgId,
       isFast: choosenAI === "universal" ? true : false,
@@ -120,7 +132,7 @@ export default function Chat(props: ChatProps) {
         setCalculatedMessages(mainArray);
       }
     }
-  }, [props.liveChat, props.liveChat?.length, props.dbChat, messages]);
+  }, [props.liveChat?.length, props.dbChat, messages]);
 
   return (
     <div className="flex flex-col gap-1 mx-auto">

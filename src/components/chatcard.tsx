@@ -11,7 +11,7 @@ import {
   CardContent,
   CardTitle,
 } from "@/components/card";
-import Chatusers from "@/components/chatusersavatars";
+import Chatusers, { getUserIdList } from "@/components/chatusersavatars";
 import { CircleNotch } from "@phosphor-icons/react";
 import { ChatEntry, ChatLog } from "@/lib/types";
 import Image from "next/image";
@@ -92,6 +92,10 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
   const firstMessage = chatlog.log[0].content;
   const chatTitle = chat.title || firstMessage;
 
+  // extracts chatentry from chatlog
+  const chats = JSON.parse(chat.messages as string) as ChatLog;
+  const userIds = getUserIdList(chats.log);
+
   return (
     <div
       className="relative cursor-pointer"
@@ -138,7 +142,11 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
           {/* </div> */}
         </CardHeader>
         <CardContent className="flex justify-between ">
-          <Chatusers chat={chat} />
+          <Chatusers
+            allPresenceIds={userIds}
+            chatId={chat.id}
+            chatCreatorId={userIds[0]}
+          />
           <div className="flex gap-2">
             {!imageUrl && (
               <span>

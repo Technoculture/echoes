@@ -1,16 +1,16 @@
 "use client";
 import React, { useState } from "react";
-import { useMyPresence, useOthers, useStorage } from "../../liveblocks.config";
-import { ChatEntry, ChatLog } from "@/lib/types";
+import { ChatLog } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 
 import { Button } from "@/components/button";
 import Link from "next/link";
-import Chatusers from "@/components/chatusersavatars";
+import Chatusers, { getUserIdList } from "@/components/chatusersavatars";
 import Chat from "@/components/chat";
 import { CircleNotch, ArrowLeft } from "@phosphor-icons/react";
 import { Eye, EyeOff } from "lucide-react";
 import usePreferences from "@/store/userPreferences";
+import { useChannel, usePresence } from "ably/react";
 
 interface Props {
   orgId: string;
@@ -26,21 +26,29 @@ interface Props {
 
 const RoomWrapper = (props: Props) => {
   const [showLoading, setShowLoading] = useState(false);
-  const others = useOthers();
-  const me = useMyPresence();
+  const { channel } = useChannel("room_5", (message) => {
+    console.log(message);
+  });
 
   const preferences = usePreferences();
-  // const [showSubRoll, setShowSubRoll] = useState(() => );
+  const { presenceData, updateStatus } = usePresence(
+    `channel_${props.chatId}`,
+    {
+      id: props.uid,
+      data: props.username,
+      isTyping: false,
+    },
+  );
 
-  // getting the ids of all the active (presence) users
-  const userWithIds = others.filter((o) => o.presence.id !== null);
-  const liveUsersIds: Array<string> = userWithIds.map(
-    (o) => o.presence.id,
-  ) as Array<string>;
-  // adding myself to the active users list
-  liveUsersIds.push(me[0].id as string);
+  const dbIds = getUserIdList(props.chat.log);
+  const chatCreatorId = dbIds[0];
 
-  const incomingChatData = useStorage((root) => root.chat);
+  const liveUserIds = presenceData.map((p) => p.data.id);
+
+  const uniqueIds = [...dbIds, ...liveUserIds].filter(
+    (v, i, a) => a.indexOf(v) === i,
+  );
+
   return (
     <>
       <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full">
@@ -60,12 +68,10 @@ const RoomWrapper = (props: Props) => {
             </Button>
 
             <Chatusers
-              allPresenceIds={liveUsersIds}
-              chatLive={
-                incomingChatData !== null
-                  ? (incomingChatData as ChatEntry[])
-                  : props.chat.log
-              }
+              allPresenceIds={uniqueIds}
+              liveUserIds={liveUserIds}
+              chatCreatorId={chatCreatorId}
+              chatId={props.chatId as unknown as number}
             />
           </div>
 
@@ -84,7 +90,7 @@ const RoomWrapper = (props: Props) => {
         <Chat
           orgId={props.orgId}
           dbChat={props.chat}
-          liveChat={incomingChatData}
+          liveChat={null}
           chatId={props.chatId}
           uid={props.uid}
           username={props.username}
