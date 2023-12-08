@@ -56,7 +56,7 @@ export default async function Page({
     <AblyChannelProvider clientId={`room_${params.chatid}`}>
       <RoomWrapper
         orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
-        chat={chatlog}
+        chat={chatlog.log}
         chatId={params.chatid}
         uid={userId}
         username={fullname}

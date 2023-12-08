@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { ChatLog } from "@/lib/types";
+import { ChatEntry } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 
 import { Button } from "@/components/button";
@@ -15,7 +15,7 @@ import { useChannel, usePresence } from "ably/react";
 interface Props {
   orgId: string;
   uid: string;
-  chat: ChatLog;
+  chat: ChatEntry[];
   chatId: string;
   username: string;
   chatAvatarData: ChatSchema;
@@ -40,7 +40,7 @@ const RoomWrapper = (props: Props) => {
     },
   );
 
-  const dbIds = getUserIdList(props.chat.log);
+  const dbIds = getUserIdList(props.chat);
   const chatCreatorId = dbIds[0];
 
   const liveUserIds = presenceData.map((p) => p.data.id);
@@ -90,7 +90,6 @@ const RoomWrapper = (props: Props) => {
         <Chat
           orgId={props.orgId}
           dbChat={props.chat}
-          liveChat={null}
           chatId={props.chatId}
           uid={props.uid}
           username={props.username}

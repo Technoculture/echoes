@@ -8,6 +8,7 @@ import { Button } from "@/components/button";
 import PatentData from "@/components/patentdata";
 import { Loader2 } from "lucide-react";
 import usePreferences from "@/store/userPreferences";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -19,7 +20,7 @@ type Props = {
   chatTitle: string;
   imageUrl: string;
   setMessages: (messages: Message[]) => void;
-  updateRoomData: (data: any) => void;
+  // updateRoomData: (data: any) => void;
   isChatCompleted: boolean;
   setIsChatCompleted: React.Dispatch<SetStateAction<boolean>>;
   append: (
@@ -37,7 +38,6 @@ const ChatMessageCombinator = ({
   setIsChatCompleted,
   append,
   setMessages,
-  updateRoomData,
   chatId,
   chatTitle,
   orgId,
@@ -47,6 +47,7 @@ const ChatMessageCombinator = ({
 }: Props) => {
   const [isPatentSearch, setIsPatentSearch] = React.useState<boolean>(false);
   const preferences = usePreferences();
+  const queryClient = useQueryClient();
   const handlePatentSearch = async ({
     id,
     msgs,
@@ -56,13 +57,7 @@ const ChatMessageCombinator = ({
     msgs: Message[];
     lastMessageIndex: number;
   }) => {
-    // console.log("id", id);
-    // console.log("msgs", msgs);
-
-    const query = msgs.map((msg) => msg.content).join(" ");
-    // console.log("uery", query);
     setIsPatentSearch(true);
-
     const res = await fetch(`/api/patentsearch`, {
       method: "POST",
       body: JSON.stringify({
@@ -74,11 +69,8 @@ const ChatMessageCombinator = ({
     });
 
     const data = await res.json();
-
-    // console.log("data", data);
-
-    setMessages(data.data);
-    updateRoomData(data.data);
+    queryClient.invalidateQueries(["chats", chatId]);
+    // setMessages(data.data);
     setIsPatentSearch(false);
   };
 
@@ -99,7 +91,6 @@ const ChatMessageCombinator = ({
             >
               {msgs.map((msg, idx) => {
                 if (index === messages.length - 1 && !isChatCompleted) {
-                  // track a state to disable all the fields
                   if (messages[index].content === CHAT_COMPLETION_CONTENT) {
                     setIsChatCompleted(true);
                   }
@@ -129,19 +120,15 @@ const ChatMessageCombinator = ({
                         key={msg.id || index}
                         messages={messages}
                         setMessages={setMessages}
-                        updateRoom={updateRoomData}
                         chatTitle={chatTitle}
                         imageUrl={imageUrl}
                         isLoading={isLoading}
                       />
                     </ContextWrapper>
-                    <div
-                    // className={cn("hidden xl:block")}
-                    >
+                    <div>
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
                           patentMessage ? (
-                            // <div>{patentMessage.content}</div>
                             <PatentData message={patentMessage} />
                           ) : (
                             <Button

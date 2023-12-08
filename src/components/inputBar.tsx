@@ -20,6 +20,7 @@ import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
+import { useQueryClient } from "@tanstack/react-query";
 function isJSON(str: any) {
   let obj: any;
   try {
@@ -60,17 +61,18 @@ const InputBar = (props: InputBarProps) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
   const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
   // using local state for development purposes
 
-  console.log(
-    "presenceData",
-    presenceData
-      .filter((p) => p.data.isTyping)
-      .map((p) => p.data.username)
-      .join(", "),
-  );
+  // console.log(
+  //   "presenceData",
+  //   presenceData
+  //     .filter((p) => p.data.isTyping)
+  //     .map((p) => p.data.username)
+  //     .join(", "),
+  // );
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (props.value.trim() === "") {
@@ -190,6 +192,7 @@ const InputBar = (props: InputBarProps) => {
     } else {
       if (disableInputs) {
         setDisableInputs(false);
+        queryClient.invalidateQueries(["chats", props.chatId]);
       }
     }
   }, [presenceData]);
@@ -215,7 +218,6 @@ const InputBar = (props: InputBarProps) => {
         id: props.userId,
       });
       // setDisableInputs(true)
-      console.log("echo is typing");
     } else {
       updateStatus({
         isTyping: false,
@@ -223,7 +225,6 @@ const InputBar = (props: InputBarProps) => {
         id: props.userId,
       });
       // setDisableInputs(false)
-      console.log("echo is not typing");
     }
   }, [props.isLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
