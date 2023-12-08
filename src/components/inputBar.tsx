@@ -179,6 +179,21 @@ const InputBar = (props: InputBarProps) => {
   };
 
   useEffect(() => {
+    if (
+      presenceData
+        .filter((p) => p.data.id !== props.userId)
+        .some((p) => p.data.isTyping)
+    ) {
+      if (!disableInputs) {
+        setDisableInputs(true);
+      }
+    } else {
+      if (disableInputs) {
+        setDisableInputs(false);
+      }
+    }
+  }, [presenceData]);
+  useEffect(() => {
     if (!props.isLoading) {
       const timer = setTimeout(() => {
         updateStatus({
@@ -186,6 +201,7 @@ const InputBar = (props: InputBarProps) => {
           username: props.username,
           id: props.userId,
         });
+        // setDisableInputs(false);
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -198,6 +214,7 @@ const InputBar = (props: InputBarProps) => {
         username: "Echo",
         id: props.userId,
       });
+      // setDisableInputs(true)
       console.log("echo is typing");
     } else {
       updateStatus({
@@ -205,6 +222,7 @@ const InputBar = (props: InputBarProps) => {
         username: "Echo",
         id: props.userId,
       });
+      // setDisableInputs(false)
       console.log("echo is not typing");
     }
   }, [props.isLoading]);
@@ -215,6 +233,7 @@ const InputBar = (props: InputBarProps) => {
       username: props.username,
       id: props.userId,
     });
+    // setDisableInputs(true)
   };
   return (
     <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
