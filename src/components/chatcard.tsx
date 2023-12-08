@@ -18,19 +18,25 @@ import Image from "next/image";
 import AudioButton from "@/components//audioButton";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+// import { dynamicBlurDataUrl } from "@/utils/helpers";
 
 type Props = {
   chat: Chat;
   uid: string;
   org_id: string;
   org_slug: string;
+  priority: boolean;
 };
 
-const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
+const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
   const queryClient = useQueryClient();
   const [showLoading, setShowLoading] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageUrl, setImageUrl] = useState(chat.image_url);
+  // const [blurDataUrl, setBlurDataUrl] = useState(async () => {
+  //   const data = await dynamicBlurDataUrl(chat.image_url as string);
+  //   return data
+  // });
   const generateTitle = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -181,9 +187,16 @@ const Chatcard = ({ chat, uid, org_id, org_slug }: Props) => {
       </Card>
       {imageUrl && (
         <Image
+          quality={30}
+          // placeholder="blur"
+          // blurDataURL={blurDataUrl as string}
           src={imageUrl}
           alt="Photo by Drew Beamer"
           fill
+          sizes="(max-width: 640px) 100vw,
+          (max-width: 1024px) 50vw,
+           (max-width: 1200px) 33vw, 20vw"
+          priority={priority}
           className="absolute rounded-md object-cover bg-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
         />
       )}

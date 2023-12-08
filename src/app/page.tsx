@@ -68,6 +68,7 @@ export default function Home() {
                 alt="image of echoes being used"
                 className="w-full h-full object-cover mix-blend-soft-light"
                 fill={true}
+                quality={10}
               />
             </div>
             <div className="z-10">
