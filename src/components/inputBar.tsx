@@ -273,16 +273,13 @@ const InputBar = (props: InputBarProps) => {
               exit={{ y: 50, opacity: 0, transition: { duration: 0.5 } }}
               className="relative w-full"
             >
-              {presenceData
-                .some((p) => p.data.isTyping) && (
+              {presenceData.some((p) => p.data.isTyping) && (
                 <div className="flex items-center absolute top-[-120%] left-[50%] translate-x-[-50%] h-full z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
                   <div className="flex items-center justify-center gap-4 h-8 ">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
                     <p className="">
                       <span className="text-foreground">
-                        {presenceData
-                          .map((p) => p.data.username)
-                          .join(", ")}
+                        {presenceData.map((p) => p.data.username).join(", ")}
                       </span>{" "}
                       is typing
                     </p>
