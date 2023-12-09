@@ -55,9 +55,8 @@ export default function Chat(props: ChatProps) {
     initialMessages: chatsData,
     body: {
       orgId: props.orgId,
-      isFast: choosenAI === "universal" ? true : false,
       name: props.username,
-    }, // some conflicts in role
+    },
     onError: (error) => {
       console.log("got the error", error);
       setIsChatCompleted(true);

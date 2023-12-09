@@ -2,15 +2,13 @@ import { StreamingTextResponse, LangChainStream, nanoid } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { CHAT_COMPLETION_CONTENT, ChatEntry, ChatLog } from "@/lib/types";
+import { ChatEntry, ChatLog } from "@/lib/types";
 import { systemPrompt } from "@/utils/prompts";
 import {
-  chooseModel,
   jsonToLangchain,
   openAIChatModel,
   OPEN_AI_MODELS,
 } from "@/utils/apiHelper";
-import { NextResponse } from "next/server";
 import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
 import axios from "axios";
@@ -27,7 +25,6 @@ export async function POST(
   console.log("orgSlug", orgSlug);
 
   const _chat = body.messages;
-  const isFast = body.isFast;
   let orgId = "";
   orgId = body.orgId;
   const url = request.url;
@@ -45,29 +42,6 @@ export async function POST(
   const msgs = jsonToLangchain(_chat, systemPrompt);
 
   const model = OPEN_AI_MODELS.gpt4Turbo;
-  const { error } = chooseModel(isFast, msgs, systemPrompt);
-
-  if (error) {
-    const msg = {
-      content: CHAT_COMPLETION_CONTENT,
-      role: "assistant",
-    };
-    _chat.push(msg); // pushing the final message to identify that the chat is completed
-    await db
-      .update(chats)
-      .set({
-        messages: JSON.stringify({ log: _chat }),
-        updatedAt: new Date(),
-      })
-      .where(eq(chats.id, Number(id)))
-      .run();
-    return NextResponse.json(
-      { ...msg },
-      {
-        status: 400,
-      },
-    );
-  }
 
   const postToAlgolia = ({
     chats,

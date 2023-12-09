@@ -37,7 +37,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
-      queryKey: ["projects"],
+      queryKey: ["chatcards", org_id],
       queryFn: fetchChats,
       getNextPageParam: (lastPage, pages) =>
         lastPage.length < 25 ? undefined : pages.length,
@@ -45,7 +45,8 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
         pageParams: [0],
         pages: [initialData],
       },
-      enabled: false,
+      refetchOnWindowFocus: false,
+      // enabled: false,
     });
 
   const lastPostRef = React.useRef<HTMLElement>(null);
