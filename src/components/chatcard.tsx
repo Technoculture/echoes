@@ -187,11 +187,11 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
       </Card>
       {imageUrl && (
         <Image
-          quality={30}
+          quality={15}
           // placeholder="blur"
           // blurDataURL={blurDataUrl as string}
           src={imageUrl}
-          alt="Photo by Drew Beamer"
+          alt="Chat Title Image"
           fill
           sizes="(max-width: 640px) 100vw,
           (max-width: 1024px) 50vw,

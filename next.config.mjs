@@ -1,4 +1,18 @@
 import "./src/app/env.mjs";
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  swcMinify: true,
+  disable: process.env.NODE_ENV === "development",
+  workboxOptions: {
+    disableDevLogs: true,
+  },
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -24,7 +38,8 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
+
 
 // export default Sentry.withSentryConfig(nextConfig, {authToken: process.env.SENTRY_AUTH_TOKEN, org: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT, hideSourceMaps: true},  {
 // // For all available options, see:
