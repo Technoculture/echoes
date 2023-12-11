@@ -49,7 +49,7 @@ export default function LoggedInLayout({
                 org_id={orgId as string}
                 org_slug={orgSlug as string}
               />
-              <Tabs defaultValue="me" onValueChange={(val) => setCards(val)}>
+              <Tabs defaultValue="org" onValueChange={(val) => setCards(val)}>
                 <TabsList>
                   <TabsTrigger value="org" className="flex gap-2 items-center">
                     <Building className="h-4 w-4" />{" "}

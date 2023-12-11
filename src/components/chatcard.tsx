@@ -187,7 +187,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
       </Card>
       {imageUrl && (
         <Image
-          quality={30}
+          quality={10}
           // placeholder="blur"
           // blurDataURL={blurDataUrl as string}
           src={imageUrl}

@@ -23,13 +23,15 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
   if (org_id === undefined) {
     redirect(`${uid}`);
   }
-  const [chats] = useQueryState("chats");
+  const [chatsQuery] = useQueryState("chats");
 
-  console.log("chats", chats);
+  console.log("chats", chatsQuery);
   const fetchChats = async ({ pageParam = 0 }) => {
     console.log("pageParam", pageParam);
     const response = await fetch(
-      `/api/getPaginatedChats/${org_id}?page=${pageParam}&userId=${uid}`,
+      `/api/getPaginatedChats/${org_id}?page=${pageParam}&userId=${uid}&chats=${
+        chatsQuery ? chatsQuery : "org"
+      }`,
       {
         method: "GET",
       },
@@ -41,7 +43,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
-      queryKey: ["chatcards", org_id, chats],
+      queryKey: ["chatcards", org_id, chatsQuery],
       queryFn: fetchChats,
       getNextPageParam: (lastPage, pages) =>
         lastPage.length < 25 ? undefined : pages.length,
