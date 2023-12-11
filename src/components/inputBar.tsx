@@ -19,7 +19,7 @@ import { AIType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAbly, usePresence } from "ably/react";
+import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
 function isJSON(str: any) {
   let obj: any;

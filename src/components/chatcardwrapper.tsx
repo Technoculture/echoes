@@ -8,6 +8,8 @@ import Chatcard from "@/components/chatcard";
 import { Button, buttonVariants } from "@/components/button";
 import { useIntersection } from "@mantine/hooks";
 import { CircleNotch } from "@phosphor-icons/react";
+import { useQueryState } from "next-usequerystate";
+
 interface Props {
   org_id: string | undefined;
   org_slug: string; // handle case of undefined in future
@@ -21,11 +23,13 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
   if (org_id === undefined) {
     redirect(`${uid}`);
   }
+  const [chats] = useQueryState("chats");
 
+  console.log("chats", chats);
   const fetchChats = async ({ pageParam = 0 }) => {
     console.log("pageParam", pageParam);
     const response = await fetch(
-      `/api/getPaginatedChats/${org_id}?page=${pageParam}`,
+      `/api/getPaginatedChats/${org_id}?page=${pageParam}&userId=${uid}`,
       {
         method: "GET",
       },
@@ -37,7 +41,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
-      queryKey: ["chatcards", org_id],
+      queryKey: ["chatcards", org_id, chats],
       queryFn: fetchChats,
       getNextPageParam: (lastPage, pages) =>
         lastPage.length < 25 ? undefined : pages.length,
@@ -63,7 +67,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {allCards?.map((chat, i) => {
           return (
             <div key={chat.id} ref={allCards.length - 1 === i ? ref : null}>

@@ -27,6 +27,7 @@ export async function POST(
   const _chat = body.messages;
   let orgId = "";
   orgId = body.orgId;
+  const userId = body.orgId;
   const url = request.url;
   // getting main url
   const urlArray = url.split("/");
@@ -105,6 +106,7 @@ export async function POST(
             .update(chats)
             .set({
               messages: JSON.stringify({ log: _chat } as ChatLog),
+              creator: userId,
             })
             .where(eq(chats.id, Number(id)))
             .run();

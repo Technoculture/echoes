@@ -56,6 +56,7 @@ export default function Chat(props: ChatProps) {
     body: {
       orgId: props.orgId,
       name: props.username,
+      userId: props.uid,
     },
     onError: (error) => {
       console.log("got the error", error);

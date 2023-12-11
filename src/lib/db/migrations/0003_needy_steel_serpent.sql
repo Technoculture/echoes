@@ -1,0 +1,1 @@
+ALTER TABLE chats ADD `creator` text DEFAULT ('');
