@@ -29,7 +29,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
   }
 
   return (
-    <div className="grid gap-4 grid-cols-1 relative">
+    <div className="standalone:pt-20 standalone:mt-20 grid gap-4 grid-cols-1 relative">
       {!isOrgExist ? (
         <div>
           You are not a member in any Organisations.{" "}

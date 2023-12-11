@@ -12,19 +12,16 @@ import { Key, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 
 const handleSmoothScroll = (): void => {
-  if (typeof window !== "undefined")
-  {
+  if (typeof window !== "undefined") {
     const hashId = window.location.hash;
 
     console.log({ location: window.location, hashId });
 
-    if (hashId)
-    {
+    if (hashId) {
       const element = document.querySelector(hashId);
       console.log({ element });
 
-      if (element)
-      {
+      if (element) {
         element.scrollIntoView({
           behavior: "smooth",
           block: "start",
@@ -40,15 +37,13 @@ const footerAnimationStates = {
   hidden: { opacity: 0, y: -50 },
 };
 
-export default function Home () {
+export default function Home() {
   const controls = useAnimation();
   const [ref, inView] = useInView();
   useEffect(() => {
-    if (inView)
-    {
+    if (inView) {
       controls.start("visible");
-    } else
-    {
+    } else {
       controls.start("hidden");
     }
   }, [controls, inView]);
@@ -57,23 +52,23 @@ export default function Home () {
 
   return (
     <div>
-      <AnimatePresence onExitComplete={ handleSmoothScroll }>
+      <AnimatePresence onExitComplete={handleSmoothScroll}>
         <div className="h-screen relative">
-          <Header variant="sticky" className="bg-black/40 backdrop-blur-md">
+          <Header className="bg-black/40 backdrop-blur-md">
             <Button
               className="mr-4 h-[32px]"
               variant="secondary"
               asChild
             ></Button>
           </Header>
-          <div className="absolute top-0 w-full y-0 flex flex-col flex-grow p-20 h-screen justify-center items-center gap-2 text-center">
+          <div className="absolute top-0 w-full y-0 flex flex-col flex-grow h-screen justify-center items-center gap-2 text-center">
             <div className="absolute inset-0 -z-5">
               <Image
                 src="/isometric.png"
                 alt="image of echoes being used"
                 className="w-full h-full object-cover mix-blend-soft-light"
-                fill={ true }
-                quality={ 5 }
+                fill={true}
+                quality={5}
               />
             </div>
             <div className="z-10">
@@ -86,28 +81,28 @@ export default function Home () {
               <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
                 <Link
                   href="/dashboard"
-                  className={ buttonVariants({ variant: "default" }) }
+                  className={buttonVariants({ variant: "default" })}
                 >
                   <LayoutDashboard className="mr-2 w-4 h-4" />
                   Dashboard
                 </Link>
-                { isSignedIn || (
+                {isSignedIn || (
                   <Link
-                    className={ buttonVariants({ variant: "secondary" }) }
+                    className={buttonVariants({ variant: "secondary" })}
                     href="/#requestaccess"
                   >
                     <Key className="mr-2 w-4 h-4" />
                     Request Access
                   </Link>
-                ) }
+                )}
               </div>
             </div>
           </div>
         </div>
       </AnimatePresence>
 
-      { isSignedIn || (
-        <AnimatePresence onExitComplete={ handleSmoothScroll }>
+      {isSignedIn || (
+        <AnimatePresence onExitComplete={handleSmoothScroll}>
           <div
             className="h-screen flex flex-col justify-center items-center bg-gradient-to-b from-slate-950 via-black to-black -z-20"
             id="requestaccess"
@@ -115,14 +110,14 @@ export default function Home () {
             <Widget id="H4H0D2hi" className="w-min-72 w-3/4 h-3/4 -z-2" />
           </div>
         </AnimatePresence>
-      ) }
+      )}
 
       <div className="md:p-20 p-12 bg-slate-950 border border-t-1 border-slate-900">
         <motion.div
-          ref={ ref }
-          animate={ controls }
+          ref={ref}
+          animate={controls}
           initial="hidden"
-          variants={ footerAnimationStates }
+          variants={footerAnimationStates}
           className="grid md:grid-cols-3 sm:grid-cols-1 gap-4 sm:gap-8"
         >
           <div className="p-4 flex flex-col space-y-4">
