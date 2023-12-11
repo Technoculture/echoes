@@ -13,11 +13,6 @@ export const dynamic = "force-dynamic",
 export default async function Page({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const { userId, sessionClaims } = auth();
-  // if (!userId || !uid || userId !== uid) {
-  //   redirect("/");
-  // }
-
-  console.log("the slug I got", slug);
 
   let orgConversations = [] as ChatSchema[];
   // fetch initial posts to start with
@@ -42,15 +37,6 @@ export default async function Page({ params }: { params: { slug: string } }) {
         </div>
       ) : (
         <div className="relative">
-          {/* <div className="sticky z-20 bg-black/40 backdrop-blur-md py-1.5 top-[72px] flex justify-between">
-            <Startnewchatbutton
-              org_id={sessionClaims?.org_id as string}
-              org_slug={sessionClaims?.org_slug as string}
-            />
-            <div className="h-[32px]">
-              <OrganizationSwitcher hidePersonal={true} />
-            </div>
-          </div> */}
           <ChatCardWrapper
             initialData={orgConversations}
             org_id={sessionClaims?.org_id}

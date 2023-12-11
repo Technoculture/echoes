@@ -121,7 +121,7 @@ const ChatMessageCombinator = ({
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
                           patentMessage ? (
-                            <PatentData message={patentMessage} />
+                            <PatentData index={index} message={patentMessage} />
                           ) : (
                             <Button
                               disabled={mutation.isLoading}
