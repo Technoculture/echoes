@@ -57,7 +57,7 @@ const RoomWrapper = (props: Props) => {
             <Button variant="outline" className="mr-2" asChild>
               <Link
                 onClick={() => setShowLoading(true)}
-                href={`/usr/${props.uid}`}
+                href={`/dashboard/user`}
               >
                 {showLoading ? (
                   <CircleNotch className="w-4 h-4 animate-spin" />

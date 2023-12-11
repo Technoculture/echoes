@@ -21,12 +21,7 @@ export default async function Page({
   const fullname = ((user?.firstName as string) +
     " " +
     user?.lastName) as string;
-  if (
-    !params.uid ||
-    !params.chatid ||
-    !userId ||
-    sessionClaims?.org_slug !== params.uid
-  ) {
+  if (!sessionClaims?.org_slug) {
     console.log('redirecting to "/"');
     redirect("/");
   }
@@ -58,10 +53,10 @@ export default async function Page({
         orgId={sessionClaims.org_id ? sessionClaims.org_id : ""}
         chat={chatlog.log}
         chatId={params.chatid}
-        uid={userId}
+        uid={userId as string}
         username={fullname}
         chatAvatarData={fetchedChat[0]}
-        org_slug={params.uid} // here uid contains org_slug
+        org_slug={sessionClaims?.org_slug} // here uid contains org_slug
         chatTitle={fetchedChat[0]?.title as string}
         imageUrl={fetchedChat[0]?.image_url as string}
       ></RoomWrapper>

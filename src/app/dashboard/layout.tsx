@@ -41,7 +41,7 @@ export default function LoggedInLayout({
 
   return (
     <div className="relative">
-      {pathname.includes("user_") ? (
+      {pathname.includes("user") ? (
         <Header
           newChild={
             <div className=" flex justify-between">

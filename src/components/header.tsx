@@ -52,7 +52,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
           </Link>
           <div className="flex gap-2">{props.children}</div>
           <SignedIn>
-            <div className="flex justify-end w-[87px]">
+            <div className="flex justify-end w-[195px]">
               <UserButton />
             </div>
           </SignedIn>

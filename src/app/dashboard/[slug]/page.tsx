@@ -1,6 +1,5 @@
 import { Button } from "@/components/button";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
@@ -11,12 +10,14 @@ import ChatCardWrapper from "@/components/chatcardwrapper";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
-export default async function Page({ params }: { params: { uid: string } }) {
-  const { uid } = params;
+export default async function Page({ params }: { params: { slug: string } }) {
+  const { slug } = params;
   const { userId, sessionClaims } = auth();
-  if (!userId || !uid || userId !== uid) {
-    redirect("/");
-  }
+  // if (!userId || !uid || userId !== uid) {
+  //   redirect("/");
+  // }
+
+  console.log("the slug I got", slug);
 
   let orgConversations = [] as ChatSchema[];
   // fetch initial posts to start with
@@ -53,7 +54,7 @@ export default async function Page({ params }: { params: { uid: string } }) {
           <ChatCardWrapper
             initialData={orgConversations}
             org_id={sessionClaims?.org_id}
-            uid={uid}
+            uid={userId as string}
             org_slug={sessionClaims?.org_slug as string}
           />
         </div>
