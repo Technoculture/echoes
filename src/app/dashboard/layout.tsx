@@ -7,7 +7,7 @@ import useStore from "@/store";
 import { useRef, useEffect } from "react";
 import AudioPlayer from "@/components/audioplayer";
 import { usePathname } from "next/navigation";
-import { OrganizationSwitcher, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import useSlotStore from "@/store/slots";
 import Search from "@/components/search";
@@ -61,8 +61,8 @@ export default function LoggedInLayout({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              <div className="h-[32px]">
-                <OrganizationSwitcher hidePersonal={true} />
+              <div className="h-[32px] w-[194px]">
+                {/* <CustomProfile /> */}
               </div>
             </div>
             // slotStore.slot

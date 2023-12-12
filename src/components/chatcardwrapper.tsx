@@ -25,9 +25,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
   }
   const [chatsQuery] = useQueryState("chats");
 
-  console.log("chats", chatsQuery);
   const fetchChats = async ({ pageParam = 0 }) => {
-    console.log("pageParam", pageParam);
     const response = await fetch(
       `/api/getPaginatedChats/${org_id}?page=${pageParam}&userId=${uid}&chats=${
         chatsQuery ? chatsQuery : "org"
@@ -37,7 +35,6 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
       },
     );
     const chats = await response.json();
-    console.log(chats);
     return chats.conversations;
   };
 
