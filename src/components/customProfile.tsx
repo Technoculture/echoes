@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdownmeu";
 import { LogOut, Settings, User } from "lucide-react";
@@ -19,6 +18,8 @@ import {
   useOrganizationList,
 } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
+import Link from "next/link";
+
 type Props = {};
 
 const CustomProfile = (props: Props) => {
@@ -41,15 +42,15 @@ const CustomProfile = (props: Props) => {
   });
 
   const organization = useOrganization();
-  console.log("user", user);
-  console.log(
-    "organizationList",
-    organizationList?.map((o) => ({
-      img: o.organization.imageUrl,
-      name: o.organization.name,
-    })),
-    userMemberships,
-  );
+  // console.log("user", user);
+  // console.log(
+  //   "organizationList",
+  //   organizationList?.map((o) => ({
+  //     img: o.organization.imageUrl,
+  //     name: o.organization.name,
+  //   })),
+  //   userMemberships,
+  // );
   return (
     <div>
       <DropdownMenu>
@@ -65,18 +66,12 @@ const CustomProfile = (props: Props) => {
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+              <Link href="/user-profile">Profile</Link>
+              {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Organizations</DropdownMenuLabel>
-
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             {organizationList?.map((o) => (
@@ -94,12 +89,15 @@ const CustomProfile = (props: Props) => {
                 <span>{o.membership.organization.name}</span>
               </DropdownMenuCheckboxItem>
             ))}
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              <Link href="/organization-profile">Manage Organization</Link>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
