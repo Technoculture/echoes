@@ -7,6 +7,8 @@ import Startnewchatbutton from "@/components/startnewchatbutton";
 import ChatMessageCombinator from "@/components/chatmessagecombinator";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import PersistenceExample from "@/components/tldraw";
+import usePreferences from "@/store/userPreferences";
 
 interface ChatProps {
   orgId: string;
@@ -23,6 +25,7 @@ export default function Chat(props: ChatProps) {
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
+  const preferences = usePreferences();
 
   const chatFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
@@ -99,6 +102,7 @@ export default function Chat(props: ChatProps) {
 
   return (
     <div className="flex flex-col gap-1 mx-auto">
+      {preferences.showSubRoll && <PersistenceExample />}
       <ChatMessageCombinator
         calculatedMessages={calculatedMessages}
         messages={messages}
