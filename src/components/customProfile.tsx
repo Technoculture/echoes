@@ -21,6 +21,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { UserProfile } from "@clerk/nextjs";
+import { ScrollArea, ScrollBar } from "@/components/scrollarea";
 
 type Props = {};
 
@@ -59,16 +60,17 @@ const CustomProfile = (props: Props) => {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                {/* <Link href="/user-profile">Profile</Link> */}
-
-                <DialogTrigger onClick={() => setIsPersonalProfile(true)}>
+              <DialogTrigger
+                className="w-full"
+                onClick={() => setIsPersonalProfile(true)}
+              >
+                <DropdownMenuItem>
+                  <User className="mr-2 h-4 w-4" />
+                  {/* <Link href="/user-profile">Profile</Link> */}
                   Profile
-                </DialogTrigger>
-
-                {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
-              </DropdownMenuItem>
+                  {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
+                </DropdownMenuItem>
+              </DialogTrigger>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Organizations</DropdownMenuLabel>
@@ -89,12 +91,15 @@ const CustomProfile = (props: Props) => {
                   <span>{o.membership.organization.name}</span>
                 </DropdownMenuCheckboxItem>
               ))}
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <DialogTrigger onClick={() => setIsPersonalProfile(false)}>
+              <DialogTrigger
+                className="w-full"
+                onClick={() => setIsPersonalProfile(false)}
+              >
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
                   Manage Organization
-                </DialogTrigger>
-              </DropdownMenuItem>
+                </DropdownMenuItem>
+              </DialogTrigger>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()}>
@@ -103,10 +108,11 @@ const CustomProfile = (props: Props) => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <DialogContent className="md:max-w-[900px] md:max-h-[480px] overflow-hidden">
-          <div className="grid max-h-52 md:max-h-[432px] overflow-scroll">
+        <DialogContent className="md:max-w-[920px] md:max-h-[480px] overflow-hidden">
+          <ScrollArea className="grid max-h-52 md:max-h-[432px]">
             {isPersonalProfile ? <UserProfile /> : <OrganizationProfile />}
-          </div>
+            <ScrollBar orientation="vertical" />
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
