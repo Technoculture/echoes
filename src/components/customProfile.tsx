@@ -16,12 +16,9 @@ import {
   useAuth,
   useOrganization,
   useOrganizationList,
-  OrganizationProfile,
 } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { UserProfile } from "@clerk/nextjs";
-import { ScrollArea, ScrollBar } from "@/components/scrollarea";
+import Link from "next/link";
 
 type Props = {};
 
@@ -48,73 +45,57 @@ const CustomProfile = (props: Props) => {
   const organization = useOrganization();
   return (
     <div>
-      <Dialog>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild className="cursor-pointer">
-            <Avatar>
-              <AvatarImage src={user?.imageUrl} />
-              <AvatarFallback>{user?.firstName}</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DialogTrigger
-                className="w-full"
-                onClick={() => setIsPersonalProfile(true)}
-              >
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  {/* <Link href="/user-profile">Profile</Link> */}
-                  Profile
-                  {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
-                </DropdownMenuItem>
-              </DialogTrigger>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>Organizations</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              {organizationList?.map((o) => (
-                <DropdownMenuCheckboxItem
-                  checked={o.membership.organization.id === orgId}
-                  onCheckedChange={() => {
-                    setActive({ organization: o.membership.organization.id });
-                  }}
-                  key={o.membership.organization.id}
-                >
-                  <Avatar className="mr-2 h-4 w-4">
-                    <AvatarImage src={o.organization.imageUrl} />
-                    <AvatarFallback>{o.organization.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <span>{o.membership.organization.name}</span>
-                </DropdownMenuCheckboxItem>
-              ))}
-              <DialogTrigger
-                className="w-full"
-                onClick={() => setIsPersonalProfile(false)}
-              >
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Manage Organization
-                </DropdownMenuItem>
-              </DialogTrigger>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut()}>
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild className="cursor-pointer">
+          <Avatar>
+            <AvatarImage src={user?.imageUrl} />
+            <AvatarFallback>{user?.firstName}</AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <Link className="w-full flex" href="/user-profile">
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </Link>
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DialogContent className="md:max-w-[920px] md:max-h-[480px] overflow-hidden">
-          <ScrollArea className="grid max-h-52 md:max-h-[432px]">
-            {isPersonalProfile ? <UserProfile /> : <OrganizationProfile />}
-            <ScrollBar orientation="vertical" />
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Organizations</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            {organizationList?.map((o) => (
+              <DropdownMenuCheckboxItem
+                checked={o.membership.organization.id === orgId}
+                onCheckedChange={() => {
+                  setActive({ organization: o.membership.organization.id });
+                }}
+                key={o.membership.organization.id}
+              >
+                <Avatar className="mr-2 h-4 w-4">
+                  <AvatarImage src={o.organization.imageUrl} />
+                  <AvatarFallback>{o.organization.name[0]}</AvatarFallback>
+                </Avatar>
+                <span>{o.membership.organization.name}</span>
+              </DropdownMenuCheckboxItem>
+            ))}
+            <DropdownMenuItem>
+              <Link className="w-full flex" href={`/organization-profile`}>
+                <Settings className="mr-2 h-4 w-4" />
+                Manage Organization
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => signOut()}>
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };
