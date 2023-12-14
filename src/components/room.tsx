@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { ChatEntry } from "@/lib/types";
+import { ChatEntry, ChatType } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 
 import { Button } from "@/components/button";
@@ -22,6 +22,7 @@ interface Props {
   org_slug: string;
   chatTitle: string;
   imageUrl: string;
+  type: ChatType;
 }
 
 const RoomWrapper = (props: Props) => {
@@ -88,6 +89,7 @@ const RoomWrapper = (props: Props) => {
           </Button>
         </div>
         <Chat
+          type={props.type}
           orgId={props.orgId}
           dbChat={props.chat}
           chatId={props.chatId}

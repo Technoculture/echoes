@@ -9,6 +9,7 @@ export const chats = sqliteTable("chats", {
   title: text("title").default(""),
   image_url: text("image_url").default(""),
   creator: text("creator").default(""),
+  type: text("type").default("chat"),
   audio: text("audio").default(""),
   createdAt: integer("created_at", { mode: "timestamp" }).default(
     sql`(strftime('%s', 'now'))`,

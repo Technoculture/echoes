@@ -61,9 +61,7 @@ export default function LoggedInLayout({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              <div className="h-[32px] w-[194px]">
-                {/* <CustomProfile /> */}
-              </div>
+              <div className="h-[32px] w-[32px]">{/* <CustomProfile /> */}</div>
             </div>
             // slotStore.slot
           }

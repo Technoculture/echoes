@@ -115,20 +115,22 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
           {/* <div className=" absolute opacity-100 "> */}
           <CardTitle className="">
             {title}{" "}
-            <AudioButton
-              chatId={String(chat.id)} // id to recognise chat
-              chatTitle={title}
-              description={description}
-              id={String(chat.id)} // id for the track
-              imageUrl={chat.image_url}
-              messages={chatlog.log}
-              summarize={true}
-              orgId={org_id}
-              audio={chat.audio}
-              variant="ghost"
-              size="sm"
-              className="text-xs"
-            />
+            {chat.type !== "tldraw" && (
+              <AudioButton
+                chatId={String(chat.id)} // id to recognise chat
+                chatTitle={title}
+                description={description}
+                id={String(chat.id)} // id for the track
+                imageUrl={chat.image_url}
+                messages={chatlog.log}
+                summarize={true}
+                orgId={org_id}
+                audio={chat.audio}
+                variant="ghost"
+                size="sm"
+                className="text-xs"
+              />
+            )}
           </CardTitle>
           <CardDescription className="text-foreground">
             {title === "" ? (

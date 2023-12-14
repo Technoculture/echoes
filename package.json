@@ -21,6 +21,7 @@
     "@clerk/nextjs": "4.26.2",
     "@clerk/themes": "1.7.4",
     "@dqbd/tiktoken": "1.0.3",
+    "@hookform/resolvers": "^3.3.2",
     "@libsql/client": "0.3.1",
     "@liveblocks/client": "1.1.6",
     "@liveblocks/react": "1.1.6",
@@ -82,6 +83,7 @@
     "react-div-100vh": "0.7.0",
     "react-dom": "18.2.0",
     "react-dropzone": "14.2.3",
+    "react-hook-form": "7.48.2",
     "react-intersection-observer": "9.5.2",
     "react-markdown": "8.0.7",
     "react-mic": "12.4.6",
@@ -92,7 +94,7 @@
     "tailwind-merge": "1.12.0",
     "tailwindcss-animate": "1.0.5",
     "typescript": "5.0.3",
-    "zod": "3.21.4",
+    "zod": "^3.22.4",
     "zustand": "^4.4.6"
   },
   "devDependencies": {

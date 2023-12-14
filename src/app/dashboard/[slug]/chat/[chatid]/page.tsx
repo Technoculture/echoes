@@ -1,4 +1,4 @@
-import { ChatLog } from "@/lib/types";
+import { ChatLog, ChatType } from "@/lib/types";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { Chat as ChatSchema, chats } from "@/lib/db/schema";
@@ -59,6 +59,7 @@ export default async function Page({
         org_slug={sessionClaims?.org_slug} // here uid contains org_slug
         chatTitle={fetchedChat[0]?.title as string}
         imageUrl={fetchedChat[0]?.image_url as string}
+        type={fetchedChat[0]?.type as ChatType}
       ></RoomWrapper>
     </AblyChannelProvider>
   );
