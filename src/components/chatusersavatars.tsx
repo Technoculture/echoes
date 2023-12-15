@@ -31,6 +31,8 @@ const Chatusersavatars = ({
     queryFn: () => getUsers(allPresenceIds),
     refetchInterval: Infinity,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    cacheTime: Infinity,
   });
 
   const getUsers = async (ids: Array<string>) => {
