@@ -31,7 +31,7 @@
   ],
   "theme_color": "#03050A",
   "background_color": "#03050A",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "scope": ".",
   "display": "standalone",
   "orientation": "portrait"

@@ -52,7 +52,7 @@ const RoomWrapper = (props: Props) => {
 
   return (
     <>
-      <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full">
+      <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full mt-[80px]">
         <div className="flex space-between mb-2">
           <div className="flex items-center">
             <Button variant="outline" className="mr-2" asChild>

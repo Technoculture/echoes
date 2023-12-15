@@ -5,6 +5,7 @@ import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 import ChatCardWrapper from "@/components/chatcardwrapper";
+import { isMobile } from "react-device-detect";
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
@@ -24,8 +25,12 @@ export default async function Page({ params }: { params: { slug: string } }) {
     });
   }
 
+  // if (isMobile) {
+  console.log("isMobile", isMobile);
+  // }
+
   return (
-    <div className="grid gap-4 grid-cols-1 relative">
+    <div className="mt-[120px] grid gap-4 grid-cols-1 relative">
       {!isOrgExist ? (
         <div>
           You are not a member in any Organisations.{" "}

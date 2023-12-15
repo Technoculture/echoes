@@ -44,7 +44,7 @@ export default function LoggedInLayout({
       {pathname.includes("user") ? (
         <Header
           newChild={
-            <div className="grid grid-cols-3">
+            <div className="grid grid-cols-3 items-center">
               <Startnewchatbutton
                 org_id={orgId as string}
                 org_slug={orgSlug as string}
@@ -55,7 +55,10 @@ export default function LoggedInLayout({
                 onValueChange={(val) => setCards(val)}
               >
                 <TabsList>
-                  <TabsTrigger value="org" className="flex gap-2 items-center">
+                  <TabsTrigger
+                    value={cards || "org"}
+                    className="flex gap-2 items-center"
+                  >
                     <Building className="h-4 w-4" />{" "}
                     <span className="hidden sm:inline">Org Chats</span>
                   </TabsTrigger>

@@ -22,8 +22,8 @@
     "@clerk/nextjs": "4.26.2",
     "@clerk/themes": "1.7.4",
     "@dqbd/tiktoken": "1.0.3",
-    "@hookform/resolvers": "^3.3.2",
     "@ducanh2912/next-pwa": "^10.0.0",
+    "@hookform/resolvers": "^3.3.2",
     "@libsql/client": "0.3.1",
     "@liveblocks/client": "1.1.6",
     "@liveblocks/react": "1.1.6",
@@ -82,6 +82,7 @@
     "openai": "^4.17.4",
     "prettier": "3.0.0",
     "react": "18.2.0",
+    "react-device-detect": "^2.2.3",
     "react-div-100vh": "0.7.0",
     "react-dom": "18.2.0",
     "react-dropzone": "14.2.3",
@@ -113,6 +114,7 @@
     "postcss": "8.4.21",
     "pwa-asset-generator": "^6.3.1",
     "tailwindcss": "3.3.1",
+    "tailwindcss-safe-area": "^0.4.1",
     "ts-node": "10.9.1",
     "webpack": "^5.89.0"
   }

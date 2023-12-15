@@ -49,6 +49,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
         pages: [initialData],
       },
       refetchOnWindowFocus: false,
+      refetchInterval: 1000 * 60 * 5,
       // enabled: false,
     });
 
