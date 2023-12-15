@@ -72,6 +72,7 @@ const CustomProfile = (props: Props) => {
                   setActive({ organization: o.membership.organization.id });
                 }}
                 key={o.membership.organization.id}
+                className="cursor-pointer"
               >
                 <Avatar className="mr-2 h-4 w-4">
                   <AvatarImage src={o.organization.imageUrl} />

@@ -83,7 +83,7 @@ const PatentData = ({
             >
               <DialogTrigger asChild>
                 <div
-                  className="text-sm hover:ring-1 ring-ring hover:bg-secondary rounded-sm px-4 py-3 grid grid-cols-1 gap-2"
+                  className="text-sm hover:ring-1 ring-ring hover:bg-secondary rounded-sm px-4 py-3 grid grid-cols-1 gap-2 cursor-pointer"
                   key={index}
                   onClick={() => {
                     setDialogItemIndex(index);

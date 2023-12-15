@@ -18,6 +18,7 @@ import Image from "next/image";
 import AudioButton from "@/components//audioButton";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 // import { dynamicBlurDataUrl } from "@/utils/helpers";
 
 type Props = {
@@ -179,7 +180,10 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
                 pathname: `${org_slug}/chat/${chat.id}`,
               }}
               key={chat.id}
-              className={buttonVariants({ variant: "secondary" })}
+              className={cn(
+                buttonVariants({ variant: "secondary" }),
+                "h-[32px]",
+              )}
             >
               {showLoading ? (
                 <CircleNotch className="m-1 w-4 h-4 animate-spin" />

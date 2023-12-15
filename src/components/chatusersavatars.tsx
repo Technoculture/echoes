@@ -39,7 +39,6 @@ const Chatusersavatars = ({
     });
     return res.data.users as UserAvatarData[];
   };
-  console.log("count", count);
 
   return (
     <div>
