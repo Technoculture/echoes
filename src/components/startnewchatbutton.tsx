@@ -25,6 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { MessageSquarePlus, PenTool } from "lucide-react";
 
 interface Props {
   org_slug: string;
@@ -84,13 +85,14 @@ const Startnewchatbutton = (props: Props) => {
         setIsOpen(val);
       }}
     >
-      <DialogTrigger asChild>
-        <button className={buttonVariants({ variant: "outline" })}>
+      <DialogTrigger asChild className="max-w-max">
+        <Button variant="outline" size="default">
           <>
             <Plus className="w-4 h-4 mr-2" />
-            New Chat
+            <span className="sm:mr-1">New</span>
+            <span className="hidden sm:inline"> Chat </span>
           </>
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {
@@ -104,7 +106,7 @@ const Startnewchatbutton = (props: Props) => {
         </DialogHeader>
         {/* show two boxes. one for a chat another for a tldraw */}
         {!showTitleInput && (
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
               className={buttonVariants({ variant: "outline" })}
@@ -121,7 +123,7 @@ const Startnewchatbutton = (props: Props) => {
                 </>
               ) : (
                 <>
-                  <Plus className="w-4 h-4 mr-2" />
+                  <MessageSquarePlus className="w-4 h-4 mr-2" />
                   New Chat
                 </>
               )}
@@ -140,8 +142,8 @@ const Startnewchatbutton = (props: Props) => {
                 </>
               ) : (
                 <>
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Tldraw
+                  <PenTool className="w-4 h-4 mr-2" />
+                  New Diagram
                 </>
               )}
             </button>

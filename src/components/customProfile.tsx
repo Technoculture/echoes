@@ -23,7 +23,7 @@ import Link from "next/link";
 type Props = {};
 
 const CustomProfile = (props: Props) => {
-  const { signOut, isSignedIn, orgId, orgSlug, userId } = useAuth();
+  const { signOut, isSignedIn, orgId, orgSlug, userId, orgRole } = useAuth();
   const [isPersonalProfile, setIsPersonalProfile] = React.useState(true);
 
   const { user } = useUser();
@@ -52,9 +52,8 @@ const CustomProfile = (props: Props) => {
             <AvatarFallback>{user?.firstName}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
+        <DropdownMenuContent className="w-56 mr-4 mt-2">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <Link className="w-full flex" href="/user-profile">
@@ -65,7 +64,6 @@ const CustomProfile = (props: Props) => {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Organizations</DropdownMenuLabel>
-          <DropdownMenuSeparator />
           <DropdownMenuGroup>
             {organizationList?.map((o) => (
               <DropdownMenuCheckboxItem
@@ -82,14 +80,16 @@ const CustomProfile = (props: Props) => {
                 <span>{o.membership.organization.name}</span>
               </DropdownMenuCheckboxItem>
             ))}
-            <DropdownMenuItem>
-              <Link className="w-full flex" href={`/organization-profile`}>
-                <Settings className="mr-2 h-4 w-4" />
-                Manage Organization
-              </Link>
-            </DropdownMenuItem>
+            {orgRole === "admin" && (
+              <DropdownMenuItem>
+                <Link className="w-full flex" href={`/organization-profile`}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Manage Organization
+                </Link>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
           </DropdownMenuGroup>
-          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>

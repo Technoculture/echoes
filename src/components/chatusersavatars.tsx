@@ -11,6 +11,7 @@ interface Props {
   liveUserIds?: Array<string>;
   chatId: number;
   chatCreatorId: string;
+  count?: number;
 }
 
 interface UserAvatarData {
@@ -23,6 +24,7 @@ const Chatusersavatars = ({
   allPresenceIds,
   liveUserIds,
   chatCreatorId,
+  count = 2,
 }: Props) => {
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: [`chat-user-avatars_${chatId}`, allPresenceIds],
@@ -37,6 +39,7 @@ const Chatusersavatars = ({
     });
     return res.data.users as UserAvatarData[];
   };
+  console.log("count", count);
 
   return (
     <div>
@@ -48,40 +51,27 @@ const Chatusersavatars = ({
         </div>
       ) : (
         <div className="flex">
-          {data
-            .filter((user) => user.id === chatCreatorId)
-            .map((user, index) => (
-              <Avatar
-                className={cn(
-                  "",
-                  "mr-4",
-                  liveUserIds && liveUserIds.includes(user.id)
-                    ? "border-2 border-green-600"
-                    : "",
-                )}
-                key={user.id}
-              >
-                <AvatarImage src={user.img} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            ))}
-          {data
-            .filter((user) => user.id !== chatCreatorId)
-            .map((user, index) => (
-              <Avatar
-                className={cn(
-                  "w-9 h-9",
-                  "-ml-2",
-                  liveUserIds && liveUserIds.includes(user.id)
-                    ? "border-2 border-green-600"
-                    : "",
-                )}
-                key={user.id}
-              >
-                <AvatarImage src={user.img} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            ))}
+          {data.slice(0, count).map((user, index) => (
+            <Avatar
+              className={cn(
+                "w-8 h-8",
+                user.id === chatCreatorId ? "" : "-ml-2",
+                liveUserIds && liveUserIds.includes(user.id)
+                  ? "border-2 border-green-600"
+                  : "border-2 border-black",
+              )}
+              key={user.id}
+            >
+              <AvatarImage src={user.img} alt="@shadcn" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          ))}
+          {data.slice(count).length ? (
+            <Avatar className={cn("w-8 h-8", "-ml-2")} key={"uuid"}>
+              <AvatarImage src={""} alt="@shadcn" />
+              <AvatarFallback>+{data.slice(count).length}</AvatarFallback>
+            </Avatar>
+          ) : null}
         </div>
       )}
     </div>

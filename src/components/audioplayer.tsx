@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { useStore } from "@/store";
-import { Pause, Play, X } from "lucide-react";
+import { Music, Pause, Play, X } from "lucide-react";
 import { Slider } from "./slider";
 import { Button } from "./button";
 import {
@@ -135,7 +135,7 @@ const AudioPlayer = (props: Props) => {
     <>
       <Dialog>
         <DialogTrigger asChild className="max-h-[32px]">
-          <Button variant="ghost">
+          <Button variant="ghost" className="max-h-[32px]">
             <audio
               ref={audioRef}
               src={currentTrack ? currentTrack?.src : undefined}
@@ -150,7 +150,10 @@ const AudioPlayer = (props: Props) => {
               }}
               onEnded={handleAudioEnded}
             ></audio>
-            Playlist
+            <div className="flex items-center gap-2">
+              <Music className="h-4 w-4" />
+              <span className="hidden sm:inline">Playlist</span>
+            </div>
           </Button>
         </DialogTrigger>
         <DialogContent>

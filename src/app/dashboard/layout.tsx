@@ -44,12 +44,16 @@ export default function LoggedInLayout({
       {pathname.includes("user") ? (
         <Header
           newChild={
-            <div className=" flex justify-between">
+            <div className="grid grid-cols-3">
               <Startnewchatbutton
                 org_id={orgId as string}
                 org_slug={orgSlug as string}
               />
-              <Tabs defaultValue="org" onValueChange={(val) => setCards(val)}>
+              <Tabs
+                className="mx-auto"
+                defaultValue="org"
+                onValueChange={(val) => setCards(val)}
+              >
                 <TabsList>
                   <TabsTrigger value="org" className="flex gap-2 items-center">
                     <Building className="h-4 w-4" />{" "}
@@ -61,7 +65,7 @@ export default function LoggedInLayout({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              <div className="h-[32px] w-[32px]">{/* <CustomProfile /> */}</div>
+              {/* <div className="h-[32px] w-[32px]"><CustomProfile /></div> */}
             </div>
             // slotStore.slot
           }

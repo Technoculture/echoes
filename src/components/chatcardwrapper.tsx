@@ -66,7 +66,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
         {allCards?.map((chat, i) => {
           return (
             <div
@@ -75,6 +75,7 @@ const ChatCardWrapper = ({ org_id, org_slug, uid, initialData }: Props) => {
               ref={allCards.length - 1 === i ? ref : null}
             >
               <Chatcard
+                type={chat.type}
                 priority={i < 4}
                 chat={chat}
                 org_id={org_id}
