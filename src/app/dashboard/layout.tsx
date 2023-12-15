@@ -51,14 +51,14 @@ export default function LoggedInLayout({
               />
               <Tabs
                 className="mx-auto"
-                defaultValue="org"
-                onValueChange={(val) => setCards(val)}
+                value={cards || "org"}
+                onValueChange={(val) => {
+                  console.log("onvalchange", val);
+                  setCards(val);
+                }}
               >
                 <TabsList>
-                  <TabsTrigger
-                    value={cards || "org"}
-                    className="flex gap-2 items-center"
-                  >
+                  <TabsTrigger value="org" className="flex gap-2 items-center">
                     <Building className="h-4 w-4" />{" "}
                     <span className="hidden sm:inline">Org Chats</span>
                   </TabsTrigger>

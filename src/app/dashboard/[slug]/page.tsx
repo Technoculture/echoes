@@ -5,13 +5,18 @@ import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs";
 import ChatCardWrapper from "@/components/chatcardwrapper";
-import { isMobile } from "react-device-detect";
 // import Uploadzone from "@/components/uploadzone";
 
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { [key: string]: string };
+}) {
   const { slug } = params;
   const { userId, sessionClaims } = auth();
 
@@ -20,14 +25,17 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const isOrgExist = Object.keys(sessionClaims?.organizations as Object).length;
 
   if (isOrgExist) {
-    orgConversations = await getConversations({
-      orgId: String(sessionClaims?.org_id),
-    });
+    if (searchParams.hasOwnProperty("chats") && searchParams.chats === "me") {
+      orgConversations = await getConversations({
+        orgId: String(sessionClaims?.org_id),
+        userId: String(userId),
+      });
+    } else {
+      orgConversations = await getConversations({
+        orgId: String(sessionClaims?.org_id),
+      });
+    }
   }
-
-  // if (isMobile) {
-  console.log("isMobile", isMobile);
-  // }
 
   return (
     <div className="mt-[120px] grid gap-4 grid-cols-1 relative">
@@ -56,18 +64,38 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
 const getConversations = async ({
   orgId,
+  userId,
   offset = 0,
 }: {
   orgId: string;
+  userId?: string;
   offset?: number;
 }): Promise<ChatSchema[]> => {
-  let orgConversations = await db
-    .select()
-    .from(chats)
-    .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
-    .orderBy(desc(chats.updatedAt))
-    .offset(offset)
-    .limit(25)
-    .all();
-  return orgConversations;
+  if (!userId) {
+    let orgConversations = await db
+      .select()
+      .from(chats)
+      .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
+      .orderBy(desc(chats.updatedAt))
+      .offset(offset)
+      .limit(25)
+      .all();
+    return orgConversations;
+  } else {
+    let orgConversations = await db
+      .select()
+      .from(chats)
+      .where(
+        and(
+          eq(chats.user_id, String(orgId)),
+          ne(chats.messages, "NULL"),
+          eq(chats.creator, userId),
+        ),
+      )
+      .orderBy(desc(chats.updatedAt))
+      .offset(offset)
+      .limit(25)
+      .all();
+    return orgConversations;
+  }
 };
