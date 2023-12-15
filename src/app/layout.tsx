@@ -248,11 +248,14 @@ export default function RootLayout({
 
           <title>Echoes</title>
         </head>
-        <body className="bg-background">
+        <body className="bg-background overscroll-none">
           <Providers>
-            <div 
-              style = {{ WebkitTapHighlightColor: "transparent" }}
-              className="flex-col flex-grow">{children}</div>
+            <div
+              style={{ WebkitTapHighlightColor: "transparent" }}
+              className="flex-col flex-grow"
+            >
+              {children}
+            </div>
           </Providers>
         </body>
       </html>

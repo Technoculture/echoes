@@ -20,5 +20,5 @@ export async function GET(
   const msg = fetchedChat[0]?.messages;
   const chatlog = JSON.parse(msg as string) as ChatLog;
 
-  return NextResponse.json({ chats: chatlog.log });
+  return NextResponse.json({ chats: chatlog ? chatlog.log : [] });
 }

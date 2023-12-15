@@ -7,11 +7,13 @@ import useStore from "@/store";
 import { useRef, useEffect } from "react";
 import AudioPlayer from "@/components/audioplayer";
 import { usePathname } from "next/navigation";
-import { OrganizationSwitcher, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import useSlotStore from "@/store/slots";
 import Search from "@/components/search";
-
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Building, User } from "lucide-react";
+import { useQueryState } from "next-usequerystate";
 export default function LoggedInLayout({
   children,
   team, // will be a page or nested layout
@@ -24,6 +26,7 @@ export default function LoggedInLayout({
   const audioRef = useRef<HTMLAudioElement>(null);
   const pathname = usePathname();
   const { orgSlug, orgId } = useAuth();
+  const [cards, setCards] = useQueryState("chats");
 
   useEffect(() => {
     if (store.audioSrc && audioRef.current) {
@@ -38,17 +41,34 @@ export default function LoggedInLayout({
 
   return (
     <div className="relative">
-      {pathname.includes("user_") ? (
+      {pathname.includes("user") ? (
         <Header
           newChild={
-            <div className=" flex justify-between">
+            <div className="grid grid-cols-3 items-center">
               <Startnewchatbutton
                 org_id={orgId as string}
                 org_slug={orgSlug as string}
               />
-              <div className="h-[32px]">
-                <OrganizationSwitcher hidePersonal={true} />
-              </div>
+              <Tabs
+                className="mx-auto"
+                value={cards || "org"}
+                onValueChange={(val) => {
+                  console.log("onvalchange", val);
+                  setCards(val);
+                }}
+              >
+                <TabsList>
+                  <TabsTrigger value="org" className="flex gap-2 items-center">
+                    <Building className="h-4 w-4" />{" "}
+                    <span className="hidden sm:inline">Org Chats</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="me" className="flex gap-2 items-center">
+                    <User className="h-4 w-4" />
+                    <span className="hidden sm:inline"> My Chats</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              {/* <div className="h-[32px] w-[32px]"><CustomProfile /></div> */}
             </div>
             // slotStore.slot
           }

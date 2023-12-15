@@ -4,10 +4,11 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/logo.png";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import CustomProfile from "@/components/customProfile";
 
 const headerVariants = cva("w-full", {
   variants: {
@@ -33,12 +34,12 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
       <header
         className={cn(
           headerVariants({ variant, className }),
-          "z-50 fixed top-0 p-5 standalone:pt-14 flex flex-col gap-2",
+          "z-50 fixed top-0 p-5 flex flex-col gap-2",
         )}
         ref={ref}
         {...props}
       >
-        <div className="flex justify-between items-center">
+        <div className="grid grid-cols-3">
           <Link
             href="/"
             className="gap-2 flex items-center cursor-pointer h-[32px]"
@@ -50,10 +51,10 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
             />
             <h1 className="text-gray-200 align-middle">Echoes</h1>
           </Link>
-          <div className="flex gap-2">{props.children}</div>
+          <div className="flex gap-2 mx-auto">{props.children}</div>
           <SignedIn>
-            <div className="flex justify-end w-[87px]">
-              <UserButton />
+            <div className="flex justify-end">
+              <CustomProfile />
             </div>
           </SignedIn>
           <SignedOut></SignedOut>

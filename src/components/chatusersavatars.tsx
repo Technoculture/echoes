@@ -5,12 +5,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { cn } from "@/lib/utils";
-import { Loader2, RefreshCcw } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 interface Props {
   allPresenceIds: Array<string>;
   liveUserIds?: Array<string>;
   chatId: number;
   chatCreatorId: string;
+  count?: number;
 }
 
 interface UserAvatarData {
@@ -23,12 +24,15 @@ const Chatusersavatars = ({
   allPresenceIds,
   liveUserIds,
   chatCreatorId,
+  count = 2,
 }: Props) => {
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: [`chat-user-avatars_${chatId}`, allPresenceIds],
     queryFn: () => getUsers(allPresenceIds),
     refetchInterval: Infinity,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    cacheTime: Infinity,
   });
 
   const getUsers = async (ids: Array<string>) => {
@@ -40,48 +44,33 @@ const Chatusersavatars = ({
 
   return (
     <div>
-      {isLoading ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : isError ? (
+      {isLoading ? null : isError ? (
         <div onClick={() => refetch()}>
           <RefreshCcw className="h-4 w-4" />
         </div>
       ) : (
         <div className="flex">
-          {data
-            .filter((user) => user.id === chatCreatorId)
-            .map((user, index) => (
-              <Avatar
-                className={cn(
-                  "",
-                  "mr-4",
-                  liveUserIds && liveUserIds.includes(user.id)
-                    ? "border-2 border-green-600"
-                    : "",
-                )}
-                key={user.id}
-              >
-                <AvatarImage src={user.img} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            ))}
-          {data
-            .filter((user) => user.id !== chatCreatorId)
-            .map((user, index) => (
-              <Avatar
-                className={cn(
-                  "w-9 h-9",
-                  "-ml-2",
-                  liveUserIds && liveUserIds.includes(user.id)
-                    ? "border-2 border-green-600"
-                    : "",
-                )}
-                key={user.id}
-              >
-                <AvatarImage src={user.img} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            ))}
+          {data.slice(0, count).map((user, index) => (
+            <Avatar
+              className={cn(
+                "w-8 h-8",
+                user.id === chatCreatorId ? "" : "-ml-2",
+                liveUserIds && liveUserIds.includes(user.id)
+                  ? "border-2 border-green-600"
+                  : "border-2 border-black",
+              )}
+              key={user.id}
+            >
+              <AvatarImage src={user.img} alt="@shadcn" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          ))}
+          {data.slice(count).length ? (
+            <Avatar className={cn("w-8 h-8", "-ml-2")} key={"uuid"}>
+              <AvatarImage src={""} alt="@shadcn" />
+              <AvatarFallback>+{data.slice(count).length}</AvatarFallback>
+            </Avatar>
+          ) : null}
         </div>
       )}
     </div>

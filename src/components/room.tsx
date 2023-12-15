@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { ChatEntry } from "@/lib/types";
+import { ChatEntry, ChatType } from "@/lib/types";
 import { Chat as ChatSchema } from "@/lib/db/schema";
 
 import { Button } from "@/components/button";
@@ -22,6 +22,7 @@ interface Props {
   org_slug: string;
   chatTitle: string;
   imageUrl: string;
+  type: ChatType;
 }
 
 const RoomWrapper = (props: Props) => {
@@ -51,13 +52,13 @@ const RoomWrapper = (props: Props) => {
 
   return (
     <>
-      <div className="standalone:pt-10 standalone:mt-20 flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full">
+      <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full mt-[80px]">
         <div className="flex space-between mb-2">
           <div className="flex items-center">
             <Button variant="outline" className="mr-2" asChild>
               <Link
                 onClick={() => setShowLoading(true)}
-                href={`/usr/${props.uid}`}
+                href={`/dashboard/user`}
               >
                 {showLoading ? (
                   <CircleNotch className="w-4 h-4 animate-spin" />
@@ -88,6 +89,7 @@ const RoomWrapper = (props: Props) => {
           </Button>
         </div>
         <Chat
+          type={props.type}
           orgId={props.orgId}
           dbChat={props.chat}
           chatId={props.chatId}

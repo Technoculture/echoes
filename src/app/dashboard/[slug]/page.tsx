@@ -1,6 +1,5 @@
 import { Button } from "@/components/button";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { chats, Chat as ChatSchema } from "@/lib/db/schema";
 import { eq, desc, ne, and } from "drizzle-orm";
@@ -11,25 +10,35 @@ import ChatCardWrapper from "@/components/chatcardwrapper";
 export const dynamic = "force-dynamic",
   revalidate = 0;
 
-export default async function Page({ params }: { params: { uid: string } }) {
-  const { uid } = params;
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { [key: string]: string };
+}) {
+  const { slug } = params;
   const { userId, sessionClaims } = auth();
-  if (!userId || !uid || userId !== uid) {
-    redirect("/");
-  }
 
   let orgConversations = [] as ChatSchema[];
   // fetch initial posts to start with
   const isOrgExist = Object.keys(sessionClaims?.organizations as Object).length;
 
   if (isOrgExist) {
-    orgConversations = await getConversations({
-      orgId: String(sessionClaims?.org_id),
-    });
+    if (searchParams.hasOwnProperty("chats") && searchParams.chats === "me") {
+      orgConversations = await getConversations({
+        orgId: String(sessionClaims?.org_id),
+        userId: String(userId),
+      });
+    } else {
+      orgConversations = await getConversations({
+        orgId: String(sessionClaims?.org_id),
+      });
+    }
   }
 
   return (
-    <div className="standalone:pt-20 standalone:mt-20 grid gap-4 grid-cols-1 relative">
+    <div className="mt-[120px] grid gap-4 grid-cols-1 relative">
       {!isOrgExist ? (
         <div>
           You are not a member in any Organisations.{" "}
@@ -41,19 +50,10 @@ export default async function Page({ params }: { params: { uid: string } }) {
         </div>
       ) : (
         <div className="relative">
-          {/* <div className="sticky z-20 bg-black/40 backdrop-blur-md py-1.5 top-[72px] flex justify-between">
-            <Startnewchatbutton
-              org_id={sessionClaims?.org_id as string}
-              org_slug={sessionClaims?.org_slug as string}
-            />
-            <div className="h-[32px]">
-              <OrganizationSwitcher hidePersonal={true} />
-            </div>
-          </div> */}
           <ChatCardWrapper
             initialData={orgConversations}
             org_id={sessionClaims?.org_id}
-            uid={uid}
+            uid={userId as string}
             org_slug={sessionClaims?.org_slug as string}
           />
         </div>
@@ -64,18 +64,38 @@ export default async function Page({ params }: { params: { uid: string } }) {
 
 const getConversations = async ({
   orgId,
+  userId,
   offset = 0,
 }: {
   orgId: string;
+  userId?: string;
   offset?: number;
 }): Promise<ChatSchema[]> => {
-  let orgConversations = await db
-    .select()
-    .from(chats)
-    .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
-    .orderBy(desc(chats.updatedAt))
-    .offset(offset)
-    .limit(25)
-    .all();
-  return orgConversations;
+  if (!userId) {
+    let orgConversations = await db
+      .select()
+      .from(chats)
+      .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
+      .orderBy(desc(chats.updatedAt))
+      .offset(offset)
+      .limit(25)
+      .all();
+    return orgConversations;
+  } else {
+    let orgConversations = await db
+      .select()
+      .from(chats)
+      .where(
+        and(
+          eq(chats.user_id, String(orgId)),
+          ne(chats.messages, "NULL"),
+          eq(chats.creator, userId),
+        ),
+      )
+      .orderBy(desc(chats.updatedAt))
+      .offset(offset)
+      .limit(25)
+      .all();
+    return orgConversations;
+  }
 };

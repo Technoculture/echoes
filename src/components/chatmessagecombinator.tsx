@@ -6,10 +6,10 @@ import ChatMessage from "@/components/chatmessage";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/button";
 import PatentData from "@/components/patentdata";
-import { Loader2 } from "lucide-react";
 import usePreferences from "@/store/userPreferences";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -121,7 +121,7 @@ const ChatMessageCombinator = ({
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
                           patentMessage ? (
-                            <PatentData message={patentMessage} />
+                            <PatentData index={index} message={patentMessage} />
                           ) : (
                             <Button
                               disabled={mutation.isLoading}
@@ -136,10 +136,12 @@ const ChatMessageCombinator = ({
                             >
                               {mutation.isLoading &&
                               mutation.variables?.id === msg.id ? (
-                                <>
-                                  <Loader2 className="mr-2 animate-spin" />{" "}
-                                  Searching...
-                                </>
+                                <div>
+                                  <div className="w-[150px]">
+                                    <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
+                                  </div>
+                                  <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
+                                </div>
                               ) : (
                                 "Search For Patents"
                               )}

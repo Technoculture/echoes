@@ -71,8 +71,11 @@ const Search = (props: Props) => {
       }}
     >
       <DialogTrigger asChild className="max-h-[32px]">
-        <Button variant="ghost">
-          <SearchIcon className="h-4 w-4" />
+        <Button variant="ghost" className="max-h-[32px]">
+          <div className="flex items-center gap-2">
+            <SearchIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Search</span>
+          </div>
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -89,8 +92,8 @@ const Search = (props: Props) => {
                   <Link
                     href={
                       result.id
-                        ? `/usr/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
-                        : `/usr/${props.orgSlug}/chat/${result.chatId}`
+                        ? `/dashboard/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
+                        : `/dashboard/${props.orgSlug}/chat/${result.chatId}`
                     } // needs to be updated
                     onClick={() => setOpen(false)}
                     key={result.objectID}

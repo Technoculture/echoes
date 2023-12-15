@@ -62,17 +62,27 @@ const InputBar = (props: InputBarProps) => {
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
   const queryClient = useQueryClient();
+  // const ably = useAbly();
+
+  // console.log(
+  //   "ably",
+  //   ably.channels
+  //     .get(`channel_${props.chatId}`)
+  //     .presence.get({ clientId: `room_${props.chatId}` }),
+  // );
 
   const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
   // using local state for development purposes
 
-  // console.log(
-  //   "presenceData",
-  //   presenceData
-  //     .filter((p) => p.data.isTyping)
-  //     .map((p) => p.data.username)
-  //     .join(", "),
-  // );
+  console.log(
+    "presenceData",
+    presenceData
+      // .filter((p) => p.data.isTyping)
+      // .filter((p) => p.data)
+      // .map((p) => p.data.username)
+      .map((p) => p.data),
+    // .join(", "),
+  );
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (props.value.trim() === "") {

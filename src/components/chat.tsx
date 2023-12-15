@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { AIType } from "@/lib/types";
+import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import ChatMessageCombinator from "@/components/chatmessagecombinator";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import PersistenceExample from "@/components/tldraw";
 
 interface ChatProps {
   orgId: string;
@@ -17,6 +18,7 @@ interface ChatProps {
   org_slug: string;
   chatTitle: string;
   imageUrl: string;
+  type: ChatType;
 }
 
 export default function Chat(props: ChatProps) {
@@ -55,9 +57,9 @@ export default function Chat(props: ChatProps) {
     initialMessages: chatsData,
     body: {
       orgId: props.orgId,
-      isFast: choosenAI === "universal" ? true : false,
       name: props.username,
-    }, // some conflicts in role
+      userId: props.uid,
+    },
     onError: (error) => {
       console.log("got the error", error);
       setIsChatCompleted(true);
@@ -99,43 +101,62 @@ export default function Chat(props: ChatProps) {
 
   return (
     <div className="flex flex-col gap-1 mx-auto">
-      <ChatMessageCombinator
-        calculatedMessages={calculatedMessages}
-        messages={messages}
-        chatId={props.chatId}
-        orgId={props.orgId}
-        name={props.username}
-        uid={props.uid}
-        setMessages={setMessages}
-        chatTitle={props.chatTitle}
-        imageUrl={props.imageUrl}
-        isChatCompleted={isChatCompleted}
-        setIsChatCompleted={setIsChatCompleted}
-        append={append}
-        isLoading={isLoading}
-      />
-      {/* </div> */}
-      {isChatCompleted && (
-        <div>
-          <Startnewchatbutton org_slug={props.org_slug} org_id={props.orgId} />
+      {props.type === "tldraw" ? (
+        <div className=" w-[calc(100dvw-40px)] sm:w-screen sm:max-w-[700px] h-[calc(100dvh-128px)]">
+          <PersistenceExample
+            org_slug={props.org_slug}
+            org_id={props.orgId}
+            dbChat={props.dbChat}
+            username={props.username}
+            chatId={props.chatId}
+            uid={props.uid}
+          />
         </div>
+      ) : (
+        // {preferences.showSubRoll && <PersistenceExample />}
+        <>
+          <ChatMessageCombinator
+            calculatedMessages={calculatedMessages}
+            messages={messages}
+            chatId={props.chatId}
+            orgId={props.orgId}
+            name={props.username}
+            uid={props.uid}
+            setMessages={setMessages}
+            chatTitle={props.chatTitle}
+            imageUrl={props.imageUrl}
+            isChatCompleted={isChatCompleted}
+            setIsChatCompleted={setIsChatCompleted}
+            append={append}
+            isLoading={isLoading}
+          />
+          {/* </div> */}
+          {isChatCompleted && (
+            <div>
+              <Startnewchatbutton
+                org_slug={props.org_slug}
+                org_id={props.orgId}
+              />
+            </div>
+          )}
+          <InputBar
+            chatId={props.chatId}
+            orgId={props.orgId}
+            messages={messages}
+            setMessages={setMessages}
+            username={props.username}
+            userId={props.uid}
+            choosenAI={choosenAI}
+            setChoosenAI={setChoosenAI}
+            value={input}
+            onChange={handleInputChange}
+            setInput={setInput}
+            append={append}
+            isChatCompleted={isChatCompleted}
+            isLoading={isLoading}
+          />
+        </>
       )}
-      <InputBar
-        chatId={props.chatId}
-        orgId={props.orgId}
-        messages={messages}
-        setMessages={setMessages}
-        username={props.username}
-        userId={props.uid}
-        choosenAI={choosenAI}
-        setChoosenAI={setChoosenAI}
-        value={input}
-        onChange={handleInputChange}
-        setInput={setInput}
-        append={append}
-        isChatCompleted={isChatCompleted}
-        isLoading={isLoading}
-      />
     </div>
   );
 }

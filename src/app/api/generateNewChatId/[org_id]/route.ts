@@ -8,6 +8,9 @@ export async function POST(
   // const body = await request.json();
   // const org_id = body.org_id;
   console.log("getting it in the route", params.params.org_id);
+  const body = await request.json();
+  const chatType = body.type;
+  const title = body.title;
 
   const id = params.params.org_id;
 
@@ -19,6 +22,8 @@ export async function POST(
     .insert(chats)
     .values({
       user_id: id,
+      type: chatType,
+      title: title,
     })
     .run();
   console.log("generated New Chat id", data.toJSON());

@@ -16,14 +16,42 @@ import { ScrollArea, ScrollBar } from "@/components/scrollarea";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/button";
+import {
+  parseAsBoolean,
+  useQueryState,
+  parseAsInteger,
+} from "next-usequerystate";
 
 type Props = {};
 
-const PatentData = ({ message }: { message: Message }) => {
+const PatentData = ({
+  message,
+  index: dialogIndex,
+}: {
+  message: Message;
+  index: number;
+}) => {
   const parsedInput: Result[] = JSON.parse(message.content);
-  const [open, setOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useQueryState<boolean>("dialog", parseAsBoolean);
+  // dialogNumber
+  const [dialogNumber, setDialogNumber] = useQueryState<number>(
+    "dialogNumber",
+    parseAsInteger,
+  );
+  const [dialogItemIndex, setDialogItemIndex] = useQueryState<number>(
+    "item",
+    parseAsInteger,
+  );
+  console.log(parsedInput);
+  const [open, setOpen] = React.useState(
+    isOpen && dialogIndex === dialogNumber ? isOpen : false,
+  );
 
-  const [itemIndex, setItemIndex] = React.useState(0);
+  const [itemIndex, setItemIndex] = React.useState(
+    dialogItemIndex ? dialogItemIndex : 0,
+  );
+
+  // usequerystate
 
   const handleArrowPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (open) {
@@ -44,12 +72,23 @@ const PatentData = ({ message }: { message: Message }) => {
       <div className="grid grid-flow-col w-max gap-2 py-3 px-4">
         {parsedInput.length ? (
           parsedInput.map((result, index) => (
-            <Dialog open={open} onOpenChange={setOpen} key={index}>
+            <Dialog
+              open={open}
+              onOpenChange={(val) => {
+                setIsOpen(val);
+                setDialogNumber(dialogIndex);
+                setOpen(val);
+              }}
+              key={index}
+            >
               <DialogTrigger asChild>
                 <div
-                  className="text-sm hover:ring-1 ring-ring hover:bg-secondary rounded-sm px-4 py-3 grid grid-cols-1 gap-2"
+                  className="text-sm hover:ring-1 ring-ring hover:bg-secondary rounded-sm px-4 py-3 grid grid-cols-1 gap-2 cursor-pointer"
                   key={index}
-                  onClick={() => setItemIndex(index)}
+                  onClick={() => {
+                    setDialogItemIndex(index);
+                    setItemIndex(index);
+                  }}
                 >
                   <div className="w-[150px]">
                     <AspectRatio ratio={2 / 3}>
@@ -140,9 +179,10 @@ const PatentData = ({ message }: { message: Message }) => {
                             <div className="flex justify-end gap-2">
                               {!(itemIndex === 0) ? (
                                 <Button
-                                  onClick={() =>
-                                    setItemIndex((prev) => prev - 1)
-                                  }
+                                  onClick={() => {
+                                    setItemIndex((prev) => prev - 1);
+                                    setDialogItemIndex(itemIndex - 1);
+                                  }}
                                   // disabled={pageNo <= 1 ? true : false}
                                   variant="ghost"
                                   // size="xs"
@@ -152,9 +192,10 @@ const PatentData = ({ message }: { message: Message }) => {
                               ) : null}
                               {itemIndex !== 4 ? (
                                 <Button
-                                  onClick={() =>
-                                    setItemIndex((prev) => prev + 1)
-                                  }
+                                  onClick={() => {
+                                    setDialogItemIndex(itemIndex + 1);
+                                    setItemIndex((prev) => prev + 1);
+                                  }}
                                   variant="ghost"
                                   // size="xs"
                                 >

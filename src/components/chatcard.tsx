@@ -18,6 +18,7 @@ import Image from "next/image";
 import AudioButton from "@/components//audioButton";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 // import { dynamicBlurDataUrl } from "@/utils/helpers";
 
 type Props = {
@@ -26,13 +27,16 @@ type Props = {
   org_id: string;
   org_slug: string;
   priority: boolean;
+  type: string;
 };
 
-const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
+const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
   const queryClient = useQueryClient();
   const [showLoading, setShowLoading] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [imageUrl, setImageUrl] = useState(chat.image_url);
+  const [imageUrl, setImageUrl] = useState(
+    type === "tldraw" ? "/default_tldraw.png" : chat.image_url,
+  );
   // const [blurDataUrl, setBlurDataUrl] = useState(async () => {
   //   const data = await dynamicBlurDataUrl(chat.image_url as string);
   //   return data
@@ -111,26 +115,12 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
       }}
     >
       <Card className="relative overflow-hidden hover:backdrop-blur-sm ">
-        <CardHeader className="h-36 overflow-y-hidden overflow-hidden">
+        <CardHeader className="h-44">
           {/* <div className=" absolute opacity-100 "> */}
-          <CardTitle className="">
+          <CardTitle className=" text-md font-bold line-clamp-2">
             {title}{" "}
-            <AudioButton
-              chatId={String(chat.id)} // id to recognise chat
-              chatTitle={title}
-              description={description}
-              id={String(chat.id)} // id for the track
-              imageUrl={chat.image_url}
-              messages={chatlog.log}
-              summarize={true}
-              orgId={org_id}
-              audio={chat.audio}
-              variant="ghost"
-              size="sm"
-              className="text-xs"
-            />
           </CardTitle>
-          <CardDescription className="text-foreground">
+          <CardDescription className=" text-xs font-semibold text-foreground line-clamp-2">
             {title === "" ? (
               <span>
                 No title{" "}
@@ -145,10 +135,26 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
               <>{description}</>
             )}
           </CardDescription>
-          {/* </div> */}
+          {chat.type !== "tldraw" && (
+            <AudioButton
+              chatId={String(chat.id)} // id to recognise chat
+              chatTitle={title}
+              description={description}
+              id={String(chat.id)} // id for the track
+              imageUrl={chat.image_url}
+              messages={chatlog.log}
+              summarize={true}
+              orgId={org_id}
+              audio={chat.audio}
+              variant="ghost"
+              size="sm"
+              className="text-xs h-[32px] max-w-max"
+            />
+          )}
         </CardHeader>
         <CardContent className="flex justify-between ">
           <Chatusers
+            count={2}
             allPresenceIds={userIds}
             chatId={chat.id}
             chatCreatorId={userIds[0]}
@@ -174,7 +180,10 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
                 pathname: `${org_slug}/chat/${chat.id}`,
               }}
               key={chat.id}
-              className={buttonVariants({ variant: "secondary" })}
+              className={cn(
+                buttonVariants({ variant: "secondary" }),
+                "h-[32px]",
+              )}
             >
               {showLoading ? (
                 <CircleNotch className="m-1 w-4 h-4 animate-spin" />
@@ -187,7 +196,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority }: Props) => {
       </Card>
       {imageUrl && (
         <Image
-          quality={15}
+          quality={10}
           // placeholder="blur"
           // blurDataURL={blurDataUrl as string}
           src={imageUrl}

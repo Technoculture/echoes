@@ -15,6 +15,20 @@
       "when": 1700892239331,
       "tag": "0002_serious_guardsmen",
       "breakpoints": false
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1702274473873,
+      "tag": "0003_needy_steel_serpent",
+      "breakpoints": false
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1702527634998,
+      "tag": "0004_secret_wasp",
+      "breakpoints": false
     }
   ]
 }
