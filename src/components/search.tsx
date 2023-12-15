@@ -92,8 +92,8 @@ const Search = (props: Props) => {
                   <Link
                     href={
                       result.id
-                        ? `/usr/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
-                        : `/usr/${props.orgSlug}/chat/${result.chatId}`
+                        ? `/dashboard/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
+                        : `/dashboard/${props.orgSlug}/chat/${result.chatId}`
                     } // needs to be updated
                     onClick={() => setOpen(false)}
                     key={result.objectID}

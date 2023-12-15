@@ -27,7 +27,7 @@ export async function POST(
   const _chat = body.messages;
   let orgId = "";
   orgId = body.orgId;
-  const userId = body.orgId;
+  const userId = body.userId;
   const url = request.url;
   // getting main url
   const urlArray = url.split("/");

@@ -45,7 +45,7 @@ const Chatusersavatars = ({
   return (
     <div>
       {isLoading ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
+        null
       ) : isError ? (
         <div onClick={() => refetch()}>
           <RefreshCcw className="h-4 w-4" />
