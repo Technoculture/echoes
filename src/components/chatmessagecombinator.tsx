@@ -76,14 +76,14 @@ const ChatMessageCombinator = ({
     <div>
       <div className="grid grid-cols-1 gap-2">
         <div className="max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto my-4">
-          <div className="xl:w-[450px] flex">
+          <div className="xl:w-[450px] flex justify-evenly">
             {imageUrl && imageUrl !== "" ? (
               <Image
                 src={imageUrl}
                 width={400}
                 height={300}
                 alt={chat_title}
-                className="rounded-xl w-42 object-cover justify-evenly"
+                className="rounded-xl w-42 object-cover"
               />
             ) : null}
           </div>
