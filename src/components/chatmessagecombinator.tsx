@@ -1,4 +1,5 @@
 import React, { SetStateAction } from "react";
+import Image from "next/image";
 import { ContextWrapper } from "@/components/contextwrapper";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
 import { CHAT_COMPLETION_CONTENT } from "@/lib/types";
@@ -66,10 +67,39 @@ const ChatMessageCombinator = ({
     },
   );
 
+  const titleSplit = chatTitle.slice(1, -1).split(":");
+  const chat_title = titleSplit[0];
+  const chat_sub_title = titleSplit.length > 1 ? titleSplit[1] : "";
+
   let messageIndex = 0;
   return (
     <div>
-      <div className="grid grid-cols-1 gap-2 ">
+      <div className="grid grid-cols-1 gap-2">
+        <div className="max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto my-4">
+          <div className="xl:w-[450px] flex">
+            {imageUrl && imageUrl !== "" ? (
+              <Image
+                src={imageUrl}
+                width={400}
+                height={300}
+                alt={chat_title}
+                className="rounded-xl w-42 object-cover justify-evenly"
+              />
+            ) : null}
+          </div>
+          <div className="xl:w-[700px] flex-col mt-auto">
+            {chat_title !== "" ? (
+              <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
+                {chat_title}
+              </h1>
+            ) : null}
+            {chat_sub_title !== "" ? (
+              <h2 className="scroll-m-20 pb-2 text-2xl tracking-tight first:mt-0">
+                {chat_sub_title}
+              </h2>
+            ) : null}
+          </div>
+        </div>
         {calculatedMessages.map((msgs, index) => {
           const patentMessage = msgs.find(
             (msg) => msg.subRole === "patent-search",
