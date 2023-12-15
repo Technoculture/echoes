@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { cn } from "@/lib/utils";
-import { Loader2, RefreshCcw } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 interface Props {
   allPresenceIds: Array<string>;
   liveUserIds?: Array<string>;
@@ -44,9 +44,7 @@ const Chatusersavatars = ({
 
   return (
     <div>
-      {isLoading ? (
-        null
-      ) : isError ? (
+      {isLoading ? null : isError ? (
         <div onClick={() => refetch()}>
           <RefreshCcw className="h-4 w-4" />
         </div>
