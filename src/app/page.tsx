@@ -57,21 +57,21 @@ export default function Home() {
     <div>
       <AnimatePresence onExitComplete={handleSmoothScroll}>
         <div className="h-screen relative">
-          <Header variant="sticky" className="bg-black/40 backdrop-blur-md">
+          <Header className="bg-black/40 backdrop-blur-md">
             <Button
               className="mr-4 h-[32px]"
               variant="secondary"
               asChild
             ></Button>
           </Header>
-          <div className="absolute top-0 w-full y-0 flex flex-col flex-grow p-20 h-screen justify-center items-center gap-2 text-center">
+          <div className="absolute top-0 w-full y-0 flex flex-col flex-grow h-screen justify-center items-center gap-2 text-center">
             <div className="absolute inset-0 -z-5">
               <Image
                 src="/isometric.png"
                 alt="image of echoes being used"
                 className="w-full h-full object-cover mix-blend-soft-light"
                 fill={true}
-                quality={10}
+                quality={5}
               />
             </div>
             <div className="z-10">
@@ -154,13 +154,18 @@ export default function Home() {
               OpenAI
             </Link>
             <Link
-              href="https://modal.com/"
+              href="https://anyscale.com/"
               className="text-sm text-popover-foreground"
             >
-              Modal Labs
+              Anyscale
+            </Link>
+            <Link
+              href="https://search.projectpq.ai/"
+              className="text-sm text-popover-foreground"
+            >
+              pqai
             </Link>
           </div>
-
           <div className="p-4 flex flex-col space-y-2">
             <h1 className="font-bold mb-4">Integrations</h1>
             <Link
