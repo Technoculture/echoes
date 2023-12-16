@@ -164,7 +164,7 @@ const AudioPlayer = (props: Props) => {
                   src={currentTrack?.imageUrl || img}
                   alt="Photo by Drew Beamer"
                   fill
-                  className=" rounded-md object-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
+                  className=" rounded-md object-cover dark:mix-blend-lighten brightness-50 pointer-events-none "
                 />
               </div>
               <div>

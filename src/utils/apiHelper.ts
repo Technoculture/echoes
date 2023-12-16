@@ -186,11 +186,10 @@ Instructions
 Key Concept Visualization: Produce a low contrast, dark image. Incorporate poetic, cinematic blurs to emphasize the key concept in the title, depicted within its relevant biological setting.
 Scientific Accuracy: Ensure the image is scientifically accurate and meaningful, focusing exclusively on the most significant word in the topic and its biological implications.
 Format and Aspect Ratio: The image should be in a landscape orientation with a 3:2 aspect ratio, suitable for a cover photo thumbnail.
-Color Scheme: Employ a palette dominated by deep blacks. Use vibrant lime green sparingly for emphasis. Avoid other colors.
+Color Scheme: BLACK, GOLD, GREEN Avoid other colors. Use Art Deco style.
 Visual Style: Create a text-free visual resembling high-quality scientific illustrations. Target an ultra-realistic 4K quality, similar to visuals found in the Nature Journal.
 Human Element (Optional): You may include human figures. If so, depict Indian scientists engaged in research. Choose between women in their early 20s and men in their late 40s. Avoid representing doctors.
-Research and Contextual Understanding: Prior to creating the image, research to understand the terms mentioned in the title, ensuring accurate and contextually relevant depiction.
-This approach ensures clarity in representing the scientific topic, maintaining a balance between aesthetic appeal and scientific integrity.`;
+Research and Contextual Understanding: Prior to creating the image, research to understand the terms mentioned in the title, ensuring accurate and contextually relevant depiction.`;
   const Openai = new OpenAI({
     apiKey: env.OPEN_AI_API_KEY,
   });

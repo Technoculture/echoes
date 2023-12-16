@@ -308,7 +308,7 @@ const InputBar = (props: InputBarProps) => {
                 autoFocus
                 value={props.value}
                 onChange={handleInputChange}
-                className="flex-none resize-none rounded-sm grow w-full bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm disabled:text-muted"
+                className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm disabled:text-muted"
               />
               <Loader2
                 className={cn(

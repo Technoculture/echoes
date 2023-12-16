@@ -4,7 +4,10 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
 import { Inter } from "next/font/google";
-import Providers from "@/app/queryProvider";
+import QueryProviders from "@/app/queryProvider";
+import { Toaster } from "@/components/ui/toaster";
+import { Providers } from "@/app/providers";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -32,7 +35,8 @@ export default function RootLayout({
     >
       <html
         lang="en"
-        className={`${inter.className} dark h-full scroll-smooth antialiased`}
+        className={`${inter.className} h-full scroll-smooth antialiased`}
+        suppressHydrationWarning
       >
         <head>
           <link
@@ -250,12 +254,15 @@ export default function RootLayout({
         </head>
         <body className="bg-background overscroll-none">
           <Providers>
-            <div
-              style={{ WebkitTapHighlightColor: "transparent" }}
-              className="flex-col flex-grow"
-            >
-              {children}
-            </div>
+            <QueryProviders>
+              <div
+                style={{ WebkitTapHighlightColor: "transparent" }}
+                className="flex-col flex-grow"
+              >
+                {children}
+                <Toaster />
+              </div>
+            </QueryProviders>
           </Providers>
         </body>
       </html>

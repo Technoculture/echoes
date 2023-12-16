@@ -6,7 +6,7 @@ import { ReactNode, useState } from "react";
 interface Props {
   children: ReactNode;
 }
-export default function Providers({ children }: Props) {
+export default function QueryProviders({ children }: Props) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (

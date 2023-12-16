@@ -4,7 +4,7 @@ import { Header } from "@/components/header";
 // revalidate = 0;
 import useStore from "@/store";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import AudioPlayer from "@/components/audioplayer";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
@@ -12,8 +12,14 @@ import Startnewchatbutton from "@/components/startnewchatbutton";
 import useSlotStore from "@/store/slots";
 import Search from "@/components/search";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building, User } from "lucide-react";
+import { Toggle } from "@/components/ui/toogle";
+import { Building, User, SearchIcon, Sun, MoonIcon } from "lucide-react";
 import { useQueryState } from "next-usequerystate";
+import { Button } from "@/components/button";
+import { useNetworkState } from "@uidotdev/usehooks";
+import { useToast } from "@/components/ui/use-toast";
+import { useTheme } from 'next-themes';
+
 export default function LoggedInLayout({
   children,
   team, // will be a page or nested layout
@@ -27,6 +33,18 @@ export default function LoggedInLayout({
   const pathname = usePathname();
   const { orgSlug, orgId } = useAuth();
   const [cards, setCards] = useQueryState("chats");
+  const [isSearchOpen, setSearchOpen] = useState(false);
+  const network = useNetworkState();
+  const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    const now = new Date();
+    toast({
+      title: `Network Status: ${network.online ? "Online" : "Offline"}`,
+      description: now.toLocaleString(),
+    });
+  }, [network]);
 
   useEffect(() => {
     if (store.audioSrc && audioRef.current) {
@@ -44,7 +62,7 @@ export default function LoggedInLayout({
       {pathname.includes("user") ? (
         <Header
           newChild={
-            <div className="grid grid-cols-3 items-center">
+            <div className="mt-2 grid grid-cols-3 items-center">
               <Startnewchatbutton
                 org_id={orgId as string}
                 org_slug={orgSlug as string}
@@ -68,22 +86,73 @@ export default function LoggedInLayout({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              {/* <div className="h-[32px] w-[32px]"><CustomProfile /></div> */}
+
+              <div className="ml-auto">
+                <Toggle aria-label="Toggle italic"
+                  onClick={(e) => {
+                    console.log(theme);
+                    setTheme(theme === "dark" ? "light" : "dark");
+                  }}>
+                  { console.log(theme) }
+                  {theme === "dark" ? (
+                    <Sun className="w-4 h-4" />
+                  ) : (
+                    <MoonIcon className="w-4 h-4" />
+                  )}
+                </Toggle>
+              </div>
             </div>
-            // slotStore.slot
           }
-          className="bg-black/40 backdrop-blur-md"
+          className="bg-primary-900 dark:backdrop-brightness-50 backdrop-blur-md"
         >
           <AudioPlayer />
-          <Search orgSlug={orgSlug as string} />
+          <SearchButton
+            onClick={(e) => {
+              setSearchOpen(true);
+            }}
+          >
+            <span className="hidden sm:inline">Search</span>
+          </SearchButton>
+          <Search
+            orgSlug={orgSlug as string}
+            isOpen={isSearchOpen}
+            setOpen={(state) => {
+              setSearchOpen(state);
+            }}
+          />
         </Header>
       ) : (
-        <Header newChild className="bg-black/40 backdrop-blur-md">
+        <Header
+          newChild
+          className="bg-primary-900 dark:backdrop-brightness-50 backdrop-blur-md"
+        >
           <AudioPlayer />
-          <Search orgSlug={orgSlug as string} />
+          <SearchButton
+            onClick={(e) => {
+              setSearchOpen(true);
+            }}
+          >
+            <span className="hidden sm:inline">Search</span>
+          </SearchButton>
+          <Search
+            orgSlug={orgSlug as string}
+            isOpen={isSearchOpen}
+            setOpen={(state) => {
+              setSearchOpen(state);
+            }}
+          />
         </Header>
       )}
       <div className="pl-5 pr-5 z-10 relative">{children}</div>
     </div>
   );
 }
+
+const SearchButton = (props: React.ComponentProps<typeof Button>) => {
+  return (
+    <Button {...props} variant="ghost" className="max-h-[32px]">
+      <SearchIcon className="w-4 h-4 mr-2" />
+      {props.children}
+    </Button>
+  );
+};

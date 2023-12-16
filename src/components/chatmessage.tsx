@@ -134,7 +134,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   return (
     <div
       className={
-        "flex-col flex-grow box-border overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group hover:bg-secondary bg-background hover:ring-1 ring-ring"
+        "flex-col flex-grow overflow-hidden p-4 pt-3 pb-3 rounded-sm gap-1 text-sm group dark:hover:bg-zinc-900 hover:bg-zinc-100 bg-background"
       }
     >
       <div className="grow flex justify-between ">
@@ -142,8 +142,8 @@ const ChatMessage = (props: ChatMessageProps) => {
           <p
             className={
               props.chat.role === "user"
-                ? "text-slate-600 group-hover:text-gray-400 select-none"
-                : "text-green-300 group-hover:text-green-200 select-none"
+                ? "text-zinc-500 group-hover:text-zinc-400 select-none text-xs"
+                : "dark:text-green-700 text-green-700 group-hover:text-green-400 select-none text-xs"
             }
           >
             {userName}

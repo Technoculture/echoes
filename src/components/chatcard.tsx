@@ -114,7 +114,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
         router.push(`${org_slug}/chat/${chat.id}`);
       }}
     >
-      <Card className="relative overflow-hidden hover:backdrop-blur-sm ">
+      <Card className="relative overflow-hidden">
         <CardHeader className="h-44">
           {/* <div className=" absolute opacity-100 "> */}
           <CardTitle className=" text-md font-bold line-clamp-2">
@@ -195,6 +195,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
         </CardContent>
       </Card>
       {imageUrl && (
+        <div className="absolute inset-0 rounded-lg opacity-30 bg-gradient-to-t from-transparent to-background mix-blend-multiply dark:mix-blend-normal">
         <Image
           quality={10}
           // placeholder="blur"
@@ -206,8 +207,9 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
           (max-width: 1024px) 50vw,
            (max-width: 1200px) 33vw, 20vw"
           priority={priority}
-          className="absolute rounded-md object-cover bg-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
+          className="absolute rounded-md object-cover bg-cover pointer-events-none "
         />
+        </div>
       )}
     </div>
   );
