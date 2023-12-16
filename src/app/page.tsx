@@ -10,7 +10,6 @@ import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Key, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
 const handleSmoothScroll = (): void => {
   if (typeof window !== "undefined") {
     const hashId = window.location.hash;
@@ -49,9 +48,9 @@ export default function Home() {
   }, [controls, inView]);
 
   const { isSignedIn } = useAuth();
-  if (isSignedIn) {
-    redirect("/dashboard/user");
-  }
+  // if (isSignedIn) {
+  //   redirect("/dashboard/user");
+  // }
 
   return (
     <div>
@@ -83,7 +82,7 @@ export default function Home() {
               </h1>
               <div className="grid md:grid-col-2 gap-4 sm:grid-col-1 p-4">
                 <Link
-                  href="/dashboard/user"
+                  href="/dashboard"
                   className={buttonVariants({ variant: "default" })}
                 >
                   <LayoutDashboard className="mr-2 w-4 h-4" />
