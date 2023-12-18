@@ -84,7 +84,7 @@ const ChatMessageCombinator = ({
                 width={400}
                 height={300}
                 alt={chat_title}
-                className="rounded-xl w-42 object-cover"
+                className="rounded-xl w-42 object-cover shadow-lg"
               />
             ) : null}
           </div>

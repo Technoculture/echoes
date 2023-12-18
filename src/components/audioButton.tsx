@@ -219,7 +219,6 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
       >
         {isSummarizationLoading || isMessageLoading ? (
           <>
-            Generating Audio{" "}
             <CircleNotch className="ml-2 animate-spin h-4 w-4" />
           </>
         ) : currentTrack === id ? (
@@ -235,7 +234,7 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
         ) : audioSrc ? (
           <>
             {" "}
-            Speak ({duration}) <Play className="ml-2 h-4 w-4" />
+            {duration} <Play className="ml-2 h-4 w-4" />
           </>
         ) : (
           <>

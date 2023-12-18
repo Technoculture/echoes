@@ -107,7 +107,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
 
   return (
     <div
-      className="relative cursor-pointer"
+      className="relative cursor-pointer shadow-sm"
       onClick={() => {
         setShowLoading(true);
         router.push(`${org_slug}/chat/${chat.id}`);
@@ -133,14 +133,14 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
               <>{description}</>
             )}
           </CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-between ">
           <Chatusers
             count={2}
             allPresenceIds={userIds}
             chatId={chat.id}
             chatCreatorId={userIds[0]}
           />
+        </CardHeader>
+        <CardContent className="flex justify-between ">
           <div className="flex gap-2">
             {!imageUrl && (
               <span>
@@ -195,7 +195,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
         </CardContent>
       </Card>
       {imageUrl && (
-        <div className="absolute inset-0 rounded-lg opacity-20 hover:opacity-60 mix-blend-darken dark:mix-blend-lighten transition-opacity duration-500">
+        <div className="absolute inset-0 rounded-lg opacity-20 dark:hover:opacity-60 hover:opacity-5 mix-blend-darken dark:mix-blend-lighten transition-opacity duration-500">
           <Image
             quality={10}
             src={imageUrl}
