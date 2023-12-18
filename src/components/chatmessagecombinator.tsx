@@ -11,6 +11,7 @@ import usePreferences from "@/store/userPreferences";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
+// import AudioButton from "./audioButton";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -89,9 +90,27 @@ const ChatMessageCombinator = ({
           </div>
           <div className="xl:w-[700px] flex-col mt-auto">
             {chat_title !== "" ? (
-              <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
-                {chat_title}
-              </h1>
+              <>
+                <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
+                  {chat_title}
+                </h1>
+                {/*
+            <AudioButton
+              chatId={String(chatId)} // id to recognise chat
+              chatTitle={chatTitle}
+              // description={description}
+              id={String(chatId)} // id for the track
+              imageUrl={imageUrl}
+              messages={messages}
+              summarize={true}
+              orgId={orgId}
+              // audio={chat.audio}
+              variant="ghost"
+              size="sm"
+              className="text-xs h-[32px]"
+            />
+            */}
+              </>
             ) : null}
             {chat_sub_title !== "" ? (
               <h2 className="scroll-m-20 pb-2 text-2xl tracking-tight first:mt-0">

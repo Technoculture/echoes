@@ -2,49 +2,39 @@
 import { Header } from "@/components/header";
 // export const dynamic = "force-dynamic",
 // revalidate = 0;
-import useStore from "@/store";
 
-import { useRef, useEffect, useState } from "react";
+import useStore from "@/store";
+import { useRef, useEffect } from "react";
 import AudioPlayer from "@/components/audioplayer";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import Startnewchatbutton from "@/components/startnewchatbutton";
-import useSlotStore from "@/store/slots";
+// import useSlotStore from "@/store/slots";
 import Search from "@/components/search";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toogle";
 import { Building, User, SearchIcon, Sun, MoonIcon } from "lucide-react";
 import { useQueryState } from "next-usequerystate";
 import { Button } from "@/components/button";
-import { useNetworkState } from "@uidotdev/usehooks";
-import { useToast } from "@/components/ui/use-toast";
-import { useTheme } from 'next-themes';
+// import { useToast } from "@/components/ui/use-toast";
+import { useTheme } from "next-themes";
+import useSearchDialogState from "@/store/searchDialogStore";
 
 export default function LoggedInLayout({
-  children,
-  team, // will be a page or nested layout
+  children, // team, // will be a page or nested layout
 }: {
   children: React.ReactNode;
-  team: React.ReactNode;
+  // team: React.ReactNode;
 }) {
   const store = useStore();
-  const slotStore = useSlotStore();
+  // const slotStore = useSlotStore();
   const audioRef = useRef<HTMLAudioElement>(null);
   const pathname = usePathname();
   const { orgSlug, orgId } = useAuth();
   const [cards, setCards] = useQueryState("chats");
-  const [isSearchOpen, setSearchOpen] = useState(false);
-  const network = useNetworkState();
-  const { toast } = useToast();
+  const { showSearchDialog, toggleSearchDialog } = useSearchDialogState();
+  // const { toast } = useToast();
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    const now = new Date();
-    toast({
-      title: `Network Status: ${network.online ? "Online" : "Offline"}`,
-      description: now.toLocaleString(),
-    });
-  }, [network]);
 
   useEffect(() => {
     if (store.audioSrc && audioRef.current) {
@@ -88,12 +78,13 @@ export default function LoggedInLayout({
               </Tabs>
 
               <div className="ml-auto">
-                <Toggle aria-label="Toggle italic"
+                <Toggle
+                  aria-label="Toggle italic"
                   onClick={(e) => {
                     console.log(theme);
                     setTheme(theme === "dark" ? "light" : "dark");
-                  }}>
-                  { console.log(theme) }
+                  }}
+                >
                   {theme === "dark" ? (
                     <Sun className="w-4 h-4" />
                   ) : (
@@ -106,20 +97,10 @@ export default function LoggedInLayout({
           className="bg-primary-900 dark:backdrop-brightness-50 backdrop-blur-md"
         >
           <AudioPlayer />
-          <SearchButton
-            onClick={(e) => {
-              setSearchOpen(true);
-            }}
-          >
+          <SearchButton onClick={toggleSearchDialog}>
             <span className="hidden sm:inline">Search</span>
           </SearchButton>
-          <Search
-            orgSlug={orgSlug as string}
-            isOpen={isSearchOpen}
-            setOpen={(state) => {
-              setSearchOpen(state);
-            }}
-          />
+          <Search orgSlug={orgSlug as string} />
         </Header>
       ) : (
         <Header
@@ -127,20 +108,10 @@ export default function LoggedInLayout({
           className="bg-primary-900 dark:backdrop-brightness-50 backdrop-blur-md"
         >
           <AudioPlayer />
-          <SearchButton
-            onClick={(e) => {
-              setSearchOpen(true);
-            }}
-          >
+          <SearchButton onClick={toggleSearchDialog}>
             <span className="hidden sm:inline">Search</span>
           </SearchButton>
-          <Search
-            orgSlug={orgSlug as string}
-            isOpen={isSearchOpen}
-            setOpen={(state) => {
-              setSearchOpen(state);
-            }}
-          />
+          <Search orgSlug={orgSlug as string} />
         </Header>
       )}
       <div className="pl-5 pr-5 z-10 relative">{children}</div>

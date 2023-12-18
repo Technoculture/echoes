@@ -210,6 +210,8 @@ const AudioButton = React.forwardRef<HTMLButtonElement, Props>(
       <Button
         ref={ref}
         {...props}
+        className="z-10 h-[32px]"
+        variant="ghost"
         onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
           e.stopPropagation();
           textToSpeech(id);

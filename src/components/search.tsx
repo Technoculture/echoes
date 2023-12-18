@@ -6,28 +6,28 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
+  // CommandSeparator,
   CommandGroup,
-  CommandShortcut,
+  // CommandShortcut,
 } from "@/components/ui/command";
-import { MessageSquarePlus, PenTool } from "lucide-react";
+// import { MessageSquarePlus, PenTool } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import algoliasearch from "algoliasearch";
 import { env } from "@/app/env.mjs";
 import Link from "next/link";
 import { timestampToDate } from "@/utils/helpers";
 import UserAvatar from "@/components/useravatars";
+import useSearchDialogState from "@/store/searchDialogStore";
 
 type Props = {
   orgSlug: string;
-  isOpen: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const Search = (props: Props) => {
   // const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [results, setResults] = useState<any>([]);
+  const { showSearchDialog, toggleSearchDialog } = useSearchDialogState();
 
   const client = useMemo(
     () =>
@@ -47,7 +47,7 @@ const Search = (props: Props) => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "/" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        props.setOpen(() => !props.isOpen);
+        toggleSearchDialog();
       }
     };
     document.addEventListener("keydown", down);
@@ -63,7 +63,7 @@ const Search = (props: Props) => {
   }, [value]);
 
   return (
-    <CommandDialog open={props.isOpen} onOpenChange={props.setOpen}>
+    <CommandDialog open={showSearchDialog} onOpenChange={toggleSearchDialog}>
       <CommandInput
         onValueChange={setValue}
         value={value}
@@ -91,15 +91,15 @@ const Search = (props: Props) => {
         */}
         <CommandGroup heading="Chat History">
           {results.length
-            ? results.map((result: any) => (
-                <CommandItem>
+            ? results.map((result: any, index: number) => (
+                <CommandItem key={index}>
                   <Link
                     href={
                       result.id
                         ? `/dashboard/${props.orgSlug}/chat/${result.chatId}/#${result.id}`
                         : `/dashboard/${props.orgSlug}/chat/${result.chatId}`
                     } // needs to be updated
-                    onClick={() => setOpen(false)}
+                    onClick={toggleSearchDialog}
                     key={result.objectID}
                     className="flex gap-2 grow justify-between"
                   >

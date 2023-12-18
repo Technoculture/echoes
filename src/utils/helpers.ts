@@ -15,7 +15,7 @@ export const calculateTime = (secs: number) => {
 
 export function timestampToDate(timestamp: number): string {
   const dateObj = new Date(timestamp * 1000);
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "short",
     day: "numeric",
