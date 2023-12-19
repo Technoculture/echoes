@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 type Props = {};
 
-export async function TeachEchoes(props: Props) {
+export async function Page(props: Props) {
   const tasks = await getTasks();
 
   // const { user, sessionClaims } = auth()
@@ -83,7 +83,7 @@ export async function TeachEchoes(props: Props) {
   );
 }
 
-export default TeachEchoes;
+export default Page;
 
 // Simulate a database read for tasks.
 async function getTasks() {
