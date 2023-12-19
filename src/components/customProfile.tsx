@@ -89,8 +89,11 @@ const CustomProfile = (props: Props) => {
                 </Link>
               </DropdownMenuItem>
             )}
-            <DropdownMenuSeparator />
           </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <Link href="/dashboard/teach">Teach Echoes</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
