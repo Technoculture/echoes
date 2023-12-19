@@ -7,6 +7,9 @@ export const taskSchema = z.object({
   title: z.string(),
   status: z.string(),
   label: z.string(),
+  label2: z.string(),
+  access: z.string(),
+  type: z.string(),
   priority: z.string(),
 });
 

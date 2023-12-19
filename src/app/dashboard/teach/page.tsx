@@ -1,4 +1,3 @@
-import React from "react";
 import { promises as fs } from "fs";
 import path from "path";
 import { Metadata } from "next";
@@ -10,7 +9,13 @@ import { DataTable } from "@/components/tablecomponents/data-table";
 import { UserNav } from "@/components/tablecomponents/user-nav";
 import { taskSchema } from "@/assets/data/schema";
 import { currentUser } from "@clerk/nextjs";
-import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  ListObjectsV2Command,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { env } from "@/app/env.mjs";
+
 export const metadata: Metadata = {
   title: "Tasks",
   description: "A task and issue tracker build using Tanstack Table.",
@@ -34,7 +39,10 @@ export default async function Page(props: Props) {
     },
   });
 
-  // const output = await listContents({ s3Client, prefix: "cardimages/" });
+  const output = await listContents({
+    s3Client,
+    prefix: "testing-docs-upload/",
+  });
 
   // console.log("output", output);
 
@@ -86,7 +94,7 @@ export default async function Page(props: Props) {
 // Simulate a database read for tasks.
 async function getTasks() {
   const data = await fs.readFile(
-    path.join(process.cwd(), "src/assets/data/tasks.json"),
+    path.join(process.cwd(), "src/assets/data/tasks2.json"),
   );
 
   const tasks = JSON.parse(data.toString());
@@ -110,6 +118,23 @@ const listContents = async ({
       MaxKeys: 100,
     }),
   );
+
+  data.Contents?.forEach(async (object) => {
+    const params = {
+      Bucket: env.BUCKET_NAME,
+      Key: object.Key,
+    };
+
+    const metadata = await s3Client.send(
+      new GetObjectCommand({
+        Bucket: process.env.BUCKET_NAME,
+        Key: object.Key,
+      }),
+    );
+    console.log("object", object);
+    console.log("metadata", metadata.Metadata);
+  });
+
   console.debug(`Received data: ${JSON.stringify(data, null, 2)}`);
   return {
     folders:

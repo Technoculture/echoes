@@ -7,6 +7,8 @@ import {
   CrossCircledIcon,
   QuestionMarkCircledIcon,
   StopwatchIcon,
+  LockClosedIcon,
+  LockOpen1Icon,
 } from "@radix-ui/react-icons";
 
 export const labels = [
@@ -21,6 +23,18 @@ export const labels = [
   {
     value: "documentation",
     label: "Documentation",
+  },
+];
+
+export const labels2 = [
+  // for internal and external
+  {
+    value: "external",
+    label: "External",
+  },
+  {
+    value: "internal",
+    label: "Internal",
   },
 ];
 
@@ -52,6 +66,38 @@ export const statuses = [
   },
 ];
 
+export const accesses = [
+  {
+    value: "confidential",
+    label: "Confidential",
+    icon: LockOpen1Icon,
+  },
+  {
+    value: "non-confidential",
+    label: "Non-Confidential",
+    icon: LockClosedIcon,
+  },
+];
+
+// Patent / Paper / Documentation / Internal Report
+export const doctypes = [
+  {
+    value: "patent",
+    label: "Patent",
+  },
+  {
+    value: "paper",
+    label: "Paper",
+  },
+  {
+    value: "documentation",
+    label: "Documentation",
+  },
+  {
+    value: "internal-report",
+    label: "Internal Report",
+  },
+];
 export const priorities = [
   {
     label: "Low",
