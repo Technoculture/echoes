@@ -26,7 +26,7 @@ export async function GET(
   console.log("userId", userId);
   console.log("chats", chatsQuery);
   // need to improve the logic
-  const offset = 25;
+  const offset = 10;
   const skip = offset * page;
   let orgConversations: any;
   if (chatsQuery === "me") {
@@ -42,7 +42,7 @@ export async function GET(
       )
       .orderBy(desc(chats.updatedAt))
       .offset(skip)
-      .limit(25)
+      .limit(10)
       .all();
   } else {
     orgConversations = await db
@@ -51,7 +51,7 @@ export async function GET(
       .where(and(eq(chats.user_id, String(org_id)), ne(chats.messages, "NULL")))
       .orderBy(desc(chats.updatedAt))
       .offset(skip)
-      .limit(25)
+      .limit(10)
       .all();
   }
 
