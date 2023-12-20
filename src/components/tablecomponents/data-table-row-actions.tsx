@@ -16,6 +16,11 @@ import { Task, taskSchema } from "../../assets/data/schema";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -40,28 +45,35 @@ export function DataTableRowActions<TData>({
   });
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-        >
-          <DotsHorizontalIcon className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            deleteFile.mutate(task);
-            console.log("delete", task);
-          }}
-        >
-          Delete
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Dialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+          >
+            <DotsHorizontalIcon className="h-4 w-4" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[160px]">
+          <DialogTrigger className="w-full">
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+          </DialogTrigger>
+          <DropdownMenuItem
+            onClick={() => {
+              deleteFile.mutate(task);
+              console.log("delete", task);
+            }}
+          >
+            Delete
+            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DialogContent>
+        <p>Hello</p>
+      </DialogContent>
+    </Dialog>
   );
 }

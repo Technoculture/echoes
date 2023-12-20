@@ -21,14 +21,14 @@ export function DataTableToolbar<TData>({
 
   return (
     <div className="flex flex-row sm:̣flex-col items-center justify-between">
-      <div className="flex flex-col sm:flex-1 sm:flex-row sm:items-center space-y-2 sm:space-x-2">
+      <div className="flex flex-col sm:flex-1 sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
         <Input
           placeholder="Filter tasks..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="h-8 w-full sm:w-[150px] lg:w-[250px]"
         />
         {table.getColumn("access") && (
           <DataTableFacetedFilter

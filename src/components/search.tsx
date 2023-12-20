@@ -17,7 +17,7 @@ import { env } from "@/app/env.mjs";
 import Link from "next/link";
 import { timestampToDate } from "@/utils/helpers";
 import UserAvatar from "@/components/useravatars";
-
+import { useThrottle } from "@uidotdev/usehooks";
 type Props = {
   orgSlug: string;
 };
@@ -26,6 +26,7 @@ const Search = (props: Props) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [results, setResults] = useState<any>([]);
+  const throttledValue = useThrottle(value, 1000);
 
   const client = useMemo(
     () =>
@@ -57,7 +58,7 @@ const Search = (props: Props) => {
       .then((response) => {
         setResults(response.hits);
       });
-  }, [value]);
+  }, [throttledValue]);
 
   return (
     <Dialog
