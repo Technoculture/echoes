@@ -102,7 +102,7 @@ export default function Chat(props: ChatProps) {
   return (
     <div className="flex flex-col gap-1 mx-auto">
       {props.type === "tldraw" ? (
-        <div className=" w-[calc(100dvw-40px)] sm:w-screen sm:max-w-[700px] h-[calc(100dvh-128px)]">
+        <div className=" w-[calc(100dvw-40px)] h-[calc(100dvh-128px)]">
           <PersistenceExample
             org_slug={props.org_slug}
             org_id={props.orgId}

@@ -13,10 +13,16 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import OpenAI from "openai";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import axios from "axios";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { RunTree, RunTreeConfig } from "langsmith";
+import { Task } from "@/assets/data/schema";
 export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
   gptTurbo: "gpt-3.5-turbo" as const,
@@ -393,3 +399,49 @@ export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {
   await parentRun.postRun();
   return stream.choices[0].message.content as string;
 };
+
+export async function listContents({
+  s3Client,
+  prefix,
+}: {
+  s3Client: S3Client;
+  prefix: string;
+}) {
+  console.debug("Retrieving data from AWS SDK");
+  const data = await s3Client.send(
+    new ListObjectsV2Command({
+      Bucket: env.BUCKET_NAME,
+      Prefix: prefix,
+      Delimiter: "/",
+      MaxKeys: 100,
+    }),
+  );
+
+  const promises = data.Contents?.map((object) => {
+    const params = {
+      Bucket: env.BUCKET_NAME,
+      Key: object.Key,
+    };
+
+    return s3Client.send(new GetObjectCommand(params));
+  })!;
+
+  if (!promises) return { tasks: [] };
+  const metadatas = await Promise.all(promises);
+  const taskList = metadatas.map((metadata) => {
+    const obj: Task = {
+      id: metadata.Metadata?.id!,
+      title: metadata.Metadata?.["file-name"]!,
+      label: metadata.Metadata?.["access-level"]!,
+      access: metadata.Metadata?.["confidentiality"]!,
+      type: metadata.Metadata?.["file-type"]!,
+      addedBy: metadata.Metadata?.["added-by"]!,
+      addedOn: metadata.Metadata?.["added-on"]!,
+    };
+    return obj;
+  });
+
+  return {
+    tasks: taskList,
+  };
+}

@@ -51,6 +51,7 @@ const fileFormSchema = z
 
 type Props = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  orgSlug: string;
   username: string;
   userId: string;
 };
@@ -115,7 +116,7 @@ const DropZone = (props: Props) => {
           ...values,
           userName: props.username,
           userId: props.userId,
-
+          orgSlug: props.orgSlug,
           // username: props.username,
           // userId: props.userId,
           // chatId: props.chatId,
@@ -125,23 +126,18 @@ const DropZone = (props: Props) => {
       });
       const data = await response.json();
       const { postUrl, getUrl } = data;
-      const upload = await fetch(postUrl, {
-        method: "PUT",
-        body: file,
-      });
-
-      // testing the get url
-      // try{
-      //   let file = await fetch(getUrl);
-      //   console.log("file", await file.json())
-      // } catch(err) {
-      //   console.log("jsonn error", err)
-      // }
-
-      if (upload.ok) {
-        console.log("Uploaded successfully!");
-      } else {
-        console.error("Upload failed.");
+      try {
+        const upload = await fetch(postUrl, {
+          method: "PUT",
+          body: file,
+        });
+        if (upload.ok) {
+          console.log("Uploaded successfully!");
+        } else {
+          console.error("Upload failed.");
+        }
+      } catch (error) {
+        console.error("Upload failed.", error);
       }
     }
     //

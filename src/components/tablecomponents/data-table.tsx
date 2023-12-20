@@ -27,6 +27,8 @@ import {
 
 import { DataTablePagination } from "@/components/tablecomponents/data-table-pagination";
 import { DataTableToolbar } from "@/components/tablecomponents/data-table-toolbar";
+// import { useQuery } from "@tanstack/react-query";
+// import axios from "axios";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -47,6 +49,17 @@ export function DataTable<TData, TValue>({
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  // const { data: files } = useQuery(
+  //   ["files"],
+  //   async () => {
+  //     const res = await axios.get(`/api/listObjects`);
+  //     return res.data as TData[];
+  //   },
+  //   {
+  //     initialData: data as TData[],
+  //   },
+  // );
 
   const table = useReactTable({
     data,

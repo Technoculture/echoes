@@ -11,16 +11,13 @@ interface PostPdfody {
   id: string;
   userName: string;
   userId: string;
+  orgSlug: string;
   fileName: string;
   fileType: string;
-  // username: string;
   authors: string; // authors of the document
   confidentiality: string; // confidentiality level
   access: string; // access level
   type: string; // type of document
-  // userId: string;
-  // orgSlug: string;
-  // orgId: string;
 }
 
 export async function POST(request: Request) {
@@ -54,11 +51,11 @@ export async function POST(request: Request) {
     }
   }
 
-  // const { fileName, fileType, chatId, orgId, orgSlug, userId, username } = body;
   const {
     id,
     userName,
     userId,
+    orgSlug,
     fileName,
     fileType,
     authors,
@@ -75,12 +72,9 @@ export async function POST(request: Request) {
     },
   });
 
-  // const fileKey = `${orgSlug}/${fileName}`;
-  // TODO: add orgSlug and prefix for parent folder to the fileKey
-  const fileKey = `testing-docs-upload/${fileName}`;
+  const fileKey = `${orgSlug}/${fileName}`;
   const putCommand = new PutObjectCommand({
     Bucket: process.env.BUCKET_NAME,
-    // Key: fileName,
     Key: fileKey,
     ContentType: fileType,
     Metadata: {
