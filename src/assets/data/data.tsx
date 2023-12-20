@@ -70,12 +70,12 @@ export const accesses = [
   {
     value: "confidential",
     label: "Confidential",
-    icon: LockOpen1Icon,
+    icon: LockClosedIcon,
   },
   {
     value: "non-confidential",
     label: "Non-Confidential",
-    icon: LockClosedIcon,
+    icon: LockOpen1Icon,
   },
 ];
 

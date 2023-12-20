@@ -23,6 +23,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/button";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { nanoid } from "ai";
 
 const documentTypes = ["patent", "paper", "documentation", "report"];
 const fileFormSchema = z
@@ -49,6 +51,8 @@ const fileFormSchema = z
 
 type Props = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  username: string;
+  userId: string;
 };
 
 const DropZone = (props: Props) => {
@@ -106,8 +110,11 @@ const DropZone = (props: Props) => {
       const response = await fetch(`/api/postFile`, {
         method: "POST",
         body: JSON.stringify({
+          id: nanoid(),
           fileType: file?.type,
           ...values,
+          userName: props.username,
+          userId: props.userId,
 
           // username: props.username,
           // userId: props.userId,
@@ -152,6 +159,23 @@ const DropZone = (props: Props) => {
           {!!file && (
             <div className="min-h-max border-2 w-full grid px-4 py-2 rounded-md ">
               <div className="grid  grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs line-clamp-2">{file?.name}</span>
+                  <CrossCircledIcon
+                    onClick={() => {
+                      setFile(null);
+                      setFileName("");
+                      console.log("remove file");
+                    }}
+                    className="h-6 w-6 cursor-pointer"
+                  />
+                </div>
+                <div className="flex text-sm items-center justify-between">
+                  <span>Size: </span>
+                  <span className="text-xs">
+                    {Math.round(file.size / 1000)} KB{" "}
+                  </span>
+                </div>
                 <FormField
                   control={form.control}
                   name="authors"
@@ -259,7 +283,13 @@ const DropZone = (props: Props) => {
             </div>
           )}
           <DialogFooter className="gap-2">
-            <Button onClick={() => form.reset()} variant="outline">
+            <Button
+              onClick={() => {
+                form.reset();
+                props.setIsOpen(false);
+              }}
+              variant="outline"
+            >
               Cancel
             </Button>
             <Button type="submit">

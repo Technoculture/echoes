@@ -8,6 +8,9 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/app/env.mjs";
 interface PostPdfody {
+  id: string;
+  userName: string;
+  userId: string;
   fileName: string;
   fileType: string;
   // username: string;
@@ -52,7 +55,17 @@ export async function POST(request: Request) {
   }
 
   // const { fileName, fileType, chatId, orgId, orgSlug, userId, username } = body;
-  const { fileName, fileType, authors, confidentiality, access, type } = body;
+  const {
+    id,
+    userName,
+    userId,
+    fileName,
+    fileType,
+    authors,
+    confidentiality,
+    access,
+    type,
+  } = body;
 
   const client = new S3Client({
     region: env.AWS_REGION,
@@ -71,12 +84,15 @@ export async function POST(request: Request) {
     Key: fileKey,
     ContentType: fileType,
     Metadata: {
+      id: id,
       "file-name": fileName,
       "Content-Type": fileType,
       authors: authors, // authors of the document
       confidentiality: confidentiality, // confidentiality level
       "access-level": access, // access level
-      "file-type": type, //
+      "file-type": type,
+      "added-by": userName,
+      "added-on": String(Date.now()), //
     },
   });
   const post = await getSignedUrl(client, putCommand, { expiresIn: 3600 });

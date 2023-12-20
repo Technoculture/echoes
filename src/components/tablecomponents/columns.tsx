@@ -9,6 +9,7 @@ import { accesses, doctypes, labels2 } from "../../assets/data/data";
 import { Task } from "../../assets/data/schema";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
+import { timestampToDate } from "@/utils/helpers";
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -38,11 +39,11 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Doc" />
+      <DataTableColumnHeader column={column} title="Id" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
+    cell: ({ row }) => <div className="">{row.getValue("id")}</div>,
     enableSorting: false,
-    enableHiding: false,
+    enableHiding: true,
   },
   {
     accessorKey: "title",
@@ -54,7 +55,11 @@ export const columns: ColumnDef<Task>[] = [
 
       return (
         <div className="flex space-x-2">
-          {label && <Badge variant="outline">{label.label}</Badge>}
+          {label && (
+            <Badge variant={label.value === "internal" ? "outline" : "default"}>
+              {label.label}
+            </Badge>
+          )}
           <span className="max-w-[500px] truncate font-medium">
             {row.getValue("title")}
           </span>
@@ -92,7 +97,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Doc-Type" />
+      <DataTableColumnHeader column={column} title="Type" />
     ),
     cell: ({ row }) => {
       const doc = doctypes.find((doc) => doc.value === row.getValue("type"));
@@ -109,6 +114,32 @@ export const columns: ColumnDef<Task>[] = [
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: "addedBy",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Added-By" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex">
+          <span>{row.getValue("addedBy")}</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "addedOn",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Added-By" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex">
+          <span>{timestampToDate(Number(row.getValue("addedOn")))}</span>
+        </div>
+      );
     },
   },
   {

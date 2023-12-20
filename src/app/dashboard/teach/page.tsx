@@ -1,13 +1,9 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { Metadata } from "next";
-import Image from "next/image";
-import { z } from "zod";
 
 import { columns } from "@/components/tablecomponents/columns";
 import { DataTable } from "@/components/tablecomponents/data-table";
 import { UserNav } from "@/components/tablecomponents/user-nav";
-import { taskSchema } from "@/assets/data/schema";
+import { Task } from "@/assets/data/schema";
 import { currentUser } from "@clerk/nextjs";
 import {
   S3Client,
@@ -24,7 +20,7 @@ export const metadata: Metadata = {
 type Props = {};
 
 export default async function Page(props: Props) {
-  const tasks = await getTasks();
+  // const tasks = await getTasks();
 
   // const { user, sessionClaims } = auth()
   const user2 = await currentUser();
@@ -43,29 +39,14 @@ export default async function Page(props: Props) {
     s3Client,
     prefix: "testing-docs-upload/",
   });
+  console.log("output", output);
 
   // console.log("output", output);
 
   return (
     <div className="mt-[80px]">
       <>
-        <div className="md:hidden">
-          <Image
-            src="/examples/tasks-light.png"
-            width={1280}
-            height={998}
-            alt="Playground"
-            className="block dark:hidden"
-          />
-          <Image
-            src="/examples/tasks-dark.png"
-            width={1280}
-            height={998}
-            alt="Playground"
-            className="hidden dark:block"
-          />
-        </div>
-        <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+        <div className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
           <div className="flex items-center justify-between space-y-2">
             <div>
               <h2 className="text-2xl font-bold tracking-tight">
@@ -78,13 +59,12 @@ export default async function Page(props: Props) {
             </div>
             <div className="flex items-center space-x-2">
               <UserNav
-                imageUrl={user2?.imageUrl || ""}
-                firstname={user2?.firstName || "C"}
-                lastname={user2?.lastName || "N"}
+                username={user2?.firstName + " " + user2?.lastName}
+                userId={user2?.id!}
               />
             </div>
           </div>
-          <DataTable data={tasks} columns={columns} />
+          <DataTable data={output.tasks} columns={columns} />
         </div>
       </>
     </div>
@@ -92,23 +72,23 @@ export default async function Page(props: Props) {
 }
 
 // Simulate a database read for tasks.
-async function getTasks() {
-  const data = await fs.readFile(
-    path.join(process.cwd(), "src/assets/data/tasks2.json"),
-  );
+// async function getTasks() {
+//   const data = await fs.readFile(
+//     path.join(process.cwd(), "src/assets/data/tasks2.json")
+//   );
 
-  const tasks = JSON.parse(data.toString());
+//   const tasks = JSON.parse(data.toString());
 
-  return z.array(taskSchema).parse(tasks);
-}
+//   return z.array(taskSchema).parse(tasks);
+// }
 
-const listContents = async ({
+async function listContents({
   s3Client,
   prefix,
 }: {
   s3Client: S3Client;
   prefix: string;
-}) => {
+}) {
   console.debug("Retrieving data from AWS SDK");
   const data = await s3Client.send(
     new ListObjectsV2Command({
@@ -119,23 +99,31 @@ const listContents = async ({
     }),
   );
 
-  data.Contents?.forEach(async (object) => {
+  const promises = data.Contents?.map((object) => {
     const params = {
       Bucket: env.BUCKET_NAME,
       Key: object.Key,
     };
 
-    const metadata = await s3Client.send(
-      new GetObjectCommand({
-        Bucket: process.env.BUCKET_NAME,
-        Key: object.Key,
-      }),
-    );
-    console.log("object", object);
-    console.log("metadata", metadata.Metadata);
+    return s3Client.send(new GetObjectCommand(params));
+  })!;
+
+  if (!promises) return { folders: [], objects: [], tasks: [] };
+  const metadatas = await Promise.all(promises);
+  const taskList = metadatas.map((metadata) => {
+    const obj: Task = {
+      id: metadata.Metadata?.id!,
+      title: metadata.Metadata?.["file-name"]!,
+      label: metadata.Metadata?.["access-level"]!,
+      access: metadata.Metadata?.["confidentiality"]!,
+      type: metadata.Metadata?.["file-type"]!,
+      addedBy: metadata.Metadata?.["added-by"]!,
+      addedOn: metadata.Metadata?.["added-on"]!,
+    };
+    return obj;
   });
 
-  console.debug(`Received data: ${JSON.stringify(data, null, 2)}`);
+  // console.debug(`Received data: ${JSON.stringify(data, null, 2)}`);
   return {
     folders:
       data.CommonPrefixes?.map(({ Prefix }) => ({
@@ -151,5 +139,6 @@ const listContents = async ({
         path: Key,
         url: `http://${process.env.BUCKET_NAME}/${Key}`,
       })) || [],
+    tasks: taskList,
   };
-};
+}

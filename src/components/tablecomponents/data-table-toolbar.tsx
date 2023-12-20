@@ -7,10 +7,7 @@ import { Button } from "@/components/button";
 import { Input } from "@/components/ui/input";
 import { DataTableViewOptions } from "@/components/tablecomponents/data-table-view-options";
 
-import {
-  accesses,
-  doctypes,
-} from "../../assets/data/data";
+import { accesses, doctypes } from "../../assets/data/data";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 
 interface DataTableToolbarProps<TData> {
@@ -23,8 +20,8 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
+    <div className="flex flex-row sm:̣flex-col items-center justify-between">
+      <div className="flex flex-col sm:flex-1 sm:flex-row sm:items-center space-y-2 sm:space-x-2">
         <Input
           placeholder="Filter tasks..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
@@ -43,7 +40,7 @@ export function DataTableToolbar<TData>({
         {table.getColumn("type") && (
           <DataTableFacetedFilter
             column={table.getColumn("type")}
-            title="Doc-Type"
+            title="Type"
             options={doctypes}
           />
         )}

@@ -13,12 +13,11 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 
 interface UserNavProps {
-  imageUrl: string;
-  firstname: string;
-  lastname: string;
+  username: string;
+  userId: string;
 }
 
-export function UserNav({ imageUrl }: UserNavProps) {
+export function UserNav({ username, userId }: UserNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -30,10 +29,13 @@ export function UserNav({ imageUrl }: UserNavProps) {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Dialog Title</DialogTitle>
-          <DialogDescription>Dialog Description</DialogDescription>
+          <DialogTitle> Upload a File</DialogTitle>
+          <DialogDescription>
+            Uploading a file allows you to add knowledge for echoes to memorise
+            and use.
+          </DialogDescription>
         </DialogHeader>
-        <DropZone setIsOpen={setIsOpen} />
+        <DropZone username={username} userId={userId} setIsOpen={setIsOpen} />
       </DialogContent>
     </Dialog>
   );
