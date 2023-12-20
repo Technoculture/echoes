@@ -20,35 +20,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { nanoid } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const documentTypes = ["patent", "paper", "documentation", "report"];
-const fileFormSchema = z
-  .object({
-    fileName: z.string().min(2, {
-      message: "At least 1 author required.",
-    }),
-    authors: z.string(),
-    confidentiality: z.enum(["non-confidential", "confidential"]),
-    access: z.enum(["internal", "external"]),
-    type: z.enum(["patent", "paper", "documentation", "report"]),
-  })
-  .refine(
-    (data) => {
-      const names = data.authors.split(",").map((name) => name.trim());
-      // Ensure each name has at least 2 characters
-      return names.every((name) => name.length >= 2);
-    },
-    {
-      message: "Each name must have at least 2 characters",
-      path: ["authors"],
-    },
-  );
+const fileFormSchema = z.object({
+  fileName: z.string().min(2, {
+    message: "At least 1 author required.",
+  }),
+  isConfidential: z.boolean(),
+  isInternal: z.boolean(),
+  type: z.enum(["patent", "paper", "documentation", "report"]),
+});
 
 type Props = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -67,9 +54,8 @@ const DropZone = (props: Props) => {
     resolver: zodResolver(fileFormSchema),
     defaultValues: {
       fileName: "",
-      authors: "",
-      confidentiality: "confidential",
-      access: "internal",
+      isConfidential: true,
+      isInternal: true,
       type: "documentation",
     },
   });
@@ -156,7 +142,7 @@ const DropZone = (props: Props) => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-4">
           {!!file && (
-            <div className="min-h-max border-2 w-full grid px-4 py-2 rounded-md ">
+            <div className="min-h-max w-full grid rounded-md ">
               <div className="grid  grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs line-clamp-2">{file?.name}</span>
@@ -177,65 +163,32 @@ const DropZone = (props: Props) => {
                 </div>
                 <FormField
                   control={form.control}
-                  name="authors"
+                  name="isInternal"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Authors</FormLabel>
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
                       <FormControl>
-                        <Input placeholder="shadcn" {...field} />
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
                       </FormControl>
+                      <FormLabel>Internal</FormLabel>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={form.control}
-                  name="confidentiality"
+                  name="isConfidential"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>confidentiality:</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Confidiently" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="confidential">
-                            confidential
-                          </SelectItem>
-                          <SelectItem value="non-confidential">
-                            non-confidential
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="access"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Access</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Access" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="internal">Internal</SelectItem>
-                          <SelectItem value="external">External</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel>Confidential</FormLabel>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -245,7 +198,7 @@ const DropZone = (props: Props) => {
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Document Type</FormLabel>
+                      <FormLabel>Document</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -272,7 +225,7 @@ const DropZone = (props: Props) => {
           )}
           {!!!file && (
             <div
-              className="h-52 border-2 w-full flex justify-center items-center cursor-pointer rounded-md"
+              className="h-52 w-full flex justify-center items-center cursor-pointer rounded-md"
               {...getRootProps()}
             >
               <div className="flex flex-col items-center">

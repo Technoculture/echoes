@@ -14,9 +14,8 @@ interface PostPdfody {
   orgSlug: string;
   fileName: string;
   fileType: string;
-  authors: string; // authors of the document
-  confidentiality: string; // confidentiality level
-  access: string; // access level
+  isConfidential: boolean;
+  isInternal: boolean;
   type: string; // type of document
 }
 
@@ -58,9 +57,8 @@ export async function POST(request: Request) {
     orgSlug,
     fileName,
     fileType,
-    authors,
-    confidentiality,
-    access,
+    isConfidential,
+    isInternal,
     type,
   } = body;
 
@@ -81,9 +79,8 @@ export async function POST(request: Request) {
       id: id,
       "file-name": fileName,
       "Content-Type": fileType,
-      authors: authors, // authors of the document
-      confidentiality: confidentiality, // confidentiality level
-      "access-level": access, // access level
+      confidentiality: isConfidential ? "confidential" : "non-confidential", // confidentiality level
+      "access-level": isInternal ? "internal" : "external", // access level
       "file-type": type,
       "added-by": userName,
       "added-on": String(Date.now()), //
