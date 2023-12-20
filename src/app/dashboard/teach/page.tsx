@@ -27,10 +27,12 @@ export default async function Page(props: Props) {
     },
   });
 
+  const prefix = orgSlug + "/";
   const output = await listContents({
     s3Client,
-    prefix: `${orgSlug}/}`,
+    prefix: prefix,
   });
+  console.log("output", output);
 
   return (
     <div className="mt-[80px]">
