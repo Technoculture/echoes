@@ -12,7 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdownmeu";
 
-import { taskSchema } from "../../assets/data/schema";
+import { Task, taskSchema } from "../../assets/data/schema";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -22,6 +25,19 @@ export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
   const task = taskSchema.parse(row.original);
+
+  const queryClient = useQueryClient();
+
+  const deleteFile = useMutation({
+    mutationFn: async (task: Task) => {
+      const response = await axios.delete(`/api/removeFile/${task.title}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["files"]);
+      console.log("success");
+    },
+  });
 
   return (
     <DropdownMenu>
@@ -36,7 +52,12 @@ export function DataTableRowActions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            deleteFile.mutate(task);
+            console.log("delete", task);
+          }}
+        >
           Delete
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>

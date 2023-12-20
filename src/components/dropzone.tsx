@@ -25,6 +25,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/button";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { nanoid } from "ai";
+import { useQueryClient } from "@tanstack/react-query";
 
 const documentTypes = ["patent", "paper", "documentation", "report"];
 const fileFormSchema = z
@@ -60,6 +61,7 @@ const DropZone = (props: Props) => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>();
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof fileFormSchema>>({
     resolver: zodResolver(fileFormSchema),
@@ -141,6 +143,7 @@ const DropZone = (props: Props) => {
       }
     }
     //
+    queryClient.invalidateQueries(["files"]);
     props.setIsOpen(false);
     setIsUploading(false);
     setFile(null);
@@ -272,9 +275,16 @@ const DropZone = (props: Props) => {
               className="h-52 border-2 w-full flex justify-center items-center cursor-pointer rounded-md"
               {...getRootProps()}
             >
-              <div>
+              <div className="flex flex-col items-center">
                 <input {...getInputProps()} />
                 <Plus className="text-4xl" color="white" />
+                {!isDragActive ? (
+                  <span className="text-xs">
+                    Choose a file or Drop it here.
+                  </span>
+                ) : (
+                  <span className="text-xs">Drop it here.</span>
+                )}
               </div>
             </div>
           )}
@@ -288,7 +298,7 @@ const DropZone = (props: Props) => {
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" disabled={!!!file}>
               {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save
             </Button>

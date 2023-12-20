@@ -10,7 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdownmeu";
-import { LogOut, Settings, User } from "lucide-react";
+import { BookOpenCheck, LogOut, Settings, User } from "lucide-react";
+// import { BookType } from "@phosphor-icons/react";
+
 import {
   useUser,
   useAuth,
@@ -92,6 +94,7 @@ const CustomProfile = (props: Props) => {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
+            <BookOpenCheck className="mr-2 h-4 w-4" />
             <Link href="/dashboard/teach">Teach Echoes</Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => signOut()}>

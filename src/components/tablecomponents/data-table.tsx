@@ -27,13 +27,14 @@ import {
 
 import { DataTablePagination } from "@/components/tablecomponents/data-table-pagination";
 import { DataTableToolbar } from "@/components/tablecomponents/data-table-toolbar";
-// import { useQuery } from "@tanstack/react-query";
-// import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
+
 export function DataTable<TData, TValue>({
   columns,
   data,
@@ -50,19 +51,24 @@ export function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
-  // const { data: files } = useQuery(
-  //   ["files"],
-  //   async () => {
-  //     const res = await axios.get(`/api/listObjects`);
-  //     return res.data as TData[];
-  //   },
-  //   {
-  //     initialData: data as TData[],
-  //   },
-  // );
+  const { data: files } = useQuery(
+    ["files"],
+    async () => {
+      const res = await axios.get(`/api/listObjects`);
+      return res.data.data as TData[];
+    },
+    {
+      initialData: data as TData[],
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: true,
+    },
+  );
 
+  const clms = columns as ColumnDef<TData, TValue>[];
+  console.log("files", files);
   const table = useReactTable({
-    data,
+    data: files,
     columns,
     state: {
       sorting,

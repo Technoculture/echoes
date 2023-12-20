@@ -2,6 +2,7 @@ import { env } from "@/app/env.mjs";
 import { S3Client } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 import { listContents } from "@/utils/apiHelper";
+import { auth } from "@clerk/nextjs";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -9,6 +10,7 @@ export async function GET(request: Request) {
   const prefix = url.searchParams.get("prefix");
   console.log("prefix", prefix);
 
+  const { orgSlug } = await auth();
   const s3Client = new S3Client({
     region: env.AWS_REGION,
     credentials: {
@@ -17,6 +19,9 @@ export async function GET(request: Request) {
     },
   });
 
-  const data = await listContents({ prefix: prefix ? prefix : "", s3Client });
-  return NextResponse.json({ data });
+  const data = await listContents({
+    prefix: prefix ? prefix : orgSlug ? orgSlug + "/" : "",
+    s3Client,
+  });
+  return NextResponse.json({ data: data.tasks });
 }
