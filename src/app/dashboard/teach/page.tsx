@@ -16,7 +16,7 @@ type Props = {};
 export default async function Page(props: Props) {
   // const tasks = await getTasks();
 
-  const { orgSlug } = auth();
+  const { orgSlug, orgId } = auth();
   const user2 = await currentUser();
 
   const s3Client = new S3Client({
@@ -56,7 +56,7 @@ export default async function Page(props: Props) {
               />
             </div>
           </div>
-          <DataTable data={output.tasks} columns={columns} />
+          <DataTable orgId={orgId!} data={output.tasks} columns={columns} />
         </div>
       </>
     </div>

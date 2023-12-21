@@ -33,11 +33,13 @@ import axios from "axios";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  orgId: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  orgId,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -52,7 +54,7 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const { data: files } = useQuery(
-    ["files"],
+    ["files", orgId],
     async () => {
       const res = await axios.get(`/api/listObjects`);
       return res.data.data as TData[];
