@@ -7,38 +7,22 @@ const client = new SuperAgentClient({
   token: env.SUPERAGENT_API_KEY,
 });
 export async function POST(request: Request) {
-  const { data: llm } = await client.llm.create({
-    provider: "OPENAI",
-    apiKey: env.OPEN_AI_API_KEY,
-  });
+  // get agent by id
+  const { data: agent } = await client.agent.get(
+    "0fae8d8b-a8ef-4828-8191-341b8573944e",
+  );
 
-  const { data: agent } = await client.agent.create({
-    name: "Chat Assistant",
-    description: "My first Assistant",
-    avatar: "https://myavatar.com/homanp.png",
-    isActive: true,
-    initialMessage: "Hi there! How can I help you?",
-    llmModel: "GPT_3_5_TURBO_16K_0613",
-    prompt: "You are an extremely helpful AI Assistant",
-  });
-
-  if (agent && llm) {
-    await client.agent.addLlm(agent.id, {
-      llmId: llm.id,
-    });
-
-    const { data: prediction } = await client.agent.invoke(agent.id, {
-      input: "Hi there!",
+  try {
+    // invoke agent
+    const { data: prediction } = await client.agent.invoke(agent!.id, {
       enableStreaming: false,
-      sessionId: "my_session",
+      // input: "what is tesla's revenue"
+      input: "what are system calls in go programming language",
     });
-
-    const body = await request.json();
-
-    const { name } = body;
 
     return NextResponse.json({ status: "ok", prediction: prediction });
-  } else {
-    return NextResponse.json({ status: "error" });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ status: "error", error });
   }
 }
