@@ -470,3 +470,17 @@ export async function addToDatasource({
     console.error("error adding to datasource", error);
   }
 }
+export async function removeFromDatasource({ zeploUrl }: { zeploUrl: string }) {
+  try {
+    // make a zeplo post request to add to datasource
+    const res = await fetch(zeploUrl, {
+      method: "DELETE",
+      headers: {
+        "x-zeplo-secret": env.ZEPLO_SECRET,
+      },
+    });
+    console.log("response from zeplo", await res.json());
+  } catch (error) {
+    console.error("error adding to datasource", error);
+  }
+}

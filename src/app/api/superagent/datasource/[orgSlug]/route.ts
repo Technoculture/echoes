@@ -16,19 +16,36 @@ export async function POST(
   const body = addToDatasourceSchema.parse(await request.json());
 
   const { description, name, type, url } = body;
-  // create datasource
-  const { data: datasource } = await client.datasource.create({
-    name: orgSlug + "_" + name,
-    description,
-    type,
-    url,
-  });
-
-  return NextResponse.json({
-    status: "ok",
-    message: "create datasource",
-    datasource,
-  });
+  try {
+    console.info("reached before datasource creation");
+    console.log(
+      "description",
+      orgSlug,
+      description,
+      "name",
+      name,
+      "type",
+      type,
+      "url",
+      url,
+    );
+    // create datasource
+    const { data: datasource } = await client.datasource.create({
+      name: orgSlug + "_" + name,
+      description: description,
+      type: "PDF",
+      url: url,
+    });
+    console.info("reached after datasource creation", datasource);
+    return NextResponse.json({
+      status: "ok",
+      message: "create datasource",
+      datasource,
+    });
+  } catch (error) {
+    console.error("error creating datasource", error);
+    return NextResponse.json({ status: "error", error }, { status: 400 });
+  }
 }
 
 // get datasource
