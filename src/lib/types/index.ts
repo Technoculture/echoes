@@ -62,6 +62,7 @@ export enum Type {
 }
 
 export interface Result {
+  // Result from patent api (generated through rest client)
   id: string;
   type: Type;
   publication_id: string;
@@ -78,3 +79,12 @@ export interface Result {
   mapping: null;
   index: string;
 }
+
+export const addToDatasourceSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  type: z.string(), // later it will mime/type of allowed files
+  url: z.string(),
+});
+
+export type AddToDatasourceSchema = z.infer<typeof addToDatasourceSchema>;

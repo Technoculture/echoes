@@ -23,6 +23,7 @@ import axios from "axios";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { RunTree, RunTreeConfig } from "langsmith";
 import { Task } from "@/assets/data/schema";
+import { AddToDatasourceSchema } from "@/lib/types";
 export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
   gptTurbo: "gpt-3.5-turbo" as const,
@@ -444,4 +445,23 @@ export async function listContents({
   return {
     tasks: taskList,
   };
+}
+
+// add to datasource
+
+export async function addToDatasource({
+  postBody,
+  zeploUrl,
+}: {
+  postBody: AddToDatasourceSchema;
+  zeploUrl: string;
+}) {
+  // make a zeplo post request to add to datasource
+  fetch(zeploUrl, {
+    method: "POST",
+    body: JSON.stringify(postBody),
+    headers: {
+      "x-zeplo-secret": env.ZEPLO_SECRET,
+    },
+  });
 }

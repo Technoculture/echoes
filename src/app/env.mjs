@@ -44,6 +44,8 @@ export const env = createEnv({
     // PQAI API
     PQAI_API_KEY: z.string().min(1),
     ALGOLIA_WRITE_API_KEY: z.string().min(1),
+    // Superagent
+    SUPERAGENT_API_KEY: z.string().min(1),
   },
 
   client: {
@@ -115,5 +117,7 @@ export const env = createEnv({
     ZEPLO_SECRET: process.env.ZEPLO_SECRET,
     // PQAI API
     PQAI_API_KEY: process.env.PQAI_API_KEY,
+    // Superagent
+    SUPERAGENT_API_KEY: process.env.SUPERAGENT_API_KEY,
   },
 });

@@ -3,10 +3,11 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   S3Client,
-  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/app/env.mjs";
+import { addToDatasource } from "@/utils/apiHelper";
+import { addToDatasourceSchema } from "@/lib/types";
 interface PostPdfody {
   id: string;
   userName: string;
@@ -21,34 +22,9 @@ interface PostPdfody {
 
 export async function POST(request: Request) {
   const body: PostPdfody = await request.json();
-  async function createFolder(Bucket: string | undefined, Key: string) {
-    const command = new PutObjectCommand({ Bucket, Key });
-    return client.send(command);
-  }
 
-  async function existsFolder(Bucket: string | undefined, Key: string) {
-    const command = new HeadObjectCommand({ Bucket, Key });
-
-    try {
-      await client.send(command);
-      return true;
-    } catch (error: any) {
-      if (error?.name === "NotFound") {
-        return false;
-      } else {
-        throw error;
-      }
-    }
-  }
-
-  async function createFolderIfNotExist(
-    Bucket: string | undefined,
-    Key: string,
-  ) {
-    if (!(await existsFolder(Bucket, Key))) {
-      return createFolder(Bucket, Key);
-    }
-  }
+  const url = request.url;
+  const urlArray = url.split("/");
 
   const {
     id,
@@ -93,6 +69,18 @@ export async function POST(request: Request) {
     Key: fileKey,
   });
   const get = await getSignedUrl(client, getCommand, { expiresIn: 3600 });
+
+  const file_s3_url = `${env.IMAGE_PREFIX_URL}${fileKey}`;
+
+  const zeploUrl = `https://zeplo.to/https://${urlArray[2]}/api/superagent/${orgSlug}?_token=${env.ZEPLO_TOKEN}&_delay=40`;
+
+  const postBody = addToDatasourceSchema.parse({
+    name: fileName,
+    description: "Uploaded by " + userName,
+    type: fileType,
+    url: file_s3_url,
+  });
+  addToDatasource({ postBody: postBody, zeploUrl: zeploUrl });
 
   return new NextResponse(JSON.stringify({ postUrl: post, getUrl: get }));
 }
