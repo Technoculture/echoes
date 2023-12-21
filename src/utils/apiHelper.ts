@@ -456,12 +456,17 @@ export async function addToDatasource({
   postBody: AddToDatasourceSchema;
   zeploUrl: string;
 }) {
-  // make a zeplo post request to add to datasource
-  fetch(zeploUrl, {
-    method: "POST",
-    body: JSON.stringify(postBody),
-    headers: {
-      "x-zeplo-secret": env.ZEPLO_SECRET,
-    },
-  });
+  try {
+    // make a zeplo post request to add to datasource
+    const res = await fetch(zeploUrl, {
+      method: "POST",
+      body: JSON.stringify(postBody),
+      headers: {
+        "x-zeplo-secret": env.ZEPLO_SECRET,
+      },
+    });
+    console.log("response from zeplo", await res.json());
+  } catch (error) {
+    console.error("error adding to datasource", error);
+  }
 }
