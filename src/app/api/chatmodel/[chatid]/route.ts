@@ -2,7 +2,7 @@ import { StreamingTextResponse, LangChainStream, nanoid } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
-import { ChatEntry, ChatLog } from "@/lib/types";
+import { ChatEntry, ChatLog, chattype } from "@/lib/types";
 import { systemPrompt } from "@/utils/prompts";
 import {
   jsonToLangchain,
@@ -12,6 +12,9 @@ import {
 import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
 import axios from "axios";
+import { SuperAgentClient } from "superagentai-js";
+import { getStreamFromAgent } from "@/utils/superagent/agenthelpers";
+import { NextResponse } from "next/server";
 export const revalidate = 0; // disable cache
 
 export const maxDuration = 60;
@@ -31,6 +34,31 @@ export async function POST(
   const url = request.url;
   // getting main url
   const urlArray = url.split("/");
+
+  // getting chat type
+  const chatType = chattype.parse(body.chattype);
+  const input = _chat[_chat.length - 1].content;
+  if (chatType === "rag") {
+    const client = new SuperAgentClient({
+      environment: "https://api.beta.superagent.sh",
+      token: env.SUPERAGENT_API_KEY,
+    });
+
+    const { data: agents } = await client.agent.list();
+    if (agents) {
+      // find agent by name
+      const agent = agents.find((agent) => agent.name === orgSlug);
+      if (agent) {
+        console.log("agent found");
+        const stream = await getStreamFromAgent(agent.id, input);
+
+        return new StreamingTextResponse(stream);
+      }
+    } else {
+      console.log("agent not found");
+      return NextResponse.json({ error: "agent not fount" }, { status: 404 });
+    }
+  }
 
   let id = params.params.chatid as any;
   // exceptional case

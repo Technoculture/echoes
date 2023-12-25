@@ -1,7 +1,6 @@
 "use client";
 
 import { Dispatch, SetStateAction, useState } from "react";
-import { buttonVariants } from "@/components/button";
 import { useRouter } from "next/navigation";
 import { Plus, CircleNotch } from "@phosphor-icons/react";
 import { ChatType } from "@/lib/types";
@@ -25,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { MessageSquarePlus, PenTool } from "lucide-react";
+import { MessageSquarePlus, PenTool, Database } from "lucide-react";
 
 interface Props {
   org_slug: string;
@@ -37,7 +36,8 @@ const formSchema = z.object({
 });
 
 const Startnewchatbutton = (props: Props) => {
-  const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false); // normal chat
+  const [isKnowledgeChatLoading, setIsKnowledgeChatLoading] = useState(false); // knowledge chat
   const [isBoardCreating, setIsBoardCreating] = useState(false);
   const [showTitleInput, setShowTitleInput] = useState(false);
   const [title, setTitle] = useState("");
@@ -109,7 +109,6 @@ const Startnewchatbutton = (props: Props) => {
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
-              className={buttonVariants({ variant: "outline" })}
               onClick={() => {
                 // setShowLoading(true);
                 handleNavigate("chat", setShowLoading, "");
@@ -128,8 +127,8 @@ const Startnewchatbutton = (props: Props) => {
                 </>
               )}
             </Button>
-            <button
-              className={buttonVariants({ variant: "outline" })}
+            <Button
+              variant="outline"
               onClick={() => {
                 setShowTitleInput(true);
               }}
@@ -146,7 +145,26 @@ const Startnewchatbutton = (props: Props) => {
                   New Diagram
                 </>
               )}
-            </button>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                handleNavigate("rag", setIsKnowledgeChatLoading, ""); // TODO: update loading state
+              }}
+              disabled={showLoading || isBoardCreating || showTitleInput}
+            >
+              {isKnowledgeChatLoading ? (
+                <>
+                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
+                  Initiating Knowledge Chat
+                </>
+              ) : (
+                <>
+                  <Database className="w-4 h-4 mr-2" />
+                  New Knowledge chat
+                </>
+              )}
+            </Button>
           </div>
         )}
         {showTitleInput && (

@@ -59,6 +59,7 @@ export default function Chat(props: ChatProps) {
       orgId: props.orgId,
       name: props.username,
       userId: props.uid,
+      chattype: props.type,
     },
     onError: (error) => {
       console.log("got the error", error);
@@ -154,6 +155,7 @@ export default function Chat(props: ChatProps) {
             append={append}
             isChatCompleted={isChatCompleted}
             isLoading={isLoading}
+            chattype={props.type}
           />
         </>
       )}

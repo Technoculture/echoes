@@ -15,7 +15,7 @@ export type ChatLog = {
   log: Array<ChatEntry>;
 };
 
-export const chattype = z.enum(["chat", "tldraw"]);
+export const chattype = z.enum(["chat", "tldraw", "rag"]);
 export type ChatType = z.infer<typeof chattype>;
 export interface PostBody {
   user_id: string;

@@ -15,7 +15,7 @@ import { Button } from "@/components/button";
 
 import ModelSwitcher from "@/components/modelswitcher";
 import AudioWaveForm from "@/components/audiowaveform";
-import { AIType } from "@/lib/types";
+import { AIType, ChatType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -54,6 +54,7 @@ interface InputBarProps {
   orgId: string;
   setMessages: (messages: Message[]) => void;
   isLoading: boolean;
+  chattype: ChatType;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -95,6 +96,10 @@ const InputBar = (props: InputBarProps) => {
       name: `${props.username},${props.userId}`,
       audio: "",
     };
+    if (props.chattype === "rag") {
+      props.append(message as Message);
+      props.setInput("");
+    }
     if (props.choosenAI === "universal") {
       props.append(message as Message);
       props.setInput("");
