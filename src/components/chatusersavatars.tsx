@@ -29,7 +29,7 @@ const Chatusersavatars = ({
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: [`chat-user-avatars_${chatId}`, allPresenceIds],
     queryFn: () => getUsers(allPresenceIds),
-    refetchInterval: Infinity,
+    // refetchInterval: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     cacheTime: Infinity,

@@ -43,7 +43,7 @@ const Search = (props: Props) => {
   );
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "/") {
+      if (e.ctrlKey && e.key === "/") {
         e.preventDefault();
         setOpen((open) => !open);
       }

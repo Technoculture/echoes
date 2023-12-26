@@ -7,8 +7,6 @@ export async function getStreamFromAgent(agentId: string, input: string) {
     token: env.SUPERAGENT_API_KEY,
   });
 
-  const { data: agent } = await client.agent.get(agentId);
-
   // const res = await client.agent.invoke(agent!.id, {
   //   enableStreaming: true,
   //   input: input
@@ -27,11 +25,9 @@ export async function getStreamFromAgent(agentId: string, input: string) {
       body: JSON.stringify({
         input: input,
         enableStreaming: true,
-        // sessionId: session,
       }),
     },
   );
-  // console.log("res", res)
 
   const reader = res.body?.getReader();
   const encoder = new TextEncoder();
@@ -48,12 +44,17 @@ export async function getStreamFromAgent(agentId: string, input: string) {
           break;
         }
         const decoded = decoder.decode(value);
-        msg += decoded
-          .replace("data:", "")
-          .replace("data: ", "")
-          .replace("data:  ", "")
-          .replace("\n\n", "\n");
-        controller.enqueue(encoder.encode(msg));
+        const lines = decoded.split("\n");
+        let parsedLines = lines
+          .map((line) => line.replace(/^data: /, ""))
+          .filter((line) => line !== "" && line !== "[DONE]");
+        console.log("parsedLines", parsedLines.join(""));
+        if (!parsedLines.join("").startsWith("event:")) {
+          msg += parsedLines.join("");
+          controller.enqueue(encoder.encode(parsedLines.join("")));
+        }
+        // console.log("splitted", splitted.length > 0 ? splitted[1] : null);
+        // controller.enqueue(encoder.encode(splitted[1]));
       }
     },
   });

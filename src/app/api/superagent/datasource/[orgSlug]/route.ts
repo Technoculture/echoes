@@ -15,6 +15,9 @@ export async function POST(
   const orgSlug = params.params.orgSlug;
   const body = addToDatasourceSchema.parse(await request.json());
 
+  const requestUrl = request.url;
+  const urlArray = requestUrl.split("/");
+
   const { description, name, type, url } = body;
   try {
     console.info("reached before datasource creation");
@@ -37,6 +40,26 @@ export async function POST(
       url: url,
     });
     console.info("reached after datasource creation", datasource);
+
+    // get org's agent
+    const { data: agents } = await client.agent.list();
+    const agent = agents!.find((agent) => agent.name === orgSlug);
+
+    // add datasource to agent
+    const result = await fetch(
+      `https://zeplo.to/https://${urlArray[2]}/api/superagent/agents/${agent?.id}datasources/add?_token=${env.ZEPLO_TOKEN}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-zeplo-secret": env.ZEPLO_SECRET,
+        },
+        body: JSON.stringify({
+          datasourceId: datasource!.id,
+        }),
+      },
+    );
+
     return NextResponse.json({
       status: "ok",
       message: "create datasource",

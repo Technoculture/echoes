@@ -78,6 +78,7 @@
     "drizzle-zod": "0.4.2",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
+    "eventsource-parser": "^1.1.1",
     "framer-motion": "10.16.2",
     "get-blob-duration": "^1.2.0",
     "iconoir-react": "6.8.0",
