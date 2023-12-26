@@ -47,7 +47,7 @@ export async function POST(
 
     // add datasource to agent
     const result = await fetch(
-      `https://zeplo.to/https://${urlArray[2]}/api/superagent/agents/${agent?.id}datasources/add?_token=${env.ZEPLO_TOKEN}`,
+      `https://zeplo.to/https://${urlArray[2]}/api/superagent/agents/${agent?.id}/datasources/add?_token=${env.ZEPLO_TOKEN}`,
       {
         method: "POST",
         headers: {

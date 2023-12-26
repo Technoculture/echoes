@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
   const file_s3_url = `${env.IMAGE_PREFIX_URL}${fileKey}`;
 
-  const zeploUrl = `https://zeplo.to/https://${urlArray[2]}/api/superagent/datasource/${orgSlug}?_token=${env.ZEPLO_TOKEN}&_delay=40`;
+  const zeploUrl = `https://zeplo.to/https://${urlArray[2]}/api/superagent/datasource/${orgSlug}?_token=${env.ZEPLO_TOKEN}`;
 
   const postBody = addToDatasourceSchema.parse({
     name: fileName,
