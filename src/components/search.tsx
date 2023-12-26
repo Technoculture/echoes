@@ -18,6 +18,7 @@ import Link from "next/link";
 import { timestampToDate } from "@/utils/helpers";
 import UserAvatar from "@/components/useravatars";
 import useSearchDialogState from "@/store/searchDialogStore";
+import { useThrottle } from "@uidotdev/usehooks";
 
 type Props = {
   orgSlug: string;
@@ -26,6 +27,7 @@ type Props = {
 const Search = (props: Props) => {
   // const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const throttledValue = useThrottle(value, 700);
   const [results, setResults] = useState<any>([]);
   const { showSearchDialog, toggleSearchDialog } = useSearchDialogState();
 
@@ -56,16 +58,23 @@ const Search = (props: Props) => {
 
   useEffect(() => {
     index
-      .search(value, { hitsPerPage: 8, filters: `orgSlug: "${props.orgSlug}"` })
+      .search(throttledValue, {
+        hitsPerPage: 8,
+        filters: `orgSlug: "${props.orgSlug}"`,
+      })
       .then((response) => {
-        setResults(response.hits);
+        console.log(response);
+        return setResults(response.hits);
       });
-  }, [value]);
+  }, [throttledValue]);
 
   return (
     <CommandDialog open={showSearchDialog} onOpenChange={toggleSearchDialog}>
       <CommandInput
-        onValueChange={setValue}
+        onValueChange={(val) => {
+          console.log("got the input value");
+          setValue(val);
+        }}
         value={value}
         placeholder="Type a command or search..."
       />
