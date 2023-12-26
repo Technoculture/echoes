@@ -1,20 +1,18 @@
-import { StreamingTextResponse, LangChainStream, nanoid } from "ai";
-import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { chats } from "@/lib/db/schema";
-import { ChatEntry, ChatLog, chattype } from "@/lib/types";
+import { StreamingTextResponse, LangChainStream, nanoid, Message } from "ai";
+import { chattype } from "@/lib/types";
 import { systemPrompt } from "@/utils/prompts";
 import {
   jsonToLangchain,
   openAIChatModel,
   OPEN_AI_MODELS,
+  saveToDB,
 } from "@/utils/apiHelper";
 import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
-import axios from "axios";
 import { SuperAgentClient } from "superagentai-js";
 import { getStreamFromAgent } from "@/utils/superagent/agenthelpers";
 import { NextResponse } from "next/server";
+
 export const revalidate = 0; // disable cache
 
 export const maxDuration = 60;
@@ -27,7 +25,7 @@ export async function POST(
   const { orgSlug } = await auth();
   console.log("orgSlug", orgSlug);
 
-  const _chat = body.messages;
+  const _chat = body.messages as Message[];
   let orgId = "";
   orgId = body.orgId;
   const userId = body.userId;
@@ -50,7 +48,16 @@ export async function POST(
       const agent = agents.find((agent) => agent.name === orgSlug);
       if (agent) {
         console.log("agent found");
-        const stream = await getStreamFromAgent(agent.id, input);
+        const stream = await getStreamFromAgent({
+          agentId: agent.id,
+          input: input,
+          _chat: _chat,
+          chatId: params.params.chatid,
+          orgSlug: orgSlug as string,
+          orgId: orgId,
+          userId: userId,
+          urlArray: urlArray,
+        });
 
         return new StreamingTextResponse(stream);
       }
@@ -72,32 +79,11 @@ export async function POST(
 
   const model = OPEN_AI_MODELS.gpt4Turbo;
 
-  const postToAlgolia = ({
-    chats,
-    chatId,
-    orgSlug,
-  }: {
-    chats: ChatEntry[];
-    chatId: number;
-    orgSlug: string;
-  }) => {
-    fetch(
-      `https://zeplo.to/https://${urlArray[2]}/api/addToSearch?_token=${env.ZEPLO_TOKEN}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ chats, chatId, orgSlug }),
-        headers: {
-          "x-zeplo-secret": env.ZEPLO_SECRET,
-        },
-      },
-    );
-  };
-
   const { stream, handlers } = LangChainStream({
     onCompletion: async (fullResponse: string) => {
       const latestReponse = {
         id: nanoid(),
-        role: "assistant",
+        role: "assistant" as const,
         content: fullResponse,
         createdAt: new Date(),
         audio: "",
@@ -107,52 +93,25 @@ export async function POST(
         // it means it is the first message in a specific chat id
         // Handling organization chat inputs
         if (_chat.length === 1) {
-          console.log("got in 1 length case");
-          _chat.push(latestReponse);
-
-          axios.post(`https://zeplo.to/step?_token=${env.ZEPLO_TOKEN}`, [
-            {
-              url: `https://${urlArray[2]}/api/generateTitle/${id}/${orgId}?_step=A`,
-              body: JSON.stringify({ chat: _chat }),
-              headers: {
-                "x-zeplo-secret": env.ZEPLO_SECRET,
-              },
-            },
-            {
-              url: `https://${urlArray[2]}/api/addToSearch?_step=B&_requires=A`,
-              body: JSON.stringify({
-                chats: _chat,
-                chatId: Number(id),
-                orgSlug: orgSlug as string,
-              }),
-              headers: {
-                "x-zeplo-secret": env.ZEPLO_SECRET,
-              },
-            },
-          ]);
-          await db
-            .update(chats)
-            .set({
-              messages: JSON.stringify({ log: _chat } as ChatLog),
-              creator: userId,
-            })
-            .where(eq(chats.id, Number(id)))
-            .run();
-        } else {
-          _chat.push(latestReponse);
-          postToAlgolia({
-            chats: [_chat[_chat.length - 2], latestReponse],
+          await saveToDB({
+            _chat: _chat,
             chatId: Number(id),
             orgSlug: orgSlug as string,
-          }); // add to search index
-          await db
-            .update(chats)
-            .set({
-              messages: JSON.stringify({ log: _chat }),
-              updatedAt: new Date(),
-            })
-            .where(eq(chats.id, Number(id)))
-            .run();
+            latestResponse: latestReponse,
+            userId: userId,
+            orgId: orgId,
+            urlArray: urlArray,
+          });
+        } else {
+          await saveToDB({
+            _chat: _chat,
+            chatId: Number(id),
+            orgSlug: orgSlug as string,
+            latestResponse: latestReponse,
+            userId: userId,
+            orgId: orgId,
+            urlArray: urlArray,
+          });
         }
       }
     },

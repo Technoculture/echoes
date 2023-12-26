@@ -7,7 +7,7 @@ export type ChatEntry = {
   id: string;
   role: ChatRole;
   content: string;
-  name: string;
+  name?: string | undefined;
   audio?: string;
 };
 

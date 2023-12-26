@@ -484,3 +484,102 @@ export async function removeFromDatasource({ zeploUrl }: { zeploUrl: string }) {
     console.error("error adding to datasource", error);
   }
 }
+
+/**
+ * Utility to be used in chatmodel
+ */
+
+export const postToAlgolia = ({
+  chats,
+  chatId,
+  orgSlug,
+  urlArray,
+}: {
+  chats: ChatEntry[];
+  chatId: number;
+  orgSlug: string;
+  urlArray: string[];
+}) => {
+  fetch(
+    `https://zeplo.to/https://${urlArray[2]}/api/addToSearch?_token=${env.ZEPLO_TOKEN}`,
+    {
+      method: "POST",
+      body: JSON.stringify({ chats, chatId, orgSlug }),
+      headers: {
+        "x-zeplo-secret": env.ZEPLO_SECRET,
+      },
+    },
+  );
+};
+
+export const saveToDB = async ({
+  _chat,
+  chatId,
+  orgSlug,
+  latestResponse,
+  userId,
+  urlArray,
+  orgId,
+}: {
+  latestResponse: ChatEntry;
+  _chat: ChatEntry[];
+  chatId: number;
+  orgSlug: string;
+  orgId: string;
+  userId: string;
+  urlArray: string[];
+}) => {
+  try {
+    if (_chat.length === 1) {
+      console.log("got in 1 length case");
+      _chat.push(latestResponse);
+      // step for generating title and adding to search index
+      axios.post(`https://zeplo.to/step?_token=${env.ZEPLO_TOKEN}`, [
+        {
+          url: `https://${urlArray[2]}/api/generateTitle/${chatId}/${orgId}?_step=A`,
+          body: JSON.stringify({ chat: _chat }),
+          headers: {
+            "x-zeplo-secret": env.ZEPLO_SECRET,
+          },
+        },
+        {
+          url: `https://${urlArray[2]}/api/addToSearch?_step=B&_requires=A`,
+          body: JSON.stringify({
+            chats: _chat,
+            chatId: chatId,
+            orgSlug: orgSlug as string,
+          }),
+          headers: {
+            "x-zeplo-secret": env.ZEPLO_SECRET,
+          },
+        },
+      ]);
+      await db
+        .update(chats)
+        .set({
+          messages: JSON.stringify({ log: _chat } as ChatLog),
+          creator: userId,
+        })
+        .where(eq(chats.id, chatId))
+        .run();
+    } else {
+      _chat.push(latestResponse);
+      postToAlgolia({
+        chats: [_chat[_chat.length - 2], latestResponse],
+        chatId: chatId,
+        orgSlug: orgSlug as string,
+        urlArray: urlArray,
+      }); // add to search index
+      await db
+        .update(chats)
+        .set({
+          messages: JSON.stringify({ log: _chat }),
+          updatedAt: new Date(),
+        })
+        .where(eq(chats.id, chatId))
+        .run();
+    }
+  } catch (error) {
+    console.log("error in saving to db", error);
+  }
+};

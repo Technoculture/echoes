@@ -1,17 +1,27 @@
-import { SuperAgentClient } from "superagentai-js";
 import { env } from "@/app/env.mjs";
+import { ChatEntry } from "@/lib/types";
+import { saveToDB } from "@/utils/apiHelper";
+import { nanoid } from "ai";
 
-export async function getStreamFromAgent(agentId: string, input: string) {
-  const client = new SuperAgentClient({
-    environment: "https://api.beta.superagent.sh",
-    token: env.SUPERAGENT_API_KEY,
-  });
-
-  // const res = await client.agent.invoke(agent!.id, {
-  //   enableStreaming: true,
-  //   input: input
-  // });
-
+export async function getStreamFromAgent({
+  agentId,
+  input,
+  _chat,
+  chatId,
+  orgId,
+  orgSlug,
+  urlArray,
+  userId,
+}: {
+  agentId: string;
+  input: string;
+  _chat: ChatEntry[];
+  chatId: string;
+  orgSlug: string;
+  orgId: string;
+  userId: string;
+  urlArray: string[];
+}) {
   // text decoder
   const decoder = new TextDecoder();
   const res = await fetch(
@@ -40,6 +50,22 @@ export async function getStreamFromAgent(agentId: string, input: string) {
         const { done, value } = await reader!.read();
         if (done) {
           console.log("message", msg);
+          const latestReponse = {
+            id: nanoid(),
+            role: "assistant" as const,
+            content: msg,
+            createdAt: new Date(),
+            audio: "",
+          };
+          await saveToDB({
+            _chat: _chat,
+            chatId: Number(chatId),
+            orgSlug: orgSlug as string,
+            latestResponse: latestReponse,
+            userId: userId,
+            orgId: orgId,
+            urlArray: urlArray,
+          });
           controller.close();
           break;
         }
