@@ -12,12 +12,10 @@ import Startnewchatbutton from "@/components/startnewchatbutton";
 // import useSlotStore from "@/store/slots";
 import Search from "@/components/search";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Toggle } from "@/components/ui/toogle";
-import { Building, User, SearchIcon, Sun, MoonIcon } from "lucide-react";
+import { Building, User, SearchIcon } from "lucide-react";
 import { useQueryState } from "next-usequerystate";
 import { Button } from "@/components/button";
 // import { useToast } from "@/components/ui/use-toast";
-import { useTheme } from "next-themes";
 import useSearchDialogState from "@/store/searchDialogStore";
 
 export default function LoggedInLayout({
@@ -34,7 +32,6 @@ export default function LoggedInLayout({
   const [cards, setCards] = useQueryState("chats");
   const { showSearchDialog, toggleSearchDialog } = useSearchDialogState();
   // const { toast } = useToast();
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     if (store.audioSrc && audioRef.current) {
@@ -76,22 +73,6 @@ export default function LoggedInLayout({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-
-              <div className="ml-auto">
-                <Toggle
-                  aria-label="Toggle italic"
-                  onClick={(e) => {
-                    console.log(theme);
-                    setTheme(theme === "dark" ? "light" : "dark");
-                  }}
-                >
-                  {theme === "dark" ? (
-                    <Sun className="w-4 h-4" />
-                  ) : (
-                    <MoonIcon className="w-4 h-4" />
-                  )}
-                </Toggle>
-              </div>
             </div>
           }
           className="bg-primary-900 dark:backdrop-brightness-50 backdrop-blur-md"
