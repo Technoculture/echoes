@@ -6,6 +6,8 @@ import { UserNav } from "@/components/tablecomponents/user-nav";
 import { auth, currentUser } from "@clerk/nextjs";
 import { S3Client } from "@aws-sdk/client-s3";
 import { listContents } from "@/utils/apiHelper";
+import { PERMISSIONS } from "@/utils/constants";
+import { LockClosedIcon } from "@radix-ui/react-icons";
 export const metadata: Metadata = {
   title: "Tasks",
   description: "A task and issue tracker build using Tanstack Table.",
@@ -45,7 +47,7 @@ export default async function Page(props: Props) {
               <h2 className="text-2xl font-bold tracking-tight">
                 Teach Echoes
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground line-clamp-2">
                 Files added here will be used by Echoes when answering questions
                 within this organization.
               </p>
@@ -59,7 +61,17 @@ export default async function Page(props: Props) {
               />
             </div>
           </div>
-          <DataTable orgId={orgId!} data={output.tasks} columns={columns} />
+          {orgPermissions?.includes(PERMISSIONS.viewFile) ? (
+            <DataTable orgId={orgId!} data={output.tasks} columns={columns} />
+          ) : (
+            <div className="flex flex-col flex-grow items-center justify-center h-full text-center">
+              <LockClosedIcon
+                className="h-48 w-48 text-gray-400"
+                aria-hidden="true"
+              />
+              Bye Bye! You don't have enough permissions to view this page.
+            </div>
+          )}
         </div>
       </>
     </div>

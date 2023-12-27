@@ -26,6 +26,7 @@ import { PERMISSIONS, USER_ROLES } from "@/utils/constants";
 type Props = {};
 
 const CustomProfile = (props: Props) => {
+  const [open, setIsOpen] = React.useState(false);
   const { signOut, isSignedIn, orgId, orgSlug, userId, orgRole, has } =
     useAuth();
   const [isPersonalProfile, setIsPersonalProfile] = React.useState(true);
@@ -58,7 +59,7 @@ const CustomProfile = (props: Props) => {
   const organization = useOrganization();
   return (
     <div>
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild className="cursor-pointer">
           <Avatar>
             <AvatarImage src={user?.imageUrl} />
@@ -104,7 +105,10 @@ const CustomProfile = (props: Props) => {
             )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled={!permission}>
+          <DropdownMenuItem
+            onClick={() => setIsOpen(false)}
+            disabled={!permission}
+          >
             <BookOpenCheck className="mr-2 h-4 w-4" />
             <Link href="/dashboard/teach">Teach Echoes</Link>
           </DropdownMenuItem>
