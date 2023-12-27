@@ -102,7 +102,7 @@ const CustomProfile = (props: Props) => {
               }}
               className="cursor-pointer"
             >
-              <Sun className="h- w-4 mr-2" />
+              <Sun className="h-4 w-4 mr-2" />
               <span>Light</span>
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
@@ -112,7 +112,7 @@ const CustomProfile = (props: Props) => {
               }}
               className="cursor-pointer"
             >
-              <MoonIcon className="h- w-4 mr-2" />
+              <MoonIcon className="h-4 w-4 mr-2" />
               <span>Dark</span>
             </DropdownMenuCheckboxItem>
           </DropdownMenuGroup>
