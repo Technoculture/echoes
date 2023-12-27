@@ -5,6 +5,7 @@ import { dark } from "@clerk/themes";
 
 import { Inter } from "next/font/google";
 import Providers from "@/app/queryProvider";
+import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -254,6 +255,7 @@ export default function RootLayout({
               style={{ WebkitTapHighlightColor: "transparent" }}
               className="flex-col flex-grow"
             >
+              <Toaster />
               {children}
             </div>
           </Providers>

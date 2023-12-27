@@ -9,6 +9,7 @@ import { env } from "@/app/env.mjs";
 import { addToDatasource, hasPermission } from "@/utils/apiHelper";
 import { addToDatasourceSchema } from "@/lib/types";
 import { PERMISSIONS } from "@/utils/constants";
+import * as z from "zod";
 interface PostPdfody {
   id: string;
   userName: string;
@@ -21,8 +22,21 @@ interface PostPdfody {
   type: string; // type of document
 }
 
+const postFileSchema = z.object({
+  id: z.string(),
+  userName: z.string(),
+  userId: z.string(),
+  orgSlug: z.string(),
+  fileName: z.string(),
+  fileType: z.enum(["application/pdf", "image/png", "image/jpeg"]),
+  confidentiality: z.enum(["confidential", "non-confidential"]),
+  access: z.enum(["internal", "external"]),
+  type: z.enum(["patent", "paper", "documentation", "report"]),
+});
+
 export async function POST(request: Request) {
-  const body: PostPdfody = await request.json();
+  // const body: PostPdfody = await request.json();
+  const body = postFileSchema.parse(await request.json());
 
   const url = request.url;
   const urlArray = url.split("/");
@@ -34,8 +48,8 @@ export async function POST(request: Request) {
     orgSlug,
     fileName,
     fileType,
-    isConfidential,
-    isInternal,
+    confidentiality,
+    access,
     type,
   } = body;
 
@@ -45,6 +59,7 @@ export async function POST(request: Request) {
       { status: 401 },
     );
   }
+  console.log("body", body);
 
   const client = new S3Client({
     region: env.AWS_REGION,
@@ -63,8 +78,8 @@ export async function POST(request: Request) {
       id: id,
       "file-name": fileName,
       "Content-Type": fileType,
-      confidentiality: isConfidential ? "confidential" : "non-confidential", // confidentiality level
-      "access-level": isInternal ? "internal" : "external", // access level
+      confidentiality: confidentiality, // confidentiality level
+      "access-level": access, // access level
       "file-type": type,
       "added-by": userName,
       "added-on": String(Date.now()), //
