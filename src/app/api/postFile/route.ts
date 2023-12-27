@@ -6,8 +6,9 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/app/env.mjs";
-import { addToDatasource } from "@/utils/apiHelper";
+import { addToDatasource, hasPermission } from "@/utils/apiHelper";
 import { addToDatasourceSchema } from "@/lib/types";
+import { PERMISSIONS } from "@/utils/constants";
 interface PostPdfody {
   id: string;
   userName: string;
@@ -37,6 +38,13 @@ export async function POST(request: Request) {
     isInternal,
     type,
   } = body;
+
+  if (!hasPermission({ permission: PERMISSIONS.uploadFile })) {
+    return NextResponse.json(
+      { message: "you are not allowed to perform this action" },
+      { status: 401 },
+    );
+  }
 
   const client = new S3Client({
     region: env.AWS_REGION,

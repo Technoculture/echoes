@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { env } from "@/app/env.mjs";
-import { removeFromDatasource } from "@/utils/apiHelper";
+import { hasPermission, removeFromDatasource } from "@/utils/apiHelper";
+import { PERMISSIONS } from "@/utils/constants";
 
 export async function DELETE(
   request: Request,
@@ -15,6 +16,12 @@ export async function DELETE(
   console.log("got the file key", fileKey);
 
   const { orgSlug, orgId, userId } = await auth();
+  if (!hasPermission({ permission: PERMISSIONS.deleteFile })) {
+    return NextResponse.json(
+      { message: "you are not allowed to perform this action" },
+      { status: 401 },
+    );
+  }
 
   const s3Client = new S3Client({
     region: env.AWS_REGION,

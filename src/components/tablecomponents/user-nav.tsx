@@ -9,23 +9,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PlusCircle } from "lucide-react";
+import { ArrowLeft, PlusCircle } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
+import { PERMISSIONS } from "@/utils/constants";
 
 interface UserNavProps {
+  orgPermissions: string[];
   orgSlug: string;
   username: string;
   userId: string;
 }
 
-export function UserNav({ username, userId, orgSlug }: UserNavProps) {
+export function UserNav({
+  username,
+  userId,
+  orgSlug,
+  orgPermissions,
+}: UserNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Button variant="outline" className="mr-2" asChild>
+        <Link
+          // onClick={() => setShowLoading(true)}
+          href={`/dashboard/user`}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Link>
+      </Button>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <PlusCircle className="h-4 w-4" />
-        </Button>
+        {orgPermissions.includes(PERMISSIONS.uploadFile) && (
+          <Button variant="outline">
+            <PlusCircle className="h-4 w-4" />
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent>

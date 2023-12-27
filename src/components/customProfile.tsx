@@ -21,14 +21,25 @@ import {
 } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import Link from "next/link";
+import { PERMISSIONS, USER_ROLES } from "@/utils/constants";
 
 type Props = {};
 
 const CustomProfile = (props: Props) => {
-  const { signOut, isSignedIn, orgId, orgSlug, userId, orgRole } = useAuth();
+  const { signOut, isSignedIn, orgId, orgSlug, userId, orgRole, has } =
+    useAuth();
   const [isPersonalProfile, setIsPersonalProfile] = React.useState(true);
 
   const { user } = useUser();
+
+  let permission = false;
+  if (has) {
+    // @ts-ignore
+    permission = has({
+      role: USER_ROLES.principalInvestigator,
+      permission: PERMISSIONS.viewFile,
+    });
+  }
 
   const {
     isLoaded,
@@ -93,7 +104,7 @@ const CustomProfile = (props: Props) => {
             )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem disabled={!permission}>
             <BookOpenCheck className="mr-2 h-4 w-4" />
             <Link href="/dashboard/teach">Teach Echoes</Link>
           </DropdownMenuItem>

@@ -35,18 +35,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Checkbox } from "../ui/checkbox";
+} from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
+import { PERMISSIONS, USER_ROLES } from "@/utils/constants";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -68,7 +69,24 @@ export function DataTableRowActions<TData>({
   const taskType = documentEnum.parse(task.type);
   const [isSaving, setIsSaving] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { orgSlug } = useAuth();
+  const { orgSlug, has } = useAuth();
+
+  let isDeletePermitted = false;
+  if (has) {
+    // @ts-ignore
+    isDeletePermitted = has({
+      role: USER_ROLES.principalInvestigator,
+      permission: PERMISSIONS.deleteFile,
+    });
+  }
+  let isEditPermitted = false;
+  if (has) {
+    // @ts-ignore
+    isEditPermitted = has({
+      role: USER_ROLES.principalInvestigator,
+      permission: PERMISSIONS.uploadFile,
+    });
+  }
 
   const queryClient = useQueryClient();
 
@@ -133,10 +151,11 @@ export function DataTableRowActions<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          <DialogTrigger className="w-full">
+          <DialogTrigger disabled={!isEditPermitted} className="w-full">
             <DropdownMenuItem>Edit</DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuItem
+            disabled={!isDeletePermitted}
             onClick={() => {
               deleteFile.mutate(task);
               console.log("delete", task);

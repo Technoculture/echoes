@@ -16,8 +16,10 @@ type Props = {};
 export default async function Page(props: Props) {
   // const tasks = await getTasks();
 
-  const { orgSlug, orgId } = auth();
+  const { orgSlug, orgId, orgRole, orgPermissions } = auth();
+  console.log("orgPermission", orgRole, orgPermissions);
   const user2 = await currentUser();
+  // console.log("user2", user2);
 
   const s3Client = new S3Client({
     region: process.env.AWS_REGION!,
@@ -32,7 +34,7 @@ export default async function Page(props: Props) {
     s3Client,
     prefix: prefix,
   });
-  console.log("output", output);
+  // console.log("output", output);
 
   return (
     <div className="mt-[80px]">
@@ -50,6 +52,7 @@ export default async function Page(props: Props) {
             </div>
             <div className="flex items-center space-x-2">
               <UserNav
+                orgPermissions={orgPermissions ? orgPermissions : []}
                 orgSlug={orgSlug!}
                 username={user2?.firstName + " " + user2?.lastName}
                 userId={user2?.id!}

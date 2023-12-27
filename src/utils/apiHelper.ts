@@ -24,6 +24,7 @@ import { ChatCompletionMessageParam } from "openai/resources";
 import { RunTree, RunTreeConfig } from "langsmith";
 import { Task } from "@/assets/data/schema";
 import { AddToDatasourceSchema } from "@/lib/types";
+import { auth } from "@clerk/nextjs";
 export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
   gptTurbo: "gpt-3.5-turbo" as const,
@@ -484,6 +485,19 @@ export async function removeFromDatasource({ zeploUrl }: { zeploUrl: string }) {
     console.error("error adding to datasource", error);
   }
 }
+
+/**
+ * Authorizatio Utility
+ */
+
+export const hasPermission = ({ permission }: { permission: string }) => {
+  const { orgPermissions } = auth();
+  if (orgPermissions) {
+    return orgPermissions.includes(permission);
+  } else {
+    return false;
+  }
+};
 
 /**
  * Utility to be used in chatmodel
