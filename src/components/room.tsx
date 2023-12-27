@@ -23,6 +23,7 @@ interface Props {
   chatTitle: string;
   imageUrl: string;
   type: ChatType;
+  confidential: number | null;
 }
 
 const RoomWrapper = (props: Props) => {
@@ -98,6 +99,7 @@ const RoomWrapper = (props: Props) => {
           org_slug={props.org_slug}
           chatTitle={props.chatTitle}
           imageUrl={props.imageUrl}
+          confidential={props.confidential}
         />
       </div>
     </>

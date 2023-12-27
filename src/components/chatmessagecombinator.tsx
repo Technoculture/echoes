@@ -11,6 +11,8 @@ import usePreferences from "@/store/userPreferences";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -29,6 +31,9 @@ type Props = {
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   isLoading: boolean;
+  confidential: number | null;
+  toogleConfidentiality: (confidential: { confidential: boolean }) => void;
+  isTooglingConfidentiality: boolean;
 };
 
 const ChatMessageCombinator = ({
@@ -45,6 +50,9 @@ const ChatMessageCombinator = ({
   uid,
   imageUrl,
   isLoading,
+  confidential,
+  toogleConfidentiality,
+  isTooglingConfidentiality,
 }: Props) => {
   const preferences = usePreferences();
   const queryClient = useQueryClient();
@@ -88,6 +96,21 @@ const ChatMessageCombinator = ({
             ) : null}
           </div>
           <div className="xl:w-[700px] flex-col mt-auto">
+            <Button
+              onClick={() =>
+                toogleConfidentiality({ confidential: !confidential })
+              }
+              variant={confidential ? "default" : "destructive"}
+            >
+              {isTooglingConfidentiality ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : confidential ? (
+                <LockClosedIcon className="h-4 w-4" />
+              ) : (
+                <LockOpen1Icon className="h-4 w-4" />
+              )}
+            </Button>
+            {/* {confidential ? <Button><LockClosedIcon /></Button>: <Button variant="destructive"><LockOpen1Icon /></Button>} */}
             {chat_title !== "" ? (
               <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
                 {chat_title}

@@ -17,6 +17,7 @@ export const chats = sqliteTable("chats", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).default(
     sql`(strftime('%s', 'now'))`,
   ),
+  confidential: integer("confidential").default(0),
 });
 export type Chat = InferModel<typeof chats, "select">;
 export type NewChat = InferModel<typeof chats, "insert">;

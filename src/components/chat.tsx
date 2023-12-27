@@ -5,9 +5,11 @@ import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
 import Startnewchatbutton from "@/components/startnewchatbutton";
 import ChatMessageCombinator from "@/components/chatmessagecombinator";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import PersistenceExample from "@/components/tldraw";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "./ui/use-toast";
 
 interface ChatProps {
   orgId: string;
@@ -19,12 +21,14 @@ interface ChatProps {
   chatTitle: string;
   imageUrl: string;
   type: ChatType;
+  confidential: number | null;
 }
 
 export default function Chat(props: ChatProps) {
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
+  const queryClient = useQueryClient();
 
   const chatFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
@@ -100,6 +104,43 @@ export default function Chat(props: ChatProps) {
     }
   }, [messages]);
 
+  const confidentialFetcher = async () => {
+    const res = await axios.get(`/api/chats/${props.chatId}/confidential`);
+    const confidential = res.data.confidential;
+    return confidential as number;
+  };
+
+  const { data: confidentiality } = useQuery({
+    queryKey: ["confidential", props.chatId],
+    queryFn: confidentialFetcher,
+    initialData: props.confidential,
+    refetchOnWindowFocus: false,
+  });
+
+  const {
+    mutate: toogleConfidentiality,
+    isLoading: isTooglingConfidentiality,
+  } = useMutation({
+    mutationFn: async ({ confidential }: { confidential: boolean }) => {
+      // toogle confidentiality
+      const res = await axios.patch(`/api/chats/${props.chatId}/confidential`, {
+        confidential,
+      });
+      return res.data;
+    },
+    onSuccess: async (data, variables, context) => {
+      await queryClient.invalidateQueries(["confidential", props.chatId]);
+      toast({
+        title: data.message,
+      });
+    },
+    onError(error: any) {
+      toast({
+        title: `${error.response.data.message}`,
+      });
+    },
+  });
+
   return (
     <div className="flex flex-col gap-1 mx-auto">
       {props.type === "tldraw" ? (
@@ -130,6 +171,9 @@ export default function Chat(props: ChatProps) {
             setIsChatCompleted={setIsChatCompleted}
             append={append}
             isLoading={isLoading}
+            confidential={confidentiality}
+            toogleConfidentiality={toogleConfidentiality}
+            isTooglingConfidentiality={isTooglingConfidentiality}
           />
           {/* </div> */}
           {isChatCompleted && (

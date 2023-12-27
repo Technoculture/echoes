@@ -48,7 +48,13 @@ export async function GET(
     orgConversations = await db
       .select()
       .from(chats)
-      .where(and(eq(chats.user_id, String(org_id)), ne(chats.messages, "NULL")))
+      .where(
+        and(
+          eq(chats.user_id, String(org_id)),
+          ne(chats.messages, "NULL"),
+          eq(chats.confidential, 0)
+        )
+      )
       .orderBy(desc(chats.updatedAt))
       .offset(skip)
       .limit(25)
