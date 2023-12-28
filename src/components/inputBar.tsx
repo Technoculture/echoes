@@ -21,6 +21,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 function isJSON(str: any) {
   let obj: any;
   try {
@@ -75,15 +76,6 @@ const InputBar = (props: InputBarProps) => {
   const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
   // using local state for development purposes
 
-  console.log(
-    "presenceData",
-    presenceData
-      // .filter((p) => p.data.isTyping)
-      // .filter((p) => p.data)
-      // .map((p) => p.data.username)
-      .map((p) => p.data),
-    // .join(", "),
-  );
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (props.value.trim() === "") {
@@ -97,8 +89,58 @@ const InputBar = (props: InputBarProps) => {
       audio: "",
     };
     if (props.chattype === "rag") {
-      props.append(message as Message);
+      setDisableInputs(true);
+      props.setMessages([...props.messages, message]);
       props.setInput("");
+      let content = "";
+      const id = nanoid();
+      const assistantMessage: Message = {
+        id,
+        role: "assistant",
+        content: "",
+      };
+      let message2 = "";
+      try {
+        await fetchEventSource(`/api/chatmodel/${props.chatId}}`, {
+          method: "POST",
+
+          credentials: "include",
+          body: JSON.stringify({
+            input: props.value,
+            messages: [...props.messages, message],
+            userId: props.userId,
+            orgId: props.orgId,
+            chattype: props.chattype,
+            enableStreaming: true,
+          }),
+          openWhenHidden: true,
+          async onclose() {
+            console.log("event reading closed", message2);
+            return;
+          },
+          async onmessage(event: any) {
+            if (event.data !== "[END]" && event.event !== "function_call") {
+              message2 += event.data === "" ? `${event.data} \n` : event.data;
+              content += event.data === "" ? `${event.data} \n` : event.data;
+              props.setMessages([
+                ...props.messages,
+                message,
+                {
+                  ...assistantMessage,
+                  content: content,
+                },
+              ]);
+            }
+          },
+          onerror(error: any) {
+            console.error("event reading error", error);
+          },
+        });
+        return;
+      } catch (error) {
+        console.error(error);
+        return;
+      }
     }
     if (props.choosenAI === "universal") {
       props.append(message as Message);

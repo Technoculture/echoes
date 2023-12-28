@@ -86,3 +86,39 @@ export async function getStreamFromAgent({
 
   return stream;
 }
+
+export async function getEventsFromAgent({
+  agentId,
+  input,
+  _chat,
+  chatId,
+  orgId,
+  orgSlug,
+  urlArray,
+  userId,
+}: {
+  agentId: string;
+  input: string;
+  _chat: ChatEntry[];
+  chatId: string;
+  orgSlug: string;
+  orgId: string;
+  userId: string;
+  urlArray: string[];
+}) {
+  const res = await fetch(
+    `https://api.beta.superagent.sh/api/v1/agents/${agentId}/invoke`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${env.SUPERAGENT_API_KEY}`,
+      },
+      body: JSON.stringify({
+        input: input,
+        enableStreaming: true,
+      }),
+    },
+  );
+  return res.body;
+}

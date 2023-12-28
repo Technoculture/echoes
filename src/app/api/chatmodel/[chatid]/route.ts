@@ -10,7 +10,7 @@ import {
 import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
 import { SuperAgentClient } from "superagentai-js";
-import { getStreamFromAgent } from "@/utils/superagent/agenthelpers";
+import { getEventsFromAgent } from "@/utils/superagent/agenthelpers";
 import { NextResponse } from "next/server";
 
 export const revalidate = 0; // disable cache
@@ -48,7 +48,7 @@ export async function POST(
       const agent = agents.find((agent) => agent.name === orgSlug);
       if (agent) {
         console.log("agent found");
-        const stream = await getStreamFromAgent({
+        const stream = await getEventsFromAgent({
           agentId: agent.id,
           input: input,
           _chat: _chat,
@@ -59,7 +59,12 @@ export async function POST(
           urlArray: urlArray,
         });
 
-        return new StreamingTextResponse(stream);
+        return new NextResponse(stream, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+          },
+        });
       }
     } else {
       console.log("agent not found");
