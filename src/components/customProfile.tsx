@@ -103,15 +103,15 @@ const CustomProfile = (props: Props) => {
                 </Link>
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem
+              onClick={() => setIsOpen(false)}
+              disabled={!permission}
+            >
+              <BookOpenCheck className="mr-2 h-4 w-4" />
+              <Link href="/dashboard/teach">Teach Echoes</Link>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => setIsOpen(false)}
-            disabled={!permission}
-          >
-            <BookOpenCheck className="mr-2 h-4 w-4" />
-            <Link href="/dashboard/teach">Teach Echoes</Link>
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>

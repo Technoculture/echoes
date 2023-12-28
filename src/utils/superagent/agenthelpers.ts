@@ -42,6 +42,8 @@ export async function getStreamFromAgent({
   const reader = res.body?.getReader();
   const encoder = new TextEncoder();
 
+  // res.body?.pipeThrough(new TextDecoderStream()).pipeTo(new WritableStream());
+
   let msg = "";
   // write a ReadableStream to the response
   const stream = new ReadableStream({
@@ -49,7 +51,6 @@ export async function getStreamFromAgent({
       while (true) {
         const { done, value } = await reader!.read();
         if (done) {
-          console.log("message", msg);
           const latestReponse = {
             id: nanoid(),
             role: "assistant" as const,
@@ -69,18 +70,16 @@ export async function getStreamFromAgent({
           controller.close();
           break;
         }
-        const decoded = decoder.decode(value);
-        const lines = decoded.split("\n");
+        const decoded = decoder.decode(value, { stream: true });
+        const lines = decoded.split(/\r\n|(?:\r?\n){2}(?!\r?\n\r?\n)|\r/g);
         let parsedLines = lines
-          .map((line) => line.replace(/^data: /, ""))
+          .map((line) => line.replace(/data: /g, "").replace(/\n\n\n\n/g, "\n"))
           .filter((line) => line !== "" && line !== "[DONE]");
-        console.log("parsedLines", parsedLines.join(""));
+        console.log("lines", parsedLines);
         if (!parsedLines.join("").startsWith("event:")) {
           msg += parsedLines.join("");
           controller.enqueue(encoder.encode(parsedLines.join("")));
         }
-        // console.log("splitted", splitted.length > 0 ? splitted[1] : null);
-        // controller.enqueue(encoder.encode(splitted[1]));
       }
     },
   });

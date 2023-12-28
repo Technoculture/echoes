@@ -96,20 +96,6 @@ const ChatMessageCombinator = ({
             ) : null}
           </div>
           <div className="xl:w-[700px] flex-col mt-auto">
-            <Button
-              onClick={() =>
-                toogleConfidentiality({ confidential: !confidential })
-              }
-              variant={confidential ? "default" : "destructive"}
-            >
-              {isTooglingConfidentiality ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : confidential ? (
-                <LockClosedIcon className="h-4 w-4" />
-              ) : (
-                <LockOpen1Icon className="h-4 w-4" />
-              )}
-            </Button>
             {/* {confidential ? <Button><LockClosedIcon /></Button>: <Button variant="destructive"><LockOpen1Icon /></Button>} */}
             {chat_title !== "" ? (
               <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
@@ -121,6 +107,29 @@ const ChatMessageCombinator = ({
                 {chat_sub_title}
               </h2>
             ) : null}
+            <Button
+              onClick={() =>
+                toogleConfidentiality({ confidential: !confidential })
+              }
+              variant={confidential ? "default" : "destructive"}
+            >
+              {isTooglingConfidentiality ? (
+                <div className="flex gap-2 items-center">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Updating</span>
+                </div>
+              ) : confidential ? (
+                <div className="flex gap-2 items-center">
+                  <LockClosedIcon className="h-4 w-4" />
+                  <span>Confidential</span>
+                </div>
+              ) : (
+                <div className="flex gap-2 items-center">
+                  <LockOpen1Icon className="h-4 w-4" />
+                  <span>Non-Confidential</span>
+                </div>
+              )}
+            </Button>
           </div>
         </div>
         {calculatedMessages.map((msgs, index) => {

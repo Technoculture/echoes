@@ -79,8 +79,8 @@ const getConversations = async ({
         and(
           eq(chats.user_id, String(orgId)),
           ne(chats.messages, "NULL"),
-          eq(chats.confidential, 0)
-        )
+          eq(chats.confidential, 0),
+        ),
       )
       .orderBy(desc(chats.updatedAt))
       .offset(offset)
@@ -96,7 +96,6 @@ const getConversations = async ({
           eq(chats.user_id, String(orgId)),
           ne(chats.messages, "NULL"),
           eq(chats.creator, userId),
-          
         ),
       )
       .orderBy(desc(chats.updatedAt))
