@@ -31,6 +31,7 @@ type Props = {
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   isLoading: boolean;
+  shouldShowConfidentialToggler: boolean;
   confidential: number | null;
   toogleConfidentiality: (confidential: { confidential: boolean }) => void;
   isTooglingConfidentiality: boolean;
@@ -50,6 +51,7 @@ const ChatMessageCombinator = ({
   uid,
   imageUrl,
   isLoading,
+  shouldShowConfidentialToggler,
   confidential,
   toogleConfidentiality,
   isTooglingConfidentiality,
@@ -107,29 +109,31 @@ const ChatMessageCombinator = ({
                 {chat_sub_title}
               </h2>
             ) : null}
-            <Button
-              onClick={() =>
-                toogleConfidentiality({ confidential: !confidential })
-              }
-              variant={confidential ? "default" : "destructive"}
-            >
-              {isTooglingConfidentiality ? (
-                <div className="flex gap-2 items-center">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Updating</span>
-                </div>
-              ) : confidential ? (
-                <div className="flex gap-2 items-center">
-                  <LockClosedIcon className="h-4 w-4" />
-                  <span>Confidential</span>
-                </div>
-              ) : (
-                <div className="flex gap-2 items-center">
-                  <LockOpen1Icon className="h-4 w-4" />
-                  <span>Non-Confidential</span>
-                </div>
-              )}
-            </Button>
+            {shouldShowConfidentialToggler && (
+              <Button
+                onClick={() =>
+                  toogleConfidentiality({ confidential: !confidential })
+                }
+                variant={!confidential ? "default" : "destructive"}
+              >
+                {isTooglingConfidentiality ? (
+                  <div className="flex gap-2 items-center">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Updating</span>
+                  </div>
+                ) : confidential ? (
+                  <div className="flex gap-2 items-center">
+                    <LockClosedIcon className="h-4 w-4" />
+                    <span>Confidential</span>
+                  </div>
+                ) : (
+                  <div className="flex gap-2 items-center">
+                    <LockOpen1Icon className="h-4 w-4" />
+                    <span>Non-Confidential</span>
+                  </div>
+                )}
+              </Button>
+            )}
           </div>
         </div>
         {calculatedMessages.map((msgs, index) => {

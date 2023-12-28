@@ -10,6 +10,7 @@ import axios from "axios";
 import PersistenceExample from "@/components/tldraw";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "./ui/use-toast";
+import { getUserIdList } from "./chatusersavatars";
 
 interface ChatProps {
   orgId: string;
@@ -117,6 +118,8 @@ export default function Chat(props: ChatProps) {
     refetchOnWindowFocus: false,
   });
 
+  const userIds = getUserIdList(props.dbChat);
+
   const {
     mutate: toogleConfidentiality,
     isLoading: isTooglingConfidentiality,
@@ -171,6 +174,7 @@ export default function Chat(props: ChatProps) {
             setIsChatCompleted={setIsChatCompleted}
             append={append}
             isLoading={isLoading}
+            shouldShowConfidentialToggler={userIds.includes(props.uid)}
             confidential={confidentiality}
             toogleConfidentiality={toogleConfidentiality}
             isTooglingConfidentiality={isTooglingConfidentiality}
