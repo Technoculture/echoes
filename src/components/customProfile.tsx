@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdownmeu";
-import { BookOpenCheck, LogOut, Settings, User, MoonIcon, Sun, } from "lucide-react";
+import { BookOpenCheck, LogOut, Settings, User, MoonIcon, Sun } from "lucide-react";
 import {
   useUser,
   useAuth,
