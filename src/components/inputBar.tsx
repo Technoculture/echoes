@@ -63,6 +63,7 @@ const InputBar = (props: InputBarProps) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
+  const [isRagLoading, setIsRagLoading] = useState<boolean>(false);
   const queryClient = useQueryClient();
   // const ably = useAbly();
 
@@ -89,6 +90,7 @@ const InputBar = (props: InputBarProps) => {
       audio: "",
     };
     if (props.chattype === "rag") {
+      setIsRagLoading(true);
       setDisableInputs(true);
       props.setMessages([...props.messages, message]);
       props.setInput("");
@@ -114,7 +116,13 @@ const InputBar = (props: InputBarProps) => {
             enableStreaming: true,
           }),
           openWhenHidden: true,
+          async onopen(response) {
+            setDisableInputs(true);
+            console.log("events started");
+          },
           async onclose() {
+            setDisableInputs(false);
+            setIsRagLoading(false);
             console.log("event reading closed", message2);
             fetch(`/api/updatedb/${props.chatId}`, {
               method: "POST",
@@ -269,7 +277,7 @@ const InputBar = (props: InputBarProps) => {
     }
   }, [presenceData]);
   useEffect(() => {
-    if (!props.isLoading) {
+    if (!props.isLoading && !isRagLoading) {
       const timer = setTimeout(() => {
         updateStatus({
           isTyping: false,
@@ -283,7 +291,7 @@ const InputBar = (props: InputBarProps) => {
   }, [props.value]);
 
   useEffect(() => {
-    if (props.isLoading) {
+    if (props.isLoading || isRagLoading) {
       updateStatus({
         isTyping: true,
         username: "Echo",
@@ -298,7 +306,7 @@ const InputBar = (props: InputBarProps) => {
       });
       // setDisableInputs(false)
     }
-  }, [props.isLoading]);
+  }, [props.isLoading, isRagLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     props.onChange(e);
     updateStatus({
