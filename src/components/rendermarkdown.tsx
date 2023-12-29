@@ -27,7 +27,7 @@ const RenderMarkdown = (props: Props) => {
       <ReactMarkdown
         className={`text-primary max-w-full text-sm box-border ${
           props.role === "user"
-            ? "group-hover:text-gray-100"
+            ? "group-hover:text-primary-800"
             : " p-4 overflow-x-auto"
         } `}
         remarkPlugins={[remarkGfm]}
@@ -45,21 +45,21 @@ export default RenderMarkdown;
 const components: Components = {
   h1: ({ children, node, level, ...props }) => {
     return (
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+      <h1 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
         {children}
       </h1>
     );
   },
   h2: ({ children, node, level, ...props }) => {
     return (
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">
         {children}
       </h2>
     );
   },
   h3: ({ children, node, level, ...props }) => {
     return (
-      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+      <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
         {children}
       </h3>
     );

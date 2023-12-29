@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Chat } from "@/lib/db/schema";
 import Link from "next/link";
-import { ArrowRight, Image as Image2 } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { buttonVariants } from "@/components/button";
 import {
   Card,
@@ -19,7 +19,6 @@ import AudioButton from "@/components//audioButton";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-// import { dynamicBlurDataUrl } from "@/utils/helpers";
 
 type Props = {
   chat: Chat;
@@ -37,10 +36,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
   const [imageUrl, setImageUrl] = useState(
     type === "tldraw" ? "/default_tldraw.png" : chat.image_url,
   );
-  // const [blurDataUrl, setBlurDataUrl] = useState(async () => {
-  //   const data = await dynamicBlurDataUrl(chat.image_url as string);
-  //   return data
-  // });
+
   const generateTitle = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -63,6 +59,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
     setTitle(data.title.replace('"', "").replace('"', "").split(":")[0]);
     setDescription(data.title.replace('"', "").replace('"', "").split(":")[1]);
   };
+
   const generateImage = async (chatTitle: string) => {
     setIsGeneratingImage(() => true);
     const res = await fetch(`/api/generateImage/${chat.id}/${org_id}`, {
@@ -88,6 +85,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
       return "";
     }
   });
+
   const [description, setDescription] = useState(() => {
     if (chat.title) {
       const trimmed = chat.title?.replace('"', "").replace('"', "");
@@ -97,6 +95,7 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
       return "";
     }
   });
+
   const msg = chat.messages;
   const chatlog = JSON.parse(msg as string) as ChatLog;
   const firstMessage = chatlog.log[0].content;
@@ -108,15 +107,14 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
 
   return (
     <div
-      className="relative cursor-pointer"
+      className="relative cursor-pointer shadow-sm"
       onClick={() => {
         setShowLoading(true);
         router.push(`${org_slug}/chat/${chat.id}`);
       }}
     >
-      <Card className="relative overflow-hidden hover:backdrop-blur-sm ">
+      <Card className="relative overflow-hidden">
         <CardHeader className="h-44">
-          {/* <div className=" absolute opacity-100 "> */}
           <CardTitle className=" text-md font-bold line-clamp-2">
             {title}{" "}
           </CardTitle>
@@ -135,33 +133,18 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
               <>{description}</>
             )}
           </CardDescription>
-          {chat.type !== "tldraw" && (
-            <AudioButton
-              chatId={String(chat.id)} // id to recognise chat
-              chatTitle={title}
-              description={description}
-              id={String(chat.id)} // id for the track
-              imageUrl={chat.image_url}
-              messages={chatlog.log}
-              summarize={true}
-              orgId={org_id}
-              audio={chat.audio}
-              variant="ghost"
-              size="sm"
-              className="text-xs h-[32px] max-w-max"
-            />
-          )}
-        </CardHeader>
-        <CardContent className="flex justify-between ">
           <Chatusers
             count={2}
             allPresenceIds={userIds}
             chatId={chat.id}
             chatCreatorId={userIds[0]}
           />
+        </CardHeader>
+        <CardContent className="flex justify-between ">
           <div className="flex gap-2">
             {!imageUrl && (
               <span>
+                {/*
                 <button
                   className={buttonVariants({ variant: "outline" })}
                   onClick={() => generateImage(chatTitle)}
@@ -172,7 +155,24 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
                     <Image2 className="w-4 h-4" />
                   )}
                 </button>{" "}
+                */}
               </span>
+            )}
+            {chat.type !== "tldraw" && (
+              <AudioButton
+                chatId={String(chat.id)} // id to recognise chat
+                chatTitle={title}
+                description={description}
+                id={String(chat.id)} // id for the track
+                imageUrl={chat.image_url}
+                messages={chatlog.log}
+                summarize={true}
+                orgId={org_id}
+                audio={chat.audio}
+                variant="ghost"
+                size="sm"
+                className="text-xs h-[32px]"
+              />
             )}
             <Link
               onClick={() => setShowLoading(true)}
@@ -195,19 +195,19 @@ const Chatcard = ({ chat, uid, org_id, org_slug, priority, type }: Props) => {
         </CardContent>
       </Card>
       {imageUrl && (
-        <Image
-          quality={10}
-          // placeholder="blur"
-          // blurDataURL={blurDataUrl as string}
-          src={imageUrl}
-          alt="Chat Title Image"
-          fill
-          sizes="(max-width: 640px) 100vw,
+        <div className="absolute inset-0 rounded-lg opacity-20 dark:hover:opacity-60 hover:opacity-5 mix-blend-darken dark:mix-blend-lighten transition-opacity duration-500">
+          <Image
+            quality={10}
+            src={imageUrl}
+            alt="Chat Title Image"
+            fill
+            sizes="(max-width: 640px) 100vw,
           (max-width: 1024px) 50vw,
            (max-width: 1200px) 33vw, 20vw"
-          priority={priority}
-          className="absolute rounded-md object-cover bg-cover mix-blend-lighten brightness-50 hover:blur-sm pointer-events-none "
-        />
+            priority={priority}
+            className="absolute rounded-md object-cover bg-cover pointer-events-none "
+          />
+        </div>
       )}
     </div>
   );

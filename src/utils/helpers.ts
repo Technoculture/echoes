@@ -6,11 +6,22 @@ export const calculateTime = (secs: number) => {
   return `${returnedMinutes}:${returnedSeconds}`;
 };
 
+//export function timestampToDate(timestamp: number): string {
+//  const timestampLength = timestamp.toString().length;
+//  const date =
+//    timestampLength === 13 ? new Date(timestamp) : new Date(timestamp * 1000);
+//  return date.toLocaleString(); // Adjust format using toLocaleDateString(), toLocaleTimeString(), etc.
+//}
+
 export function timestampToDate(timestamp: number): string {
-  const timestampLength = timestamp.toString().length;
-  const date =
-    timestampLength === 13 ? new Date(timestamp) : new Date(timestamp * 1000);
-  return date.toLocaleString(); // Adjust format using toLocaleDateString(), toLocaleTimeString(), etc.
+  const dateObj = new Date(timestamp * 1000);
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+  const formattedDate = dateObj.toLocaleDateString("en-US", options);
+  return formattedDate;
 }
 
 const baseUrl =

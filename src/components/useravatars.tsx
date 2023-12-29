@@ -4,7 +4,6 @@ import React from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import { ChatRole } from "@/lib/types";
-import { Loader2 } from "lucide-react";
 
 type Props = {
   userData?: string;
@@ -36,14 +35,10 @@ const UserAvatar = (props: Props) => {
           <AvatarImage src={"/apple-touch-icon.png"} alt="echo" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-      ) : isLoading ? (
-        <Loader2 className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full animate-spin" />
-      ) : isError ? (
-        <div>error</div>
-      ) : (
+      ) : isLoading ? null : isError ? null : (
         <Avatar>
           <AvatarImage src={data?.users[0]?.img || null} alt={name} />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarFallback>U</AvatarFallback>
         </Avatar>
       )}
     </div>

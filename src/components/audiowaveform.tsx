@@ -3,6 +3,7 @@ import { ReactMic, ReactMicStopEvent } from "react-mic";
 import { Button } from "@/components/button";
 import { motion } from "framer-motion";
 import { StopCircle } from "@phosphor-icons/react";
+import { useTheme } from "next-themes";
 
 type Props = {
   isRecording: boolean;
@@ -11,6 +12,8 @@ type Props = {
 };
 
 const AudioWaveForm = (props: Props) => {
+  const { theme, setTheme } = useTheme();
+
   const startRecording = () => {
     props.setIsRecording(true);
   };
@@ -60,8 +63,8 @@ const AudioWaveForm = (props: Props) => {
           record={props.isRecording}
           onStop={onStop}
           onData={onData}
-          strokeColor="#cbd5e1"
-          backgroundColor="rgb(15,23,42)"
+          strokeColor={theme === "dark" ? "#cbd5e1" : "#18181b"}
+          backgroundColor={theme === "dark" ? "#18181b" : "#f4f4f5"}
           echoCancellation={true}
           autoGainControl={true}
           noiseSuppression={true}

@@ -14,7 +14,7 @@ const headerVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
-      sticky: "fixed bg-black",
+      sticky: "fixed bg-background",
     },
   },
   defaultVariants: {
@@ -34,7 +34,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
       <header
         className={cn(
           headerVariants({ variant, className }),
-          "z-50 fixed top-0 p-5 flex flex-col gap-2",
+          "z-50 fixed top-0 p-5 flex flex-col",
         )}
         ref={ref}
         {...props}
@@ -47,9 +47,9 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
             <Image
               src={logo}
               alt="logo"
-              className="w-6 h-6 border-gray-700 border-2"
+              className="w-6 h-6 border-zinc-700 border-2"
             />
-            <h1 className="text-gray-200 align-middle">Echoes</h1>
+            <h1 className="text-primary align-middle">Echoes</h1>
           </Link>
           <div className="flex gap-2 mx-auto">{props.children}</div>
           <SignedIn>

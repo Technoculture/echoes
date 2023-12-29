@@ -56,7 +56,7 @@ export default function Home() {
     <div>
       <AnimatePresence onExitComplete={handleSmoothScroll}>
         <div className="h-screen relative">
-          <Header className="bg-black/40 backdrop-blur-md">
+          <Header className="bg-background/10 backdrop-blur-sm">
             <Button
               className="mr-4 h-[32px]"
               variant="secondary"
@@ -68,7 +68,7 @@ export default function Home() {
               <Image
                 src="/isometric.png"
                 alt="image of echoes being used"
-                className="w-full h-full object-cover mix-blend-soft-light"
+                className="w-full h-full object-cover dark:mix-blend-soft-light opacity-30 brightness-125"
                 fill={true}
                 quality={5}
               />
@@ -106,7 +106,7 @@ export default function Home() {
       {isSignedIn || (
         <AnimatePresence onExitComplete={handleSmoothScroll}>
           <div
-            className="h-screen flex flex-col justify-center items-center bg-gradient-to-b from-slate-950 via-black to-black -z-20"
+            className="h-screen flex flex-col justify-center items-center bg-gradient-to-b dark:from-slate-950 dark:via-black dark:to-black -z-20 from-zinc-50 via-zinc-200 to-zinc-200"
             id="requestaccess"
           >
             <Widget id="H4H0D2hi" className="w-min-72 w-3/4 h-3/4 -z-2" />
@@ -114,7 +114,7 @@ export default function Home() {
         </AnimatePresence>
       )}
 
-      <div className="md:p-20 p-12 bg-slate-950 border border-t-1 border-slate-900">
+      <div className="md:p-20 p-12 dark:bg-slate-950 bg-zinc-100 border border-t-1 dark:border-slate-900 border-zinc-200">
         <motion.div
           ref={ref}
           animate={controls}

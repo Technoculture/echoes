@@ -57,7 +57,7 @@ const Chatusersavatars = ({
                 user.id === chatCreatorId ? "" : "-ml-2",
                 liveUserIds && liveUserIds.includes(user.id)
                   ? "border-2 border-green-600"
-                  : "border-2 border-black",
+                  : "border-2 dark:border-black border-white",
               )}
               key={user.id}
             >

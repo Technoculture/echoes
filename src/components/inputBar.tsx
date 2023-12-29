@@ -378,7 +378,7 @@ const InputBar = (props: InputBarProps) => {
                 autoFocus
                 value={props.value}
                 onChange={handleInputChange}
-                className="flex-none resize-none rounded-sm grow w-full bg-linear-400 border border-linear-50 text-gray-200 p-2 text-sm disabled:text-muted"
+                className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm disabled:text-muted"
               />
               <Loader2
                 className={cn(
@@ -401,9 +401,9 @@ const InputBar = (props: InputBarProps) => {
                 disabled={isRecording || isTranscribing || disableInputs}
                 onClick={() => setIsAudioWaveVisible(true)}
                 size="icon"
-                variant="outline"
+                variant="secondary"
                 type="button"
-                className="text-blue-400 hover:text-green-100 disabled:text-muted"
+                className="disabled:text-muted"
               >
                 <Microphone
                   className="h-4 w-4 fill-current"
@@ -420,7 +420,7 @@ const InputBar = (props: InputBarProps) => {
             >
               <Button
                 size="icon"
-                variant="outline"
+                variant="secondary"
                 disabled={
                   props.isChatCompleted ||
                   isRecording ||
@@ -428,7 +428,7 @@ const InputBar = (props: InputBarProps) => {
                   disableInputs
                 }
                 type="submit"
-                className=" text-green-400 hover:text-green-100 disabled:text-muted"
+                className="disabled:text-muted"
               >
                 <PaperPlaneTilt className="h-4 w-4 fill-current" />
               </Button>

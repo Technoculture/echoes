@@ -77,7 +77,7 @@ const ChatMessageCombinator = ({
     },
   );
 
-  const titleSplit = chatTitle.slice(1, -1).split(":");
+  const titleSplit = chatTitle.replaceAll('"', "").split(":");
   const chat_title = titleSplit[0];
   const chat_sub_title = titleSplit.length > 1 ? titleSplit[1] : "";
 
@@ -93,16 +93,34 @@ const ChatMessageCombinator = ({
                 width={400}
                 height={300}
                 alt={chat_title}
-                className="rounded-xl w-42 object-cover"
+                className="rounded-xl w-42 object-cover shadow-lg"
               />
             ) : null}
           </div>
           <div className="xl:w-[700px] flex-col mt-auto">
             {/* {confidential ? <Button><LockClosedIcon /></Button>: <Button variant="destructive"><LockOpen1Icon /></Button>} */}
             {chat_title !== "" ? (
-              <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
-                {chat_title}
-              </h1>
+              <>
+                <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
+                  {chat_title}
+                </h1>
+                {/*
+            <AudioButton
+              chatId={String(chatId)} // id to recognise chat
+              chatTitle={chatTitle}
+              // description={description}
+              id={String(chatId)} // id for the track
+              imageUrl={imageUrl}
+              messages={messages}
+              summarize={true}
+              orgId={orgId}
+              // audio={chat.audio}
+              variant="ghost"
+              size="sm"
+              className="text-xs h-[32px]"
+            />
+            */}
+              </>
             ) : null}
             {chat_sub_title !== "" ? (
               <h2 className="scroll-m-20 pb-2 text-2xl tracking-tight first:mt-0">

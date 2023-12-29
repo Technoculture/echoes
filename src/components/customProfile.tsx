@@ -10,9 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdownmeu";
-import { BookOpenCheck, LogOut, Settings, User } from "lucide-react";
-// import { BookType } from "@phosphor-icons/react";
-
+import { BookOpenCheck, LogOut, Settings, User, MoonIcon, Sun, } from "lucide-react";
 import {
   useUser,
   useAuth,
@@ -22,6 +20,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import Link from "next/link";
 import { PERMISSIONS, USER_ROLES } from "@/utils/constants";
+import { useTheme } from "next-themes";
 
 type Props = {};
 
@@ -32,6 +31,7 @@ const CustomProfile = (props: Props) => {
   const [isPersonalProfile, setIsPersonalProfile] = React.useState(true);
 
   const { user } = useUser();
+  const { theme, setTheme } = useTheme();
 
   let permission = false;
   if (has) {
@@ -110,6 +110,29 @@ const CustomProfile = (props: Props) => {
               <BookOpenCheck className="mr-2 h-4 w-4" />
               <Link href="/dashboard/teach">Teach Echoes</Link>
             </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuLabel>Theme</DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuCheckboxItem
+              checked={theme === "light"}
+              onCheckedChange={() => {
+                setTheme("light");
+              }}
+              className="cursor-pointer"
+            >
+              <Sun className="h-4 w-4 mr-2" />
+              <span>Light</span>
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              checked={theme === "dark"}
+              onCheckedChange={() => {
+                setTheme("dark");
+              }}
+              className="cursor-pointer"
+            >
+              <MoonIcon className="h-4 w-4 mr-2" />
+              <span>Dark</span>
+            </DropdownMenuCheckboxItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>
