@@ -116,6 +116,21 @@ const InputBar = (props: InputBarProps) => {
           openWhenHidden: true,
           async onclose() {
             console.log("event reading closed", message2);
+            fetch(`/api/updatedb/${props.chatId}`, {
+              method: "POST",
+              body: JSON.stringify({
+                messages: [
+                  ...props.messages,
+                  message,
+                  {
+                    ...assistantMessage,
+                    content: content,
+                  },
+                ],
+                orgId: props.orgId,
+                usreId: props.userId,
+              }),
+            }); // TODO: handle echoes is typing
             return;
           },
           async onmessage(event: any) {
