@@ -19,7 +19,6 @@ import { timestampToDate } from "@/utils/helpers";
 import UserAvatar from "@/components/useravatars";
 import useSearchDialogState from "@/store/searchDialogStore";
 import { useThrottle } from "@uidotdev/usehooks";
-
 type Props = {
   orgSlug: string;
 };

@@ -60,6 +60,7 @@ export default async function Page({
         chatTitle={fetchedChat[0]?.title as string}
         imageUrl={fetchedChat[0]?.image_url as string}
         type={fetchedChat[0]?.type as ChatType}
+        confidential={fetchedChat[0]?.confidential}
       ></RoomWrapper>
     </AblyChannelProvider>
   );

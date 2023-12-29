@@ -15,12 +15,13 @@ import { Button } from "@/components/button";
 
 import ModelSwitcher from "@/components/modelswitcher";
 import AudioWaveForm from "@/components/audiowaveform";
-import { AIType } from "@/lib/types";
+import { AIType, ChatType } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 function isJSON(str: any) {
   let obj: any;
   try {
@@ -54,6 +55,7 @@ interface InputBarProps {
   orgId: string;
   setMessages: (messages: Message[]) => void;
   isLoading: boolean;
+  chattype: ChatType;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -61,6 +63,7 @@ const InputBar = (props: InputBarProps) => {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
+  const [isRagLoading, setIsRagLoading] = useState<boolean>(false);
   const queryClient = useQueryClient();
   // const ably = useAbly();
 
@@ -74,15 +77,6 @@ const InputBar = (props: InputBarProps) => {
   const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
   // using local state for development purposes
 
-  console.log(
-    "presenceData",
-    presenceData
-      // .filter((p) => p.data.isTyping)
-      // .filter((p) => p.data)
-      // .map((p) => p.data.username)
-      .map((p) => p.data),
-    // .join(", "),
-  );
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (props.value.trim() === "") {
@@ -95,6 +89,82 @@ const InputBar = (props: InputBarProps) => {
       name: `${props.username},${props.userId}`,
       audio: "",
     };
+    if (props.chattype === "rag") {
+      setIsRagLoading(true);
+      setDisableInputs(true);
+      props.setMessages([...props.messages, message]);
+      props.setInput("");
+      let content = "";
+      const id = nanoid();
+      const assistantMessage: Message = {
+        id,
+        role: "assistant",
+        content: "",
+      };
+      let message2 = "";
+      try {
+        await fetchEventSource(`/api/chatmodel/${props.chatId}}`, {
+          method: "POST",
+
+          credentials: "include",
+          body: JSON.stringify({
+            input: props.value,
+            messages: [...props.messages, message],
+            userId: props.userId,
+            orgId: props.orgId,
+            chattype: props.chattype,
+            enableStreaming: true,
+          }),
+          openWhenHidden: true,
+          async onopen(response) {
+            setDisableInputs(true);
+            console.log("events started");
+          },
+          async onclose() {
+            setDisableInputs(false);
+            setIsRagLoading(false);
+            console.log("event reading closed", message2);
+            fetch(`/api/updatedb/${props.chatId}`, {
+              method: "POST",
+              body: JSON.stringify({
+                messages: [
+                  ...props.messages,
+                  message,
+                  {
+                    ...assistantMessage,
+                    content: content,
+                  },
+                ],
+                orgId: props.orgId,
+                usreId: props.userId,
+              }),
+            }); // TODO: handle echoes is typing
+            return;
+          },
+          async onmessage(event: any) {
+            if (event.data !== "[END]" && event.event !== "function_call") {
+              message2 += event.data === "" ? `${event.data} \n` : event.data;
+              content += event.data === "" ? `${event.data} \n` : event.data;
+              props.setMessages([
+                ...props.messages,
+                message,
+                {
+                  ...assistantMessage,
+                  content: content,
+                },
+              ]);
+            }
+          },
+          onerror(error: any) {
+            console.error("event reading error", error);
+          },
+        });
+        return;
+      } catch (error) {
+        console.error(error);
+        return;
+      }
+    }
     if (props.choosenAI === "universal") {
       props.append(message as Message);
       props.setInput("");
@@ -207,7 +277,7 @@ const InputBar = (props: InputBarProps) => {
     }
   }, [presenceData]);
   useEffect(() => {
-    if (!props.isLoading) {
+    if (!props.isLoading && !isRagLoading) {
       const timer = setTimeout(() => {
         updateStatus({
           isTyping: false,
@@ -221,7 +291,7 @@ const InputBar = (props: InputBarProps) => {
   }, [props.value]);
 
   useEffect(() => {
-    if (props.isLoading) {
+    if (props.isLoading || isRagLoading) {
       updateStatus({
         isTyping: true,
         username: "Echo",
@@ -236,7 +306,7 @@ const InputBar = (props: InputBarProps) => {
       });
       // setDisableInputs(false)
     }
-  }, [props.isLoading]);
+  }, [props.isLoading, isRagLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     props.onChange(e);
     updateStatus({

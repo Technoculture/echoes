@@ -75,7 +75,13 @@ const getConversations = async ({
     let orgConversations = await db
       .select()
       .from(chats)
-      .where(and(eq(chats.user_id, String(orgId)), ne(chats.messages, "NULL")))
+      .where(
+        and(
+          eq(chats.user_id, String(orgId)),
+          ne(chats.messages, "NULL"),
+          eq(chats.confidential, 0),
+        ),
+      )
       .orderBy(desc(chats.updatedAt))
       .offset(offset)
       .limit(10)

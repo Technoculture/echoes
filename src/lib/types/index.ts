@@ -7,7 +7,7 @@ export type ChatEntry = {
   id: string;
   role: ChatRole;
   content: string;
-  name: string;
+  name?: string | undefined;
   audio?: string;
 };
 
@@ -15,7 +15,7 @@ export type ChatLog = {
   log: Array<ChatEntry>;
 };
 
-export const chattype = z.enum(["chat", "tldraw"]);
+export const chattype = z.enum(["chat", "tldraw", "rag"]);
 export type ChatType = z.infer<typeof chattype>;
 export interface PostBody {
   user_id: string;
@@ -62,6 +62,7 @@ export enum Type {
 }
 
 export interface Result {
+  // Result from patent api (generated through rest client)
   id: string;
   type: Type;
   publication_id: string;
@@ -78,3 +79,12 @@ export interface Result {
   mapping: null;
   index: string;
 }
+
+export const addToDatasourceSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  type: z.string(), // later it will mime/type of allowed files
+  url: z.string(),
+});
+
+export type AddToDatasourceSchema = z.infer<typeof addToDatasourceSchema>;

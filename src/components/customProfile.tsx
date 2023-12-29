@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdownmeu";
-import { LogOut, MoonIcon, Settings, Sun, User } from "lucide-react";
+import { BookOpenCheck, LogOut, Settings, User, MoonIcon, Sun, } from "lucide-react";
 import {
   useUser,
   useAuth,
@@ -19,16 +19,28 @@ import {
 } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
 import Link from "next/link";
+import { PERMISSIONS, USER_ROLES } from "@/utils/constants";
 import { useTheme } from "next-themes";
 
 type Props = {};
 
 const CustomProfile = (props: Props) => {
-  const { signOut, isSignedIn, orgId, orgSlug, userId, orgRole } = useAuth();
+  const [open, setIsOpen] = React.useState(false);
+  const { signOut, isSignedIn, orgId, orgSlug, userId, orgRole, has } =
+    useAuth();
   const [isPersonalProfile, setIsPersonalProfile] = React.useState(true);
 
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
+
+  let permission = false;
+  if (has) {
+    // @ts-ignore
+    permission = has({
+      role: USER_ROLES.principalInvestigator,
+      permission: PERMISSIONS.viewFile,
+    });
+  }
 
   const {
     isLoaded,
@@ -47,7 +59,7 @@ const CustomProfile = (props: Props) => {
   const organization = useOrganization();
   return (
     <div>
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild className="cursor-pointer">
           <Avatar>
             <AvatarImage src={user?.imageUrl} />
@@ -91,7 +103,13 @@ const CustomProfile = (props: Props) => {
                 </Link>
               </DropdownMenuItem>
             )}
-            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setIsOpen(false)}
+              disabled={!permission}
+            >
+              <BookOpenCheck className="mr-2 h-4 w-4" />
+              <Link href="/dashboard/teach">Teach Echoes</Link>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuLabel>Theme</DropdownMenuLabel>
           <DropdownMenuGroup>

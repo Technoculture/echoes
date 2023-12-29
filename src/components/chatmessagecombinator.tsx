@@ -11,7 +11,8 @@ import usePreferences from "@/store/userPreferences";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
-// import AudioButton from "./audioButton";
+import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -30,6 +31,10 @@ type Props = {
     chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   isLoading: boolean;
+  shouldShowConfidentialToggler: boolean;
+  confidential: number | null;
+  toogleConfidentiality: (confidential: { confidential: boolean }) => void;
+  isTooglingConfidentiality: boolean;
 };
 
 const ChatMessageCombinator = ({
@@ -46,6 +51,10 @@ const ChatMessageCombinator = ({
   uid,
   imageUrl,
   isLoading,
+  shouldShowConfidentialToggler,
+  confidential,
+  toogleConfidentiality,
+  isTooglingConfidentiality,
 }: Props) => {
   const preferences = usePreferences();
   const queryClient = useQueryClient();
@@ -89,6 +98,7 @@ const ChatMessageCombinator = ({
             ) : null}
           </div>
           <div className="xl:w-[700px] flex-col mt-auto">
+            {/* {confidential ? <Button><LockClosedIcon /></Button>: <Button variant="destructive"><LockOpen1Icon /></Button>} */}
             {chat_title !== "" ? (
               <>
                 <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
@@ -117,6 +127,31 @@ const ChatMessageCombinator = ({
                 {chat_sub_title}
               </h2>
             ) : null}
+            {shouldShowConfidentialToggler && (
+              <Button
+                onClick={() =>
+                  toogleConfidentiality({ confidential: !confidential })
+                }
+                variant={!confidential ? "default" : "destructive"}
+              >
+                {isTooglingConfidentiality ? (
+                  <div className="flex gap-2 items-center">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Updating</span>
+                  </div>
+                ) : confidential ? (
+                  <div className="flex gap-2 items-center">
+                    <LockClosedIcon className="h-4 w-4" />
+                    <span>Confidential</span>
+                  </div>
+                ) : (
+                  <div className="flex gap-2 items-center">
+                    <LockOpen1Icon className="h-4 w-4" />
+                    <span>Non-Confidential</span>
+                  </div>
+                )}
+              </Button>
+            )}
           </div>
         </div>
         {calculatedMessages.map((msgs, index) => {

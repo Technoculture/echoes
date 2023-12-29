@@ -29,7 +29,7 @@ const Chatusersavatars = ({
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: [`chat-user-avatars_${chatId}`, allPresenceIds],
     queryFn: () => getUsers(allPresenceIds),
-    refetchInterval: Infinity,
+    // refetchInterval: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     cacheTime: Infinity,
@@ -85,8 +85,8 @@ export const getUserIdList = (chatMessages: ChatEntry[]): Array<string> => {
     chat.name !== "" ? chat.name : null,
   );
   const ids = ArrayContainingUsers.map((usr) => {
-    const split = usr.name.split(",");
-    return split.length > 0 ? split[1] : null;
+    const split = usr.name?.split(",");
+    return split && split.length > 0 ? split[1] : null;
   });
   const filteredIds = ids.filter((id) => id !== undefined);
   const uniqueIds = Array.from(new Set(filteredIds));

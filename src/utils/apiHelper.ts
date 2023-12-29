@@ -13,10 +13,18 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import OpenAI from "openai";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import axios from "axios";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { RunTree, RunTreeConfig } from "langsmith";
+import { Task } from "@/assets/data/schema";
+import { AddToDatasourceSchema } from "@/lib/types";
+import { auth } from "@clerk/nextjs";
 export const OPEN_AI_MODELS = {
   gpt4: "gpt-4" as const,
   gptTurbo: "gpt-3.5-turbo" as const,
@@ -391,4 +399,200 @@ export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {
   });
   await parentRun.postRun();
   return stream.choices[0].message.content as string;
+};
+
+export async function listContents({
+  s3Client,
+  prefix,
+}: {
+  s3Client: S3Client;
+  prefix: string;
+}) {
+  console.debug("Retrieving data from AWS SDK");
+  const data = await s3Client.send(
+    new ListObjectsV2Command({
+      Bucket: env.BUCKET_NAME,
+      Prefix: prefix,
+      Delimiter: "/",
+      MaxKeys: 100,
+    }),
+  );
+
+  const promises = data.Contents?.map((object) => {
+    const params = {
+      Bucket: env.BUCKET_NAME,
+      Key: object.Key,
+    };
+
+    return s3Client.send(new GetObjectCommand(params));
+  })!;
+
+  if (!promises) return { tasks: [] };
+  const metadatas = await Promise.all(promises);
+  const taskList = metadatas.map((metadata) => {
+    const obj: Task = {
+      id: metadata.Metadata?.id!,
+      title: metadata.Metadata?.["file-name"]!,
+      label: metadata.Metadata?.["access-level"]!,
+      access: metadata.Metadata?.["confidentiality"]!,
+      type: metadata.Metadata?.["file-type"]!,
+      addedBy: metadata.Metadata?.["added-by"]!,
+      addedOn: metadata.Metadata?.["added-on"]!,
+    };
+    return obj;
+  });
+
+  return {
+    tasks: taskList,
+  };
+}
+
+// add to datasource
+
+export async function addToDatasource({
+  postBody,
+  zeploUrl,
+}: {
+  postBody: AddToDatasourceSchema;
+  zeploUrl: string;
+}) {
+  try {
+    // make a zeplo post request to add to datasource
+    const res = await fetch(zeploUrl, {
+      method: "POST",
+      body: JSON.stringify(postBody),
+      headers: {
+        "x-zeplo-secret": env.ZEPLO_SECRET,
+      },
+    });
+    console.log("response from zeplo", await res.json());
+  } catch (error) {
+    console.error("error adding to datasource", error);
+  }
+}
+export async function removeFromDatasource({ zeploUrl }: { zeploUrl: string }) {
+  try {
+    // make a zeplo post request to add to datasource
+    const res = await fetch(zeploUrl, {
+      method: "DELETE",
+      headers: {
+        "x-zeplo-secret": env.ZEPLO_SECRET,
+      },
+    });
+    console.log("response from zeplo", await res.json());
+  } catch (error) {
+    console.error("error adding to datasource", error);
+  }
+}
+
+/**
+ * Authorizatio Utility
+ */
+
+export const hasPermission = ({ permission }: { permission: string }) => {
+  const { orgPermissions } = auth();
+  if (orgPermissions) {
+    return orgPermissions.includes(permission);
+  } else {
+    return false;
+  }
+};
+
+/**
+ * Utility to be used in chatmodel
+ */
+
+export const postToAlgolia = ({
+  chats,
+  chatId,
+  orgSlug,
+  urlArray,
+}: {
+  chats: ChatEntry[];
+  chatId: number;
+  orgSlug: string;
+  urlArray: string[];
+}) => {
+  fetch(
+    `https://zeplo.to/https://${urlArray[2]}/api/addToSearch?_token=${env.ZEPLO_TOKEN}`,
+    {
+      method: "POST",
+      body: JSON.stringify({ chats, chatId, orgSlug }),
+      headers: {
+        "x-zeplo-secret": env.ZEPLO_SECRET,
+      },
+    },
+  );
+};
+
+export const saveToDB = async ({
+  _chat,
+  chatId,
+  orgSlug,
+  latestResponse,
+  userId,
+  urlArray,
+  orgId,
+}: {
+  latestResponse: ChatEntry;
+  _chat: ChatEntry[];
+  chatId: number;
+  orgSlug: string;
+  orgId: string;
+  userId: string;
+  urlArray: string[];
+}) => {
+  try {
+    if (_chat.length === 1) {
+      console.log("got in 1 length case");
+      _chat.push(latestResponse);
+      // step for generating title and adding to search index
+      axios.post(`https://zeplo.to/step?_token=${env.ZEPLO_TOKEN}`, [
+        {
+          url: `https://${urlArray[2]}/api/generateTitle/${chatId}/${orgId}?_step=A`,
+          body: JSON.stringify({ chat: _chat }),
+          headers: {
+            "x-zeplo-secret": env.ZEPLO_SECRET,
+          },
+        },
+        {
+          url: `https://${urlArray[2]}/api/addToSearch?_step=B&_requires=A`,
+          body: JSON.stringify({
+            chats: _chat,
+            chatId: chatId,
+            orgSlug: orgSlug as string,
+          }),
+          headers: {
+            "x-zeplo-secret": env.ZEPLO_SECRET,
+          },
+        },
+      ]);
+      await db
+        .update(chats)
+        .set({
+          messages: JSON.stringify({ log: _chat } as ChatLog),
+          creator: userId,
+        })
+        .where(eq(chats.id, chatId))
+        .run();
+    } else {
+      _chat.push(latestResponse);
+      postToAlgolia({
+        chats: [_chat[_chat.length - 2], latestResponse],
+        chatId: chatId,
+        orgSlug: orgSlug as string,
+        urlArray: urlArray,
+      }); // add to search index
+      await db
+        .update(chats)
+        .set({
+          messages: JSON.stringify({ log: _chat }),
+          updatedAt: new Date(),
+        })
+        .where(eq(chats.id, chatId))
+        .run();
+    }
+  } catch (error) {
+    console.log("error in saving to db", error);
+  }
 };
