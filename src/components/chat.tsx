@@ -133,6 +133,7 @@ export default function Chat(props: ChatProps) {
     },
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries(["confidential", props.chatId]);
+      await queryClient.invalidateQueries(["chatcards"]);
       toast({
         title: data.message,
       });
