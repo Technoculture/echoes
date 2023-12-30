@@ -3,6 +3,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 import { listContents } from "@/utils/apiHelper";
 import { auth } from "@clerk/nextjs";
+export const maxDuration = 120;
 
 export async function GET(request: Request) {
   const url = new URL(request.url);

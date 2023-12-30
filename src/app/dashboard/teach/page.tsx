@@ -8,6 +8,8 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { listContents } from "@/utils/apiHelper";
 import { PERMISSIONS } from "@/utils/constants";
 import { LockClosedIcon } from "@radix-ui/react-icons";
+
+export const maxDuration = 120;
 export const metadata: Metadata = {
   title: "Tasks",
   description: "A task and issue tracker build using Tanstack Table.",
