@@ -17,6 +17,7 @@ const requestbody = z.object({
 type RequestBody = z.infer<typeof requestbody>;
 
 export async function POST(request: Request) {
+  
   const body = await request.json();
   const msgs = body.msgs as Message[];
   const orgId = body.orgId as string;
