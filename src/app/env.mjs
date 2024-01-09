@@ -24,7 +24,7 @@ export const env = createEnv({
     CLERK_SECRET_KEY: z.string().min(10),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(10),
     // Upstash Redis
-    // REDIS_URL: z.string().url(),
+    REDIS_URL: z.string().url(),
     // Turso db
     TURSO_DB_URL: z.string().min(1),
     TURSO_DB_AUTH_TOKEN: z.string().min(1),
@@ -81,7 +81,7 @@ export const env = createEnv({
     // Ably (Realtime)
     NEXT_PUBLIC_ABLY_API_KEY: process.env.NEXT_PUBLIC_ABLY_API_KEY,
     // Upstash (Redis)
-    // REDIS_URL: process.env.REDIS_URL,
+    REDIS_URL: process.env.REDIS_URL,
     // OpenAI
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
     // LLaMA-2-7B-32K-Instruct (7B) from https://api.together.xyz
