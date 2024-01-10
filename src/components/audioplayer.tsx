@@ -79,7 +79,7 @@ const AudioPlayer = (props: Props) => {
   const [sliderValue, setSliderValue] = useState<number>(0);
   const [sliderMax, setSliderMax] = useState<number>(0);
   const [tracksToShow, setTracksToShow] = useState<any[]>(() =>
-    tracks.slice(0, 3)
+    tracks.slice(0, 3),
   );
   const [pageNo, setPageNo] = useState<number>(1);
 

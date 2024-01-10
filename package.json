@@ -91,7 +91,7 @@
     "next-themes": "^0.2.1",
     "next-usequerystate": "^1.13.1",
     "openai": "^4.17.4",
-    "prettier": "3.0.0",
+    "prettier": "^3.1.1",
     "react": "18.2.0",
     "react-device-detect": "^2.2.3",
     "react-div-100vh": "0.7.0",
