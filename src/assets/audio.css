@@ -5,10 +5,9 @@ audio::-webkit-media-controls-panel {
   /* background: transparent; */
 }
 
-audio::-webkit-media-controls-play-button{
+audio::-webkit-media-controls-play-button {
   transform: scale(2.5);
   /* background-color: black; */
-
 }
 audio::-webkit-media-controls-timeline-container,
 audio::-webkit-media-controls-current-time-display,

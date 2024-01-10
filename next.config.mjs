@@ -40,7 +40,6 @@ const nextConfig = {
 
 export default withPWA(nextConfig);
 
-
 // export default Sentry.withSentryConfig(nextConfig, {authToken: process.env.SENTRY_AUTH_TOKEN, org: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT, hideSourceMaps: true},  {
 // // For all available options, see:
 // // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
