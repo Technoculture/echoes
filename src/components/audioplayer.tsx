@@ -79,7 +79,7 @@ const AudioPlayer = (props: Props) => {
   const [sliderValue, setSliderValue] = useState<number>(0);
   const [sliderMax, setSliderMax] = useState<number>(0);
   const [tracksToShow, setTracksToShow] = useState<any[]>(() =>
-    tracks.slice(0, 3)
+    tracks.slice(0, 3),
   );
   const [pageNo, setPageNo] = useState<number>(1);
 
@@ -294,75 +294,75 @@ const AudioPlayer = (props: Props) => {
           </DrawerTrigger>
           <DrawerContent>
             <div>
-            <div className="grid sm:grid-cols-2 grid-cols[repeat(auto-fill, minmax(clamp(300px, 100vw / 4, 300px), 1fr))] gap-3 p-5">
-              <div className="grid grid-flow-col grid-rows-3  min-h-48">
-                <div className="relative row-span-2">
-                  <Image
-                    src={currentTrack?.imageUrl || img}
-                    alt="Photo by Drew Beamer"
-                    fill
-                    className=" rounded-md object-cover dark:mix-blend-lighten brightness-50 pointer-events-none "
-                  />
+              <div className="grid sm:grid-cols-2 grid-cols[repeat(auto-fill, minmax(clamp(300px, 100vw / 4, 300px), 1fr))] gap-3 p-5">
+                <div className="grid grid-flow-col grid-rows-3  min-h-48">
+                  <div className="relative row-span-2">
+                    <Image
+                      src={currentTrack?.imageUrl || img}
+                      alt="Photo by Drew Beamer"
+                      fill
+                      className=" rounded-md object-cover dark:mix-blend-lighten brightness-50 pointer-events-none "
+                    />
+                  </div>
+                  <div>
+                    <div className="flex gap-4 flex-grow">
+                      <div className="">{calculateTime(currentTime)}</div>
+                      <Slider
+                        onValueChange={(value: number[]) => {
+                          setSliderValue(() => value[0]);
+                          changeRange(value[0]);
+                        }}
+                        ref={progressBar}
+                        max={sliderMax}
+                        value={[sliderValue]}
+                      />
+                      <div className="">
+                        {!isNaN(duration) && calculateTime(duration)}
+                      </div>
+                    </div>
+                    <div className="flex flex-row items-center gap-4 py-4 w-full">
+                      <Button
+                        disabled={!!!currentTrack}
+                        onClick={togglePlayPause}
+                      >
+                        {isPlaying ? <Pause /> : <Play />}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
                 <div>
-                  <div className="flex gap-4 flex-grow">
-                    <div className="">{calculateTime(currentTime)}</div>
-                    <Slider
-                      onValueChange={(value: number[]) => {
-                        setSliderValue(() => value[0]);
-                        changeRange(value[0]);
-                      }}
-                      ref={progressBar}
-                      max={sliderMax}
-                      value={[sliderValue]}
-                    />
-                    <div className="">
-                      {!isNaN(duration) && calculateTime(duration)}
-                    </div>
-                  </div>
-                  <div className="flex flex-row items-center gap-4 py-4 w-full">
-                    <Button
-                      disabled={!!!currentTrack}
-                      onClick={togglePlayPause}
+                  {tracksToShow.map((track: any, index) => (
+                    <div
+                      className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center"
+                      key={track.id}
                     >
-                      {isPlaying ? <Pause /> : <Play />}
-                    </Button>
-                  </div>
+                      <div onClick={() => handleTrackClick(index)}>
+                        {track.title.split(" ").slice(0, 5).join(" ")}
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          {track.description &&
+                            track.description.split(" ").slice(0, 5).join(" ")}
+                        </p>
+                      </div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeFromQueue(track)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Remove</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div>
-                {tracksToShow.map((track: any, index) => (
-                  <div
-                    className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center"
-                    key={track.id}
-                  >
-                    <div onClick={() => handleTrackClick(index)}>
-                      {track.title.split(" ").slice(0, 5).join(" ")}
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        {track.description &&
-                          track.description.split(" ").slice(0, 5).join(" ")}
-                      </p>
-                    </div>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeFromQueue(track)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Remove</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                ))}
-              </div>
-            </div>
 
               <DrawerFooter className="flex flex-row justify-end gap-2 px-5">
                 {!(pageNo <= 1) && (
