@@ -397,9 +397,7 @@ const AudioPlayer = (props: Props) => {
                     <ChevronRight />
                   </Button>
                 )}
-                <DrawerClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DrawerClose>
+               
               </DrawerFooter>
             </div>
           </DrawerContent>
