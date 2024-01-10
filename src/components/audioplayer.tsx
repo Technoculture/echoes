@@ -397,7 +397,6 @@ const AudioPlayer = (props: Props) => {
                     <ChevronRight />
                   </Button>
                 )}
-               
               </DrawerFooter>
             </div>
           </DrawerContent>
