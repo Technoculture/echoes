@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-
 import { useStore } from "@/store";
 import { Music, Pause, Play, X } from "lucide-react";
 import { Slider } from "./slider";
@@ -11,7 +10,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/tooltip";
-
 import {
   Dialog,
   DialogContent,
@@ -30,7 +28,6 @@ import img from "@/assets/audio_bg.webp";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { calculateTime } from "@/utils/helpers";
 type Props = {};
-
 const AudioPlayer = (props: Props) => {
   const {
     currentTrackId,
@@ -50,7 +47,6 @@ const AudioPlayer = (props: Props) => {
     currentTrackId !== null
       ? tracks.find((t) => t.id === currentTrackId)
       : null;
-
   useEffect(() => {
     if (currentTrack) {
       animationRef.current = requestAnimationFrame(whilePlaying);
@@ -61,18 +57,15 @@ const AudioPlayer = (props: Props) => {
       audioRef.current?.load();
     }
   }, [currentTrack]);
-
   const handleTrackClick = (index: number) => {
     playTrack(index);
     animationRef.current = requestAnimationFrame(whilePlaying);
   };
-
   // from pla
   // references
   const audioPlayer = useRef<HTMLAudioElement>(null); // reference our audio component
   const progressBar = useRef<HTMLSpanElement>(null); // reference our progress bar
   const animationRef = useRef<number>(); // reference the animation
-
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [sliderValue, setSliderValue] = useState<number>(0);
@@ -81,7 +74,6 @@ const AudioPlayer = (props: Props) => {
     tracks.slice(0, 3),
   );
   const [pageNo, setPageNo] = useState<number>(1);
-
   useEffect(() => {
     if (pageNo === 1) {
       setTracksToShow(tracks.slice(0, 3));
@@ -96,7 +88,6 @@ const AudioPlayer = (props: Props) => {
       setIsPlaying(true);
     }
   };
-
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -110,7 +101,6 @@ const AudioPlayer = (props: Props) => {
       }
     }
   }, [isPlaying]);
-
   const whilePlaying = () => {
     if (audioRef && audioRef.current) {
       setSliderValue(audioRef.current.currentTime);
@@ -118,7 +108,6 @@ const AudioPlayer = (props: Props) => {
       animationRef.current = requestAnimationFrame(whilePlaying);
     }
   };
-
   const changeRange = (sldrval?: number) => {
     if (audioRef && audioRef.current) {
       const val = sldrval ? sldrval : sliderValue;
@@ -126,7 +115,6 @@ const AudioPlayer = (props: Props) => {
       setCurrentTime(val);
     }
   };
-
   const handleAudioEnded = () => {
     if (animationRef.current) {
       // setIsPlaying(false);
@@ -136,7 +124,6 @@ const AudioPlayer = (props: Props) => {
       if (!val) cancelAnimationFrame(animationRef.current);
     }
   };
-
   return (
     <>
       <div className=" hidden  sm:flex">
@@ -266,7 +253,6 @@ const AudioPlayer = (props: Props) => {
           </DialogContent>
         </Dialog>
       </div>
-
       <div className="sm:hidden">
         <Drawer>
           <DrawerTrigger>
@@ -362,7 +348,6 @@ const AudioPlayer = (props: Props) => {
                   ))}
                 </div>
               </div>
-
               <DrawerFooter className="flex flex-row justify-end gap-2 px-5">
                 {!(pageNo <= 1) && (
                   <Button
@@ -401,5 +386,4 @@ const AudioPlayer = (props: Props) => {
     </>
   );
 };
-
 export default AudioPlayer;
