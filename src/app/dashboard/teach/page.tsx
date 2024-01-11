@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-
 import { columns } from "@/components/tablecomponents/columns";
 import { DataTable } from "@/components/tablecomponents/data-table";
 import { UserNav } from "@/components/tablecomponents/user-nav";

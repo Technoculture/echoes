@@ -69,7 +69,7 @@ export default function LoggedInLayout({
                   </TabsTrigger>
                   <TabsTrigger value="me" className="flex gap-2 items-center">
                     <User className="h-4 w-4" />
-                    <span className="hidden sm:inline"> My Chats</span>
+                    <span className="hidden sm:inline">My Chats</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
