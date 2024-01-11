@@ -27,8 +27,13 @@ import Image from "next/image";
 import img from "@/assets/audio_bg.webp";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { calculateTime } from "@/utils/helpers";
+import { useMediaQuery } from "@react-hook/media-query";
+
 type Props = {};
 const AudioPlayer = (props: Props) => {
+  const [open, setOpen] = React.useState(false);
+  const isDesktop = useMediaQuery("(min-width: 520px)");
+
   const {
     currentTrackId,
     isPlaying,
@@ -124,161 +129,35 @@ const AudioPlayer = (props: Props) => {
       if (!val) cancelAnimationFrame(animationRef.current);
     }
   };
-  return (
-    <>
-      <div className=" hidden  sm:flex">
-        <Dialog>
-          <DialogTrigger asChild className="max-h-[32px]">
-            <Button variant="ghost" className="max-h-[32px]">
-              <audio
-                ref={audioRef}
-                src={currentTrack ? currentTrack?.src : undefined}
-                preload="metadata"
-                autoPlay={isPlaying}
-                onLoadedData={() => {
-                  if (audioRef.current) {
-                    const seconds = Math.floor(audioRef.current.duration);
-                    setDuration(seconds);
-                    setSliderMax(seconds);
-                  }
-                }}
-                onEnded={handleAudioEnded}
-              ></audio>
-              <div className="flex items-center gap-2">
-                <Music className="h-4 w-4" />
-                <span className="hidden sm:inline">Playlist</span>
-              </div>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <div className="grid sm:grid-cols-2 grid-cols[repeat(auto-fill, minmax(clamp(300px, 100vw / 4, 300px), 1fr))] gap-3 p-5">
-              <div className="grid grid-flow-col grid-rows-3  min-h-48">
-                <div className="relative row-span-2">
-                  <Image
-                    src={currentTrack?.imageUrl || img}
-                    alt="Photo by Drew Beamer"
-                    fill
-                    className=" rounded-md object-cover dark:mix-blend-lighten brightness-50 pointer-events-none "
-                  />
+
+  if (isDesktop) {
+    return (
+      <>
+        <div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild className="max-h-[32px]">
+              <Button variant="ghost" className="max-h-[32px]">
+                <audio
+                  ref={audioRef}
+                  src={currentTrack ? currentTrack?.src : undefined}
+                  preload="metadata"
+                  autoPlay={isPlaying}
+                  onLoadedData={() => {
+                    if (audioRef.current) {
+                      const seconds = Math.floor(audioRef.current.duration);
+                      setDuration(seconds);
+                      setSliderMax(seconds);
+                    }
+                  }}
+                  onEnded={handleAudioEnded}
+                ></audio>
+                <div className="flex items-center gap-2">
+                  <Music className="h-4 w-4" />
+                  <span className="hidden sm:inline">Playlist</span>
                 </div>
-                <div>
-                  <div className="flex gap-4 flex-grow">
-                    <div className="">{calculateTime(currentTime)}</div>
-                    <Slider
-                      onValueChange={(value: number[]) => {
-                        setSliderValue(() => value[0]);
-                        changeRange(value[0]);
-                      }}
-                      ref={progressBar}
-                      max={sliderMax}
-                      value={[sliderValue]}
-                    />
-                    <div className="">
-                      {!isNaN(duration) && calculateTime(duration)}
-                    </div>
-                  </div>
-                  <div className="flex flex-row items-center gap-4 py-4 w-full">
-                    <Button
-                      disabled={!!!currentTrack}
-                      onClick={togglePlayPause}
-                    >
-                      {isPlaying ? <Pause /> : <Play />}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              <div>
-                {tracksToShow.map((track: any, index) => (
-                  <div
-                    className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center"
-                    key={track.id}
-                  >
-                    <div onClick={() => handleTrackClick(index)}>
-                      {track.title.split(" ").slice(0, 5).join(" ")}
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        {track.description &&
-                          track.description.split(" ").slice(0, 5).join(" ")}
-                      </p>
-                    </div>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeFromQueue(track)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Remove</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <DialogFooter className="flex flex-row justify-end gap-2 px-5">
-              {!(pageNo <= 1) && (
-                <Button
-                  onClick={() => setPageNo((prev) => prev - 1)}
-                  disabled={pageNo <= 1 ? true : false}
-                  variant="ghost"
-                  size="icon"
-                  className=""
-                >
-                  <ChevronLeft />
-                </Button>
-              )}
-              {!(
-                pageNo >= Math.ceil(tracks.length / 3) || tracks.length < 3
-              ) && (
-                <Button
-                  onClick={() => setPageNo((prev) => prev + 1)}
-                  disabled={
-                    pageNo >= Math.ceil(tracks.length / 3) || tracks.length < 3
-                      ? true
-                      : false
-                  }
-                  variant="ghost"
-                  size="icon"
-                  className=""
-                >
-                  <ChevronRight />
-                </Button>
-              )}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-      <div className="sm:hidden">
-        <Drawer>
-          <DrawerTrigger>
-            <Button variant="ghost" className="max-h-[32px]">
-              <audio
-                ref={audioRef}
-                src={currentTrack ? currentTrack?.src : undefined}
-                preload="metadata"
-                autoPlay={isPlaying}
-                onLoadedData={() => {
-                  if (audioRef.current) {
-                    const seconds = Math.floor(audioRef.current.duration);
-                    setDuration(seconds);
-                    setSliderMax(seconds);
-                  }
-                }}
-                onEnded={handleAudioEnded}
-              ></audio>
-              <div className="flex items-center gap-2">
-                <Music className="h-4 w-4" />
-                <span className="hidden sm:inline">Playlist</span>
-              </div>
-            </Button>{" "}
-          </DrawerTrigger>
-          <DrawerContent>
-            <div>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
               <div className="grid sm:grid-cols-2 grid-cols[repeat(auto-fill, minmax(clamp(300px, 100vw / 4, 300px), 1fr))] gap-3 p-5">
                 <div className="grid grid-flow-col grid-rows-3  min-h-48">
                   <div className="relative row-span-2">
@@ -348,7 +227,7 @@ const AudioPlayer = (props: Props) => {
                   ))}
                 </div>
               </div>
-              <DrawerFooter className="flex flex-row justify-end gap-2 px-5">
+              <DialogFooter className="flex flex-row justify-end gap-2 px-5">
                 {!(pageNo <= 1) && (
                   <Button
                     onClick={() => setPageNo((prev) => prev - 1)}
@@ -378,12 +257,150 @@ const AudioPlayer = (props: Props) => {
                     <ChevronRight />
                   </Button>
                 )}
-              </DrawerFooter>
-            </div>
-          </DrawerContent>
-        </Drawer>
-      </div>
-    </>
-  );
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <div>
+          <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger>
+              <Button variant="ghost" className="max-h-[32px]">
+                <audio
+                  ref={audioRef}
+                  src={currentTrack ? currentTrack?.src : undefined}
+                  preload="metadata"
+                  autoPlay={isPlaying}
+                  onLoadedData={() => {
+                    if (audioRef.current) {
+                      const seconds = Math.floor(audioRef.current.duration);
+                      setDuration(seconds);
+                      setSliderMax(seconds);
+                    }
+                  }}
+                  onEnded={handleAudioEnded}
+                ></audio>
+                <div className="flex items-center gap-2">
+                  <Music className="h-4 w-4" />
+                  <span className="hidden sm:inline">Playlist</span>
+                </div>
+              </Button>{" "}
+            </DrawerTrigger>
+            <DrawerContent>
+              <div>
+                <div className="grid sm:grid-cols-2 grid-cols[repeat(auto-fill, minmax(clamp(300px, 100vw / 4, 300px), 1fr))] gap-3 p-5">
+                  <div className="grid grid-flow-col grid-rows-3  min-h-48">
+                    <div className="relative row-span-2">
+                      <Image
+                        src={currentTrack?.imageUrl || img}
+                        alt="Photo by Drew Beamer"
+                        fill
+                        className=" rounded-md object-cover dark:mix-blend-lighten brightness-50 pointer-events-none "
+                      />
+                    </div>
+                    <div>
+                      <div className="flex gap-4 flex-grow">
+                        <div className="">{calculateTime(currentTime)}</div>
+                        <Slider
+                          onValueChange={(value: number[]) => {
+                            setSliderValue(() => value[0]);
+                            changeRange(value[0]);
+                          }}
+                          ref={progressBar}
+                          max={sliderMax}
+                          value={[sliderValue]}
+                        />
+                        <div className="">
+                          {!isNaN(duration) && calculateTime(duration)}
+                        </div>
+                      </div>
+                      <div className="flex flex-row items-center gap-4 py-4 w-full">
+                        <Button
+                          disabled={!!!currentTrack}
+                          onClick={togglePlayPause}
+                        >
+                          {isPlaying ? <Pause /> : <Play />}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    {tracksToShow.map((track: any, index) => (
+                      <div
+                        className="select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground flex flex-row justify-between items-center"
+                        key={track.id}
+                      >
+                        <div onClick={() => handleTrackClick(index)}>
+                          {track.title.split(" ").slice(0, 5).join(" ")}
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {track.description &&
+                              track.description
+                                .split(" ")
+                                .slice(0, 5)
+                                .join(" ")}
+                          </p>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeFromQueue(track)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Remove</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <DrawerFooter className="flex flex-row justify-end gap-2 px-5">
+                  {!(pageNo <= 1) && (
+                    <Button
+                      onClick={() => setPageNo((prev) => prev - 1)}
+                      disabled={pageNo <= 1 ? true : false}
+                      variant="ghost"
+                      size="icon"
+                      className=""
+                    >
+                      <ChevronLeft />
+                    </Button>
+                  )}
+                  {!(
+                    pageNo >= Math.ceil(tracks.length / 3) || tracks.length < 3
+                  ) && (
+                    <Button
+                      onClick={() => setPageNo((prev) => prev + 1)}
+                      disabled={
+                        pageNo >= Math.ceil(tracks.length / 3) ||
+                        tracks.length < 3
+                          ? true
+                          : false
+                      }
+                      variant="ghost"
+                      size="icon"
+                      className=""
+                    >
+                      <ChevronRight />
+                    </Button>
+                  )}
+                </DrawerFooter>
+              </div>
+            </DrawerContent>
+          </Drawer>
+        </div>
+      </>
+    );
+  }
 };
 export default AudioPlayer;
