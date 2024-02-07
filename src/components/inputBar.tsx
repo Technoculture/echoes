@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import { Microphone, PaperPlaneTilt, ImageSquare } from "@phosphor-icons/react";
+import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import ModelSwitcher from "@/components/modelswitcher";
 import AudioWaveForm from "@/components/audiowaveform";
@@ -39,7 +39,7 @@ function isJSON(str: any) {
 interface InputBarProps {
   value: string;
   onChange: (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => void;
   choosenAI: AIType;
   setChoosenAI: Dispatch<SetStateAction<AIType>>;
@@ -47,7 +47,7 @@ interface InputBarProps {
   userId: string;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions | undefined
+    chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
   isChatCompleted: boolean;
@@ -319,7 +319,6 @@ const InputBar = (props: InputBarProps) => {
     // setDisableInputs(true)
   };
 
-  
   return (
     <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
       <motion.div
@@ -387,7 +386,7 @@ const InputBar = (props: InputBarProps) => {
               <Loader2
                 className={cn(
                   "h-4 w-4 animate-spin absolute left-2 top-3",
-                  isTranscribing ? "visible" : "hidden"
+                  isTranscribing ? "visible" : "hidden",
                 )}
               />
             </motion.div>
@@ -437,7 +436,6 @@ const InputBar = (props: InputBarProps) => {
                 <PaperPlaneTilt className="h-4 w-4 fill-current" />
               </Button>
             </motion.div>
-           
           </motion.div>
         )}
 
