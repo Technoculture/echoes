@@ -10,9 +10,8 @@ import {
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
+import { Microphone, PaperPlaneTilt, ImageSquare } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
-
 import ModelSwitcher from "@/components/modelswitcher";
 import AudioWaveForm from "@/components/audiowaveform";
 import { AIType, ChatType } from "@/lib/types";
@@ -22,6 +21,8 @@ import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { DropzoneDrawer } from "./DropzoneDrawer";
+
 function isJSON(str: any) {
   let obj: any;
   try {
@@ -38,7 +39,7 @@ function isJSON(str: any) {
 interface InputBarProps {
   value: string;
   onChange: (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
   ) => void;
   choosenAI: AIType;
   setChoosenAI: Dispatch<SetStateAction<AIType>>;
@@ -46,7 +47,7 @@ interface InputBarProps {
   userId: string;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions | undefined,
+    chatRequestOptions?: ChatRequestOptions | undefined
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
   isChatCompleted: boolean;
@@ -59,6 +60,7 @@ interface InputBarProps {
 }
 
 const InputBar = (props: InputBarProps) => {
+  const [dropZoneOpen, setDropZonOpen] = useState<boolean>(false);
   const [isAudioWaveVisible, setIsAudioWaveVisible] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
@@ -316,6 +318,8 @@ const InputBar = (props: InputBarProps) => {
     });
     // setDisableInputs(true)
   };
+
+  
   return (
     <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
       <motion.div
@@ -383,7 +387,7 @@ const InputBar = (props: InputBarProps) => {
               <Loader2
                 className={cn(
                   "h-4 w-4 animate-spin absolute left-2 top-3",
-                  isTranscribing ? "visible" : "hidden",
+                  isTranscribing ? "visible" : "hidden"
                 )}
               />
             </motion.div>
@@ -433,8 +437,14 @@ const InputBar = (props: InputBarProps) => {
                 <PaperPlaneTilt className="h-4 w-4 fill-current" />
               </Button>
             </motion.div>
+           
           </motion.div>
         )}
+
+        <div className="position-absolute z-10">
+          <DropzoneDrawer open={dropZoneOpen} />
+        </div>
+
         {/* </AnimatePresence> */}
       </motion.div>
     </form>

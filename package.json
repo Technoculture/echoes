@@ -26,6 +26,7 @@
     "@ducanh2912/next-pwa": "^10.0.0",
     "@faker-js/faker": "^8.3.1",
     "@hookform/resolvers": "^3.3.2",
+    "@langchain/openai": "^0.0.14",
     "@libsql/client": "0.3.1",
     "@liveblocks/client": "1.1.6",
     "@liveblocks/react": "1.1.6",
