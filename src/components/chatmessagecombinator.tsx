@@ -147,7 +147,7 @@ const ChatMessageCombinator = ({
                 ) : (
                   <div className="flex gap-2 items-center">
                     <LockOpen1Icon className="h-4 w-4" />
-                    <span>Non-Confidential kmkmkmk</span>
+                    <span>Non-Confidential</span>
                   </div>
                 )}
               </Button>
