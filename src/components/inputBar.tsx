@@ -21,8 +21,6 @@ import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
-import { DropzoneDrawer } from "./DropzoneDrawer";
-
 function isJSON(str: any) {
   let obj: any;
   try {
@@ -60,7 +58,6 @@ interface InputBarProps {
 }
 
 const InputBar = (props: InputBarProps) => {
-  const [dropZoneOpen, setDropZonOpen] = useState<boolean>(false);
   const [isAudioWaveVisible, setIsAudioWaveVisible] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
@@ -91,6 +88,8 @@ const InputBar = (props: InputBarProps) => {
       name: `${props.username},${props.userId}`,
       audio: "",
     };
+    console.log("value", props.value);
+
     if (props.chattype === "rag") {
       setIsRagLoading(true);
       setDisableInputs(true);
@@ -438,11 +437,6 @@ const InputBar = (props: InputBarProps) => {
             </motion.div>
           </motion.div>
         )}
-
-        <div className="position-absolute z-10">
-          <DropzoneDrawer open={dropZoneOpen} />
-        </div>
-
         {/* </AnimatePresence> */}
       </motion.div>
     </form>
