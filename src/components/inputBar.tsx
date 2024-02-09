@@ -91,6 +91,7 @@ const InputBar = (props: InputBarProps) => {
     console.log("value", props.value);
 
     if (props.chattype === "rag") {
+      console.log("rag");
       setIsRagLoading(true);
       setDisableInputs(true);
       props.setMessages([...props.messages, message]);
@@ -190,7 +191,7 @@ const InputBar = (props: InputBarProps) => {
         content: "",
       };
       let functionMessages: Message[] = [];
-
+      console.log("responce", res.body);
       if (res.body) {
         const reader = res?.body.getReader();
         while (true) {

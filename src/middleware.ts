@@ -7,6 +7,7 @@ import { env } from "@/app/env.mjs";
 const clerkMiddleware = authMiddleware({
   // "/" will be accessible to all users
   publicRoutes: ["/"],
+  ignoredRoutes: ["/((?!api|trpc))(_next.*|.+.[w]+$)", "/api/imageInput"],
 });
 
 export async function middleware(req: NextRequest, event: NextFetchEvent) {

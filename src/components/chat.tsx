@@ -34,22 +34,36 @@ export default function Chat(props: ChatProps) {
 
   const queryClient = useQueryClient();
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log("aaaaa", acceptedFiles);
-    // acceptedFiles.forEach((file) => {
-    //   const reader = new FileReader()
-
-    //   reader.onabort = () => console.log('file reading was aborted')
-    //   reader.onerror = () => console.log('file reading has failed')
-    //   reader.onload = () => {
-    //   // Do whatever you want with the file contents
-    //     const binaryStr = reader.result
-    //     console.log(binaryStr)
-    //   }
-    //   reader.readAsArrayBuffer(file)
-    // })
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    try {
+      if (acceptedFiles && acceptedFiles.length > 0) {
+        const file = acceptedFiles[0];
+        // console.log("file", file);
+        const formData = new FormData();
+        formData.append("file", file);
+        console.log("Appended file:", formData.get("file"));
+        const response = await fetch("/api/imageInput", {
+          method: "POST",
+          body: formData,
+        });
+        console.log("Backend response:", response);
+        //   if (response.ok) {
+        //     const result = await response.json();
+        //     console.log('Backend response:', result);
+        //   } else {
+        //     console.error('Error:', response);
+        //   }
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
   }, []);
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    noClick: true,
+    noKeyboard: true,
+  });
 
   const chatFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
