@@ -113,11 +113,11 @@ export default function Chat(props: ChatProps) {
 
   useEffect(() => {
     setImageInput(input);
-    console.log("imageinput", imageInput);
+    // console.log("imageinput", imageInput);
     if (imageInput && image.length > 0) {
       handleImage();
     }
-    console.log("imagestate", image);
+    // console.log("imagestate", image);
   }, [dropZone]);
 
   const handleImage = async () => {
@@ -132,7 +132,6 @@ export default function Chat(props: ChatProps) {
           content: imageInput,
           name: `${props.username},${props.uid}`,
         };
-
         const file = image[0];
         const formData = new FormData();
         formData.append("file", file);
@@ -153,7 +152,7 @@ export default function Chat(props: ChatProps) {
           };
           // console.log("Backend response:", result);
           setMessages([...messages, assistantMessage]);
-          console.log("New messages Ok: ", messages);
+          console.log("New messages Ok:", messages);
           const content = result.result.kwargs.content;
           fetch(`/api/updatedb/${props.chatId}`, {
             method: "POST",
@@ -261,7 +260,7 @@ export default function Chat(props: ChatProps) {
         <>
           <section onDrop={(acceptedFiles: any) => onDrop(acceptedFiles)}>
             <div
-              className="min-h-[400px] max-h-[auto] flex justify-center items-center"
+              // className="justify-center items-center"
               {...getRootProps()}
             >
               <input {...getInputProps()} />

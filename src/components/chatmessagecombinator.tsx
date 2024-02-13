@@ -124,7 +124,7 @@ const ChatMessageCombinator = ({
             ) : null}
             {chat_sub_title !== "" ? (
               <h2 className="scroll-m-20 pb-2 text-2xl tracking-tight first:mt-0">
-                {chat_sub_title}
+                {/* {chat_sub_title} */}
               </h2>
             ) : null}
             {shouldShowConfidentialToggler && (
