@@ -132,10 +132,15 @@ export default function Chat(props: ChatProps) {
           content: imageInput,
           name: `${props.username},${props.uid}`,
         };
+        const message02: any = [...messages, message];
         const file = image[0];
         const formData = new FormData();
         formData.append("file", file);
         formData.append("imageInput", imageInput);
+        formData.append("userId", props.uid);
+        formData.append("orgId", props.orgId);
+        formData.append("chatId", props.chatId);
+        formData.append("message02", message02);
         console.log("Appended file:", formData.get("file"));
         const response = await fetch("/api/imageInput", {
           method: "POST",
@@ -259,10 +264,7 @@ export default function Chat(props: ChatProps) {
         // {preferences.showSubRoll && <PersistenceExample />}
         <>
           <section onDrop={(acceptedFiles: any) => onDrop(acceptedFiles)}>
-            <div
-              // className="justify-center items-center"
-              {...getRootProps()}
-            >
+            <div className="min-h-[400px] max-h-[auto]" {...getRootProps()}>
               <input {...getInputProps()} />
               <ChatMessageCombinator
                 calculatedMessages={calculatedMessages}
