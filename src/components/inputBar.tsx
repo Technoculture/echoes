@@ -55,6 +55,10 @@ interface InputBarProps {
   setMessages: (messages: Message[]) => void;
   isLoading: boolean;
   chattype: ChatType;
+  setDropzone: Dispatch<SetStateAction<boolean>>;
+  dropZone: boolean;
+  imageInput: string;
+  setImageInput: Dispatch<SetStateAction<string>>;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -88,8 +92,6 @@ const InputBar = (props: InputBarProps) => {
       name: `${props.username},${props.userId}`,
       audio: "",
     };
-    console.log("value", props.value);
-
     if (props.chattype === "rag") {
       console.log("rag");
       setIsRagLoading(true);
@@ -310,13 +312,21 @@ const InputBar = (props: InputBarProps) => {
     }
   }, [props.isLoading, isRagLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    props.onChange(e);
+    if (props.dropZone) {
+      props.setImageInput(e.target.value);
+    } else {
+      props.onChange(e);
+    }
     updateStatus({
       isTyping: true,
       username: props.username,
       id: props.userId,
     });
     // setDisableInputs(true)
+  };
+
+  const handleDropzone = () => {
+    props.setDropzone(false);
   };
 
   return (
@@ -377,9 +387,15 @@ const InputBar = (props: InputBarProps) => {
                   disableInputs
                 }
                 maxRows={10}
-                placeholder={isTranscribing ? "" : "Type your message here..."}
+                placeholder={
+                  isTranscribing
+                    ? ""
+                    : props.dropZone
+                    ? "Ask question about image"
+                    : "Type your message here..."
+                }
                 autoFocus
-                value={props.value}
+                value={props.dropZone ? props.imageInput : props.value}
                 onChange={handleInputChange}
                 className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm disabled:text-muted"
               />
@@ -421,20 +437,41 @@ const InputBar = (props: InputBarProps) => {
               animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
               exit={{ x: 50, opacity: 0, transition: { duration: 0.5 } }}
             >
-              <Button
-                size="icon"
-                variant="secondary"
-                disabled={
-                  props.isChatCompleted ||
-                  isRecording ||
-                  isTranscribing ||
-                  disableInputs
-                }
-                type="submit"
-                className="disabled:text-muted"
-              >
-                <PaperPlaneTilt className="h-4 w-4 fill-current" />
-              </Button>
+              {props.dropZone ? (
+                <>
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    disabled={
+                      props.isChatCompleted ||
+                      isRecording ||
+                      isTranscribing ||
+                      disableInputs
+                    }
+                    onClick={handleDropzone}
+                    className="disabled:text-muted"
+                  >
+                    <PaperPlaneTilt className="h-4 w-4 fill-current" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    disabled={
+                      props.isChatCompleted ||
+                      isRecording ||
+                      isTranscribing ||
+                      disableInputs
+                    }
+                    type="submit"
+                    className="disabled:text-muted"
+                  >
+                    <PaperPlaneTilt className="h-4 w-4 fill-current" />
+                  </Button>
+                </>
+              )}
             </motion.div>
           </motion.div>
         )}

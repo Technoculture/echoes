@@ -1,4 +1,5 @@
 "use client";
+import { nanoid } from "ai";
 import { useState, useEffect, useCallback } from "react";
 import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
@@ -11,7 +12,8 @@ import PersistenceExample from "@/components/tldraw";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "./ui/use-toast";
 import { getUserIdList } from "./chatusersavatars";
-// import Dropzone from "react-dropzone";
+import { usePresence } from "ably/react";
+import { Button } from "./button";
 import { useDropzone } from "react-dropzone";
 
 interface ChatProps {
@@ -28,32 +30,28 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
+  // const { toast} = useToast()
+
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
+  const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
+  const [imageInput, setImageInput] = useState<string>("");
+  const [dropZone, setDropzone] = useState<boolean>(false);
+  const [image, setImage] = useState<File[]>([]); // Initialize state
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [imageName, setImageName] = useState<string>("");
 
   const queryClient = useQueryClient();
+  // let imageUrl:any='';
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    setImage(acceptedFiles);
     try {
-      if (acceptedFiles && acceptedFiles.length > 0) {
-        const file = acceptedFiles[0];
-        // console.log("file", file);
-        const formData = new FormData();
-        formData.append("file", file);
-        console.log("Appended file:", formData.get("file"));
-        const response = await fetch("/api/imageInput", {
-          method: "POST",
-          body: formData,
-        });
-        console.log("Backend response:", response);
-        //   if (response.ok) {
-        //     const result = await response.json();
-        //     console.log('Backend response:', result);
-        //   } else {
-        //     console.error('Error:', response);
-        //   }
-      }
+      setImageUrl(URL.createObjectURL(acceptedFiles[0]));
+      setImageName(JSON.stringify(acceptedFiles[0].name));
+
+      setDropzone(true);
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -112,6 +110,72 @@ export default function Chat(props: ChatProps) {
     },
     sendExtraMessageFields: true,
   });
+
+  useEffect(() => {
+    setImageInput(input);
+    console.log("imageinput", imageInput);
+    if (imageInput && image.length > 0) {
+      handleImage();
+    }
+    console.log("imagestate", image);
+  }, [dropZone]);
+
+  const handleImage = async () => {
+    if (image && image.length > 0) {
+      console.log("dropzone", dropZone);
+      if (props.type === "rag" || "agent" || "univeral" || "chat") {
+        setInput("");
+        console.log("type", props.type);
+        const message: Message = {
+          id: nanoid(),
+          role: "user",
+          content: imageInput,
+          name: `${props.username},${props.uid}`,
+        };
+
+        const file = image[0];
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("imageInput", imageInput);
+        console.log("Appended file:", formData.get("file"));
+        const response = await fetch("/api/imageInput", {
+          method: "POST",
+          body: formData,
+        });
+        const id = nanoid();
+        if (response.ok) {
+          setMessages([...messages, message]);
+          const result = await response.json();
+          const assistantMessage: Message = {
+            id,
+            role: "assistant",
+            content: result.result.kwargs.content,
+          };
+          // console.log("Backend response:", result);
+          setMessages([...messages, assistantMessage]);
+          console.log("New messages Ok: ", messages);
+          const content = result.result.kwargs.content;
+          fetch(`/api/updatedb/${props.chatId}`, {
+            method: "POST",
+            body: JSON.stringify({
+              messages: [
+                ...messages,
+                message,
+                {
+                  ...assistantMessage,
+                  content: content,
+                },
+              ],
+              orgId: props.orgId,
+              usreId: props.uid,
+            }),
+          });
+        } else {
+          console.error(" Response Error :", response);
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     let mainArray: Message[][] = [];
@@ -223,6 +287,35 @@ export default function Chat(props: ChatProps) {
             </div>
           </section>
           {/* </div> */}
+
+          {dropZone ? (
+            <>
+              {" "}
+              <div className=" w-[200px] rounded-md bg-slate-950 p-4">
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full h-auto rounded-md"
+                />
+                <pre>
+                  <code className="text-white">{imageName}</code>
+                </pre>
+                <br></br>
+                <Button
+                  onClick={() => {
+                    setImageInput("");
+                    setDropzone(false);
+                  }}
+                  className="w-40"
+                >
+                  Undo
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>{""}</>
+          )}
+
           {isChatCompleted && (
             <div>
               <Startnewchatbutton
@@ -232,6 +325,10 @@ export default function Chat(props: ChatProps) {
             </div>
           )}
           <InputBar
+            imageInput={imageInput}
+            setImageInput={setImageInput}
+            dropZone={dropZone}
+            setDropzone={setDropzone}
             chatId={props.chatId}
             orgId={props.orgId}
             messages={messages}
