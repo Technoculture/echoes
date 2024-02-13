@@ -22,7 +22,8 @@ export async function POST(request: Request) {
   const imageInput: any = formData.get("imageInput");
   if (file) {
     const blob = file as Blob;
-    const buffer = Buffer.from(await blob.arrayBuffer()); const imageBase64 = buffer.toString("base64");
+    const buffer = Buffer.from(await blob.arrayBuffer());
+    const imageBase64 = buffer.toString("base64");
     // console.log("imageBase64", imageBase64);
     // Assuming the API can accept Base64 directly
     const message = new HumanMessage({

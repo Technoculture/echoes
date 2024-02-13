@@ -37,7 +37,7 @@ function isJSON(str: any) {
 interface InputBarProps {
   value: string;
   onChange: (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => void;
   choosenAI: AIType;
   setChoosenAI: Dispatch<SetStateAction<AIType>>;
@@ -45,7 +45,7 @@ interface InputBarProps {
   userId: string;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions | undefined
+    chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
   isChatCompleted: boolean;
@@ -402,7 +402,7 @@ const InputBar = (props: InputBarProps) => {
               <Loader2
                 className={cn(
                   "h-4 w-4 animate-spin absolute left-2 top-3",
-                  isTranscribing ? "visible" : "hidden"
+                  isTranscribing ? "visible" : "hidden",
                 )}
               />
             </motion.div>
