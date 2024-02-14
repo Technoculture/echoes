@@ -3,7 +3,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import { saveToDB } from "@/utils/apiHelper";
+import { saveDroppedImage } from "@/utils/apiHelper";
 import { nanoid } from "ai";
 import { Message } from "ai/react/dist";
 
@@ -15,7 +15,6 @@ const chat = new ChatOpenAI({
 
 export async function POST(request: Request) {
   let formData = await request.formData();
-
   const { orgSlug } = await auth();
   const url: any = request.url;
   const urlArray = url.split("/") as string[];
@@ -32,7 +31,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const file = formData.get("file");
+  const file: any = formData.get("file");
+  console.log("fileNameeeeee", file.name);
   const imageInput: any = formData.get("imageInput");
   if (file) {
     const blob = file as Blob;
@@ -62,30 +62,37 @@ export async function POST(request: Request) {
     });
     console.log("Image response", res);
     if (res) {
-      const latestReponse = {
-        id: nanoid(),
-        role: "assistant" as const,
-        content: typeof res === "string" ? res : JSON.stringify(res),
-        createdAt: new Date(),
-        audio: "",
-      };
-      await saveToDB({
-        _chat: message02,
-        chatId: chatId,
-        orgSlug: orgSlug as string,
-        latestResponse: latestReponse,
-        userId: userId,
-        orgId: orgId,
-        urlArray: urlArray,
-      });
+      // const latestReponse = {
+      //   id: nanoid(),
+      //   role: "assistant" as const,
+      //   content: typeof res === "string" ? res : JSON.stringify(res),
+      //   createdAt: new Date(),
+      //   audio: "",
+
+      // };
+      // const db = await saveToDB({
+      //   _chat: message02,
+      //   chatId: chatId,
+      //   orgSlug: orgSlug as string,
+      //   latestResponse: latestReponse,
+      //   userId: userId,
+      //   orgId: orgId,
+      //   urlArray: urlArray,
+      // });
       // console.log("dbbbbbbb", db);
-      // await postToAlgolia({
+      // const postToAlgoli = await postToAlgolia({
       //   chats: message02,
       //   chatId: chatId,
       //   orgSlug: orgSlug as string,
       //   urlArray: urlArray,
       // });
       // console.log("postToAlgoli", postToAlgoli);
+      await saveDroppedImage({
+        imageId: nanoid(),
+        buffer: buffer,
+        chatId: chatId,
+        messageId: file.name,
+      });
 
       return NextResponse.json({ result: res, success: true }, { status: 200 });
     }

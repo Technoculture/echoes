@@ -148,6 +148,14 @@ export default function Chat(props: ChatProps) {
         });
         const id = nanoid();
         if (response.ok) {
+          setTimeout(() => {
+            updateStatus({
+              isTyping: true,
+              username: "Echo",
+              id: props.uid,
+            });
+            // setDisableInputs(false);
+          }, 3000);
           const result = await response.json();
           const assistantMessage: Message = {
             id,

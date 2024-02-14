@@ -360,6 +360,42 @@ export const saveAudioMessage = async ({
   return audioUrl;
 };
 
+export const saveDroppedImage = async ({
+  imageId: imageId,
+  buffer,
+  chatId,
+  messageId,
+}: {
+  imageId: any;
+  buffer: Buffer;
+  chatId: string;
+  messageId: string;
+}): Promise<string> => {
+  const s3 = new S3Client({
+    region: env.AWS_REGION,
+    credentials: {
+      accessKeyId: env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
+  const data = await s3.send(
+    new PutObjectCommand({
+      Bucket: env.BUCKET_NAME,
+      Body: buffer,
+      Key: `imagefolder/${chatId}/${imageId}+${messageId}`,
+      Metadata: {
+        "Content-Type": "image/*",
+        "image-id": chatId,
+        "message-id": messageId,
+      },
+    }),
+  );
+  console.log("aws_image_data", data);
+
+  // const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
+  return "";
+};
+
 export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {
   const msgs = chat
     .filter((chat) => ["user", "assistant", "system"].includes(chat.role))
