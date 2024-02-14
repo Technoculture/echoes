@@ -3,7 +3,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import { saveToDB, postToAlgolia } from "@/utils/apiHelper";
+import { saveToDB } from "@/utils/apiHelper";
 import { nanoid } from "ai";
 import { Message } from "ai/react/dist";
 
@@ -51,7 +51,15 @@ export async function POST(request: Request) {
         },
       ],
     });
-    const res = await chat.invoke([message]);
+    const res = await Promise.race([
+      chat.invoke([message]),
+      new Promise((resolve, reject) => {
+        setTimeout(() => reject(new Error("Timeout occurred")), 30000); // Adjust the timeout value (in milliseconds) as needed
+      }),
+    ]).catch((error) => {
+      console.error("Error:", error);
+      return null; // Handle the timeout error appropriately
+    });
     console.log("Image response", res);
     if (res) {
       const latestReponse = {
@@ -61,7 +69,7 @@ export async function POST(request: Request) {
         createdAt: new Date(),
         audio: "",
       };
-      const db = await saveToDB({
+      await saveToDB({
         _chat: message02,
         chatId: chatId,
         orgSlug: orgSlug as string,
@@ -70,14 +78,14 @@ export async function POST(request: Request) {
         orgId: orgId,
         urlArray: urlArray,
       });
-      console.log("dbbbbbbb", db);
-      const postToAlgoli = await postToAlgolia({
-        chats: message02,
-        chatId: chatId,
-        orgSlug: orgSlug as string,
-        urlArray: urlArray,
-      });
-      console.log("postToAlgoli", postToAlgoli);
+      // console.log("dbbbbbbb", db);
+      // await postToAlgolia({
+      //   chats: message02,
+      //   chatId: chatId,
+      //   orgSlug: orgSlug as string,
+      //   urlArray: urlArray,
+      // });
+      // console.log("postToAlgoli", postToAlgoli);
 
       return NextResponse.json({ result: res, success: true }, { status: 200 });
     }
