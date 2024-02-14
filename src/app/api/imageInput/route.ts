@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 import { saveToDB, postToAlgolia } from "@/utils/apiHelper";
 import { nanoid } from "ai";
 import { Message } from "ai/react/dist";
-import { ChatEntry } from "@/lib/types";
 
 const chat = new ChatOpenAI({
   modelName: "gpt-4-vision-preview",
@@ -24,7 +23,7 @@ export async function POST(request: Request) {
   const orgId = formData.get("orgId") as string;
   const userId = formData.get("userId") as string;
   const message02 = formData.get("message02") as unknown as Message[];
-  console.log("message02", message02)
+  console.log("message02", message02);
 
   if (!formData || !formData.has("file")) {
     return NextResponse.json(
@@ -71,14 +70,14 @@ export async function POST(request: Request) {
         orgId: orgId,
         urlArray: urlArray,
       });
-      console.log("dbbbbbbb", db)
+      console.log("dbbbbbbb", db);
       const postToAlgoli = await postToAlgolia({
         chats: message02,
         chatId: chatId,
         orgSlug: orgSlug as string,
         urlArray: urlArray,
       });
-      console.log("postToAlgoli", postToAlgoli)
+      console.log("postToAlgoli", postToAlgoli);
 
       return NextResponse.json({ result: res, success: true }, { status: 200 });
     }
