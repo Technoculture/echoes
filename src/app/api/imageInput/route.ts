@@ -3,8 +3,10 @@ import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import { saveToDB } from "@/utils/apiHelper";
+import { saveToDB, postToAlgolia } from "@/utils/apiHelper";
 import { nanoid } from "ai";
+import { Message } from "ai/react/dist";
+import { ChatEntry } from "@/lib/types";
 
 const chat = new ChatOpenAI({
   modelName: "gpt-4-vision-preview",
@@ -16,14 +18,14 @@ export async function POST(request: Request) {
   let formData = await request.formData();
 
   const { orgSlug } = await auth();
-  console.log("orgSlug", orgSlug);
-  const urlArray: any = request.url;
+  const url: any = request.url;
+  const urlArray = url.split("/") as string[];
   const chatId: any = formData.get("chatId");
-  const orgId: any = formData.get("orgId");
-  const userId: any = formData.get("userId");
-  const message02: any = formData.get("message02");
+  const orgId = formData.get("orgId") as string;
+  const userId = formData.get("userId") as string;
+  const message02 = formData.get("message02") as unknown as Message[];
+  console.log("message02", message02)
 
-  console.log("urlllll", request.url);
   if (!formData || !formData.has("file")) {
     return NextResponse.json(
       { result: "no data received", success: false },
@@ -37,7 +39,6 @@ export async function POST(request: Request) {
     const blob = file as Blob;
     const buffer = Buffer.from(await blob.arrayBuffer());
     const imageBase64 = buffer.toString("base64");
-    // console.log("imageBase64", imageBase64);
     // Assuming the API can accept Base64 directly
     const message = new HumanMessage({
       content: [
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
         createdAt: new Date(),
         audio: "",
       };
-      await saveToDB({
+      const db = await saveToDB({
         _chat: message02,
         chatId: chatId,
         orgSlug: orgSlug as string,
@@ -70,6 +71,15 @@ export async function POST(request: Request) {
         orgId: orgId,
         urlArray: urlArray,
       });
+      console.log("dbbbbbbb", db)
+      const postToAlgoli = await postToAlgolia({
+        chats: message02,
+        chatId: chatId,
+        orgSlug: orgSlug as string,
+        urlArray: urlArray,
+      });
+      console.log("postToAlgoli", postToAlgoli)
+
       return NextResponse.json({ result: res, success: true }, { status: 200 });
     }
   } else {

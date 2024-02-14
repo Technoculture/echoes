@@ -148,7 +148,6 @@ export default function Chat(props: ChatProps) {
         });
         const id = nanoid();
         if (response.ok) {
-          setMessages([...messages, message]);
           const result = await response.json();
           const assistantMessage: Message = {
             id,
@@ -156,9 +155,16 @@ export default function Chat(props: ChatProps) {
             content: result.result.kwargs.content,
           };
           // console.log("Backend response:", result);
-          setMessages([...messages, assistantMessage]);
-          console.log("New messages Ok:", messages);
           const content = result.result.kwargs.content;
+          setMessages([
+            ...messages,
+            message,
+            {
+              ...assistantMessage,
+              content: content,
+            },
+          ]);
+          console.log("New messages Ok:", messages);
           fetch(`/api/updatedb/${props.chatId}`, {
             method: "POST",
             body: JSON.stringify({
