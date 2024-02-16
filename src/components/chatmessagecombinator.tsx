@@ -183,8 +183,8 @@ const ChatMessageCombinator = ({
                         key={idx}
                         alt="image"
                         src={msg.content}
-                        width={200}
-                        height={200}
+                        width={170}
+                        height={170}
                       ></Image>
                     </div>
                   );
