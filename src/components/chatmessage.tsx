@@ -40,8 +40,8 @@ const ChatMessage = (props: ChatMessageProps) => {
     const [name, id] = props.chat.name.split(",");
     userName = name;
   } else {
-    if (props.chat.role === "user") {
-      userName = props.name;
+    if (props.chat.role === "user" && props.chat.subRole == "image") {
+      userName = "";
     } else if (props.chat.role === "assistant") {
       userName = "Echo";
     } else {

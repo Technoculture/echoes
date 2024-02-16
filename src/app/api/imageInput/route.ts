@@ -4,7 +4,6 @@ import { env } from "@/app/env.mjs";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { saveDroppedImage } from "@/utils/apiHelper";
-import { nanoid } from "ai";
 import { Message } from "ai/react/dist";
 
 const chat = new ChatOpenAI({
@@ -19,10 +18,12 @@ export async function POST(request: Request) {
   const url: any = request.url;
   const urlArray = url.split("/") as string[];
   const chatId: any = formData.get("chatId");
+  const messageId = formData.get("messageId");
   const orgId = formData.get("orgId") as string;
   const userId = formData.get("userId") as string;
   const message02 = formData.get("message02") as unknown as Message[];
-  console.log("message02", message02);
+  // const message02Array = JSON.parse(message02)
+  // console.log("messageId",message02Array)
 
   if (!formData || !formData.has("file")) {
     return NextResponse.json(
@@ -32,7 +33,11 @@ export async function POST(request: Request) {
   }
 
   const file: any = formData.get("file");
-  console.log("fileNameeeeee", file.name);
+  const parts = file.name.split(".");
+  const extension = parts[parts.length - 1];
+  // console.log("fileNameeeeee", file.name);
+  // console.log("fileNameeeeee", extension);
+
   const imageInput: any = formData.get("imageInput");
   if (file) {
     const blob = file as Blob;
@@ -87,14 +92,18 @@ export async function POST(request: Request) {
       //   urlArray: urlArray,
       // });
       // console.log("postToAlgoli", postToAlgoli);
-      await saveDroppedImage({
-        imageId: nanoid(),
+      const saveDroppedImag = await saveDroppedImage({
+        imageId: messageId,
         buffer: buffer,
         chatId: chatId,
-        messageId: file.name,
+        imageExtension: extension,
+        imageName: file.name,
       });
 
-      return NextResponse.json({ result: res, success: true }, { status: 200 });
+      return NextResponse.json(
+        { result: res, imageUrl: saveDroppedImag, success: true },
+        { status: 200 },
+      );
     }
   } else {
     return NextResponse.json(

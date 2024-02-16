@@ -154,10 +154,12 @@ const ChatMessageCombinator = ({
             )}
           </div>
         </div>
+
         {calculatedMessages.map((msgs, index) => {
-          const patentMessage = msgs.find(
-            (msg) => msg.subRole === "patent-search",
-          );
+          const patentMessage = msgs.find((msg) => {
+            msg.subRole === "patent-search";
+          });
+
           return (
             <div
               key={index}
@@ -174,6 +176,19 @@ const ChatMessageCombinator = ({
                 messageIndex++;
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;
+                if (msg.subRole === "image") {
+                  return (
+                    <div key={idx}>
+                      <Image
+                        key={idx}
+                        alt="image"
+                        src={msg.content}
+                        width={100}
+                        height={100}
+                      ></Image>
+                    </div>
+                  );
+                }
                 return (
                   <div
                     key={msg.id || index}
@@ -202,6 +217,16 @@ const ChatMessageCombinator = ({
                       />
                     </ContextWrapper>
                     <div>
+                      {/* {msg.subRole === "image" ? (
+                        <div>
+                          <Image
+                            alt="image"
+                            src={JSON.parse(msg.content)}
+                            width={100}
+                            height={100}
+                          ></Image>
+                        </div>
+                      ) : null} */}
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
                           patentMessage ? (

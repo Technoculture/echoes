@@ -364,12 +364,14 @@ export const saveDroppedImage = async ({
   imageId: imageId,
   buffer,
   chatId,
-  messageId,
+  imageExtension,
+  imageName,
 }: {
   imageId: any;
   buffer: Buffer;
   chatId: string;
-  messageId: string;
+  imageExtension: string;
+  imageName: string;
 }): Promise<string> => {
   const s3 = new S3Client({
     region: env.AWS_REGION,
@@ -382,18 +384,19 @@ export const saveDroppedImage = async ({
     new PutObjectCommand({
       Bucket: env.BUCKET_NAME,
       Body: buffer,
-      Key: `imagefolder/${chatId}/${imageId}+${messageId}`,
+      Key: `imagefolder/${chatId}/${imageId}.${imageExtension}`,
       Metadata: {
         "Content-Type": "image/*",
-        "image-id": chatId,
-        "message-id": messageId,
+        "image-id": imageId,
+        "chat-id": chatId,
+        "image-Name": imageName,
       },
     }),
   );
+  const imageUrl = `${env.IMAGE_PREFIX_URL}imagefolder/${chatId}/${imageId}.${imageExtension}`;
   console.log("aws_image_data", data);
-
-  // const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
-  return "";
+  console.log("Image URL", imageUrl);
+  return imageUrl;
 };
 
 export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {

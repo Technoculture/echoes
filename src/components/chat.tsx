@@ -41,7 +41,7 @@ export default function Chat(props: ChatProps) {
   const [image, setImage] = useState<File[]>([]); // Initialize state
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
-
+  const [awsImageUrl, setAwsImageUrl] = useState("");
   const queryClient = useQueryClient();
   // let imageUrl:any='';
 
@@ -122,17 +122,27 @@ export default function Chat(props: ChatProps) {
 
   const handleImage = async () => {
     if (image && image.length > 0) {
+      const timer = setTimeout(() => {
+        updateStatus({
+          isTyping: true,
+          username: "Echo",
+          id: props.uid,
+        });
+        // setDisableInputs(false);
+      }, 1000);
       console.log("dropzone", dropZone);
       if (props.type === "rag" || "agent" || "univeral" || "chat") {
         setInput("");
-        console.log("type", props.type);
+        const ID = nanoid();
+        // console.log("type", props.type);
         const message: Message = {
-          id: nanoid(),
+          id: ID,
           role: "user",
           content: imageInput,
           name: `${props.username},${props.uid}`,
         };
-        const message02: any = [...messages, message];
+        // const message02:Message[] = [...messages, message];
+        // const message02Json = JSON.stringify(message02);
         const file = image[0];
         const formData = new FormData();
         formData.append("file", file);
@@ -140,33 +150,36 @@ export default function Chat(props: ChatProps) {
         formData.append("userId", props.uid);
         formData.append("orgId", props.orgId);
         formData.append("chatId", props.chatId);
-        formData.append("message02", message02);
-        console.log("Appended file:", formData.get("file"));
+        // formData.append("message02",message02Json);
+        formData.append("messageId", ID);
+        // console.log("Appended file:", formData.get("file"));
         const response = await fetch("/api/imageInput", {
           method: "POST",
           body: formData,
         });
-        const id = nanoid();
+        const id = ID;
         if (response.ok) {
-          setTimeout(() => {
-            updateStatus({
-              isTyping: true,
-              username: "Echo",
-              id: props.uid,
-            });
-            // setDisableInputs(false);
-          }, 3000);
           const result = await response.json();
+          const awsUrl = result.imageUrl;
+          setAwsImageUrl(awsUrl);
+          const awsImageMessage = {
+            role: "user",
+            subRole: "image",
+            content: awsUrl,
+            id: ID,
+          } as Message;
           const assistantMessage: Message = {
             id,
             role: "assistant",
             content: result.result.kwargs.content,
           };
           // console.log("Backend response:", result);
+          console.log("imageUrl", awsUrl);
           const content = result.result.kwargs.content;
           setMessages([
             ...messages,
             message,
+            awsImageMessage,
             {
               ...assistantMessage,
               content: content,
@@ -179,6 +192,7 @@ export default function Chat(props: ChatProps) {
               messages: [
                 ...messages,
                 message,
+                awsImageMessage,
                 {
                   ...assistantMessage,
                   content: content,
@@ -220,7 +234,6 @@ export default function Chat(props: ChatProps) {
       setCalculatedMessages(mainArray);
     }
   }, [messages]);
-
   const confidentialFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}/confidential`);
     const confidential = res.data.confidential;
