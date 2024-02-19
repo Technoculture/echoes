@@ -148,6 +148,7 @@ const ChatMessage = (props: ChatMessageProps) => {
           >
             {userName}
           </p>
+
           {props.chat.role === "assistant" ? (
             <div className="flex items-center flex-grow">
               {!(

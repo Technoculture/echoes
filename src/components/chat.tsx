@@ -116,6 +116,11 @@ export default function Chat(props: ChatProps) {
     // console.log("imageinput", imageInput);
     if (imageInput && image.length > 0) {
       handleImage();
+      updateStatus({
+        isTyping: true,
+        username: "Echo",
+        id: props.uid,
+      });
     }
     // console.log("imagestate", image);
   }, [dropZone]);
@@ -124,12 +129,11 @@ export default function Chat(props: ChatProps) {
     if (image && image.length > 0) {
       const timer = setTimeout(() => {
         updateStatus({
-          isTyping: true,
+          isTyping: false,
           username: "Echo",
           id: props.uid,
         });
-        // setDisableInputs(false);
-      }, 1000);
+      }, 7000);
       console.log("dropzone", dropZone);
       if (props.type === "rag" || "agent" || "univeral" || "chat") {
         setInput("");
@@ -178,8 +182,8 @@ export default function Chat(props: ChatProps) {
           const content = result.result.kwargs.content;
           setMessages([
             ...messages,
-            message,
             awsImageMessage,
+            message,
             {
               ...assistantMessage,
               content: content,
@@ -191,8 +195,8 @@ export default function Chat(props: ChatProps) {
             body: JSON.stringify({
               messages: [
                 ...messages,
-                message,
                 awsImageMessage,
+                message,
                 {
                   ...assistantMessage,
                   content: content,

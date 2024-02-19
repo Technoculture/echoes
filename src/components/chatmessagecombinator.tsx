@@ -1,4 +1,4 @@
-import React, { SetStateAction } from "react";
+import React, { SetStateAction, useState } from "react";
 import Image from "next/image";
 import { ContextWrapper } from "@/components/contextwrapper";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
@@ -56,9 +56,11 @@ const ChatMessageCombinator = ({
   toogleConfidentiality,
   isTooglingConfidentiality,
 }: Props) => {
+  let SubRole = "";
+
   const preferences = usePreferences();
   const queryClient = useQueryClient();
-
+  const [imageRender, setImageRender] = useState("");
   const mutation = useMutation(
     async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
       const res = await axios.post(`/api/patentsearch`, {
@@ -159,7 +161,11 @@ const ChatMessageCombinator = ({
           const patentMessage = msgs.find((msg) => {
             msg.subRole === "patent-search";
           });
-
+          const imageMessage: any = msgs.filter((msg) => {
+            return msg.role === "user" && msg.name;
+          });
+          SubRole = imageMessage;
+          console.log("imageMessage", SubRole);
           return (
             <div
               key={index}
@@ -175,20 +181,22 @@ const ChatMessageCombinator = ({
                 }
                 messageIndex++;
                 const msgIdx = messageIndex;
+                // let Role = "";
                 if (msg.subRole === "patent-search") return null;
                 if (msg.subRole === "image") {
                   return (
-                    <div key={idx}>
+                    <div key={msg.id}>
                       <Image
-                        key={idx}
+                        key={msg.id}
                         alt="image"
                         src={msg.content}
-                        width={170}
-                        height={170}
+                        width={100}
+                        height={100}
                       ></Image>
                     </div>
                   );
                 }
+
                 return (
                   <div
                     key={msg.id || index}
@@ -216,17 +224,19 @@ const ChatMessageCombinator = ({
                         isLoading={isLoading}
                       />
                     </ContextWrapper>
+
+                    {/* {imageMessage[0]?.subRole === "image" ? (
+                      <div className="bg-green-400" key={msg.id}>
+                        <Image
+                          key={msg.id}
+                          alt="image"
+                          src={""}
+                          width={100}
+                          height={100}
+                        ></Image>
+                      </div>
+                    ) : null} */}
                     <div>
-                      {/* {msg.subRole === "image" ? (
-                        <div>
-                          <Image
-                            alt="image"
-                            src={JSON.parse(msg.content)}
-                            width={100}
-                            height={100}
-                          ></Image>
-                        </div>
-                      ) : null} */}
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
                           patentMessage ? (
