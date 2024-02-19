@@ -35,6 +35,7 @@ function isJSON(str: any) {
 }
 
 interface InputBarProps {
+  dropZoneImage: File[];
   value: string;
   onChange: (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
@@ -68,6 +69,8 @@ const InputBar = (props: InputBarProps) => {
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
   const [isRagLoading, setIsRagLoading] = useState<boolean>(false);
   const queryClient = useQueryClient();
+  const [awsImageUrl, setAwsImageUrl] = useState("");
+
   // const ably = useAbly();
 
   // console.log(
@@ -92,6 +95,97 @@ const InputBar = (props: InputBarProps) => {
       name: `${props.username},${props.userId}`,
       audio: "",
     };
+    if (props.dropZone) {
+      console.log("image dropped");
+      props.setInput("");
+      props.setDropzone(false);
+
+      if (props.dropZoneImage && props.dropZoneImage.length > 0) {
+        const timer = setTimeout(() => {
+          updateStatus({
+            isTyping: false,
+            username: "Echo",
+            id: props.userId,
+          });
+        }, 7000);
+        console.log("dropzone", props.dropZone);
+        if (props.dropZoneImage) {
+          const ID = nanoid();
+          // console.log("type", props.type);
+          const message: Message = {
+            id: ID,
+            role: "user",
+            content: props.value,
+            name: `${props.username},${props.userId}`,
+          };
+          // const message02:Message[] = [...messages, message];
+          // const message02Json = JSON.stringify(message02);
+          const file = props.dropZoneImage[0];
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("imageInput", props.value);
+          formData.append("userId", props.userId);
+          formData.append("orgId", props.orgId);
+          formData.append("chatId", props.chatId);
+          // formData.append("message02",message02Json);
+          formData.append("messageId", ID);
+          // console.log("Appended file:", formData.get("file"));
+          const response = await fetch("/api/imageInput", {
+            method: "POST",
+            body: formData,
+          });
+          const id = ID;
+          if (response.ok) {
+            const result = await response.json();
+            const awsUrl = result.imageUrl;
+            setAwsImageUrl(awsUrl);
+            const awsImageMessage = {
+              role: "user",
+              subRole: "image",
+              content: awsUrl,
+              id: ID,
+            } as Message;
+            const assistantMessage: Message = {
+              id,
+              role: "assistant",
+              content: result.result.kwargs.content,
+            };
+            // console.log("Backend response:", result);
+            console.log("imageUrl", awsUrl);
+            const content = result.result.kwargs.content;
+            props.setMessages([
+              ...props.messages,
+              awsImageMessage,
+              message,
+              {
+                ...assistantMessage,
+                content: content,
+              },
+            ]);
+            console.log("New messages Ok:", props.messages);
+            fetch(`/api/updatedb/${props.chatId}`, {
+              method: "POST",
+              body: JSON.stringify({
+                messages: [
+                  ...props.messages,
+                  awsImageMessage,
+                  message,
+                  {
+                    ...assistantMessage,
+                    content: content,
+                  },
+                ],
+                orgId: props.orgId,
+                usreId: props.userId,
+              }),
+            });
+          } else {
+            console.error(" Response Error :", response);
+          }
+        }
+      }
+      return;
+    }
     if (props.chattype === "rag") {
       console.log("rag");
       setIsRagLoading(true);
@@ -313,7 +407,7 @@ const InputBar = (props: InputBarProps) => {
   }, [props.isLoading, isRagLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (props.dropZone) {
-      props.setImageInput(e.target.value);
+      props.setInput(e.target.value);
     } else {
       props.onChange(e);
     }
@@ -325,9 +419,9 @@ const InputBar = (props: InputBarProps) => {
     // setDisableInputs(true)
   };
 
-  const handleDropzone = () => {
-    props.setDropzone(false);
-  };
+  // const handleDropzone = () => {
+  //   props.setDropzone(false);
+  // };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
@@ -395,7 +489,7 @@ const InputBar = (props: InputBarProps) => {
                     : "Type your message here..."
                 }
                 autoFocus
-                value={props.dropZone ? props.imageInput : props.value}
+                value={props.value}
                 onChange={handleInputChange}
                 className="flex-none resize-none rounded-sm grow w-full bg-background border border-secondary text-primary p-2 text-sm disabled:text-muted"
               />
@@ -437,7 +531,7 @@ const InputBar = (props: InputBarProps) => {
               animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
               exit={{ x: 50, opacity: 0, transition: { duration: 0.5 } }}
             >
-              {props.dropZone ? (
+              {/* {props.dropZone ? (
                 <>
                   <Button
                     size="icon"
@@ -455,23 +549,23 @@ const InputBar = (props: InputBarProps) => {
                   </Button>
                 </>
               ) : (
-                <>
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    disabled={
-                      props.isChatCompleted ||
-                      isRecording ||
-                      isTranscribing ||
-                      disableInputs
-                    }
-                    type="submit"
-                    className="disabled:text-muted"
-                  >
-                    <PaperPlaneTilt className="h-4 w-4 fill-current" />
-                  </Button>
-                </>
-              )}
+                <> */}
+              <Button
+                size="icon"
+                variant="secondary"
+                disabled={
+                  props.isChatCompleted ||
+                  isRecording ||
+                  isTranscribing ||
+                  disableInputs
+                }
+                type="submit"
+                className="disabled:text-muted"
+              >
+                <PaperPlaneTilt className="h-4 w-4 fill-current" />
+              </Button>
+              {/* </>
+              )} */}
             </motion.div>
           </motion.div>
         )}

@@ -224,8 +224,7 @@ const ChatMessageCombinator = ({
                         isLoading={isLoading}
                       />
                     </ContextWrapper>
-
-                    {/* {imageMessage[0]?.subRole === "image" ? (
+                    {/* {imageMessage[0]?.subRole==="image" ? (
                       <div className="bg-green-400" key={msg.id}>
                         <Image
                           key={msg.id}
@@ -235,7 +234,7 @@ const ChatMessageCombinator = ({
                           height={100}
                         ></Image>
                       </div>
-                    ) : null} */}
+                    ) : msg.name || msg.role === "assistant" ? null : null} */}
                     <div>
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
