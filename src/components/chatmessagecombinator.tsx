@@ -13,6 +13,12 @@ import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
 import { Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+} from "@/components/ui/dialog";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -61,7 +67,7 @@ const ChatMessageCombinator = ({
 
   const preferences = usePreferences();
   const queryClient = useQueryClient();
-  // const [imageRender, setImageRender] = useState("");
+  const [open, setOpen] = React.useState(false);
   const mutation = useMutation(
     async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
       const res = await axios.post(`/api/patentsearch`, {
@@ -170,18 +176,6 @@ const ChatMessageCombinator = ({
             msg.subRole === "image";
             return msg.subRole;
           });
-          // const userMessage: any = msgs.find((msg) => {
-          //   msg.role === "user";
-          //   return msg.role === "user";
-          // });
-          // const assiatantMessage: any = msgs.find((msg) => {
-          //   msg.role === "assistant";
-          //   return msg.role === "assistant";
-          // });
-          console.log("data", msgs);
-          // console.log("imageMessage", SubRole);
-          // console.log("userMessage", userMessage.name);
-          // console.log("assistantMessage", assiatantMessage?.role);
 
           return (
             <div
@@ -200,25 +194,29 @@ const ChatMessageCombinator = ({
                 messageIndex++;
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;
-                // if (msg.subRole === "image") {
-                //   return (
-                //     <div key={msg.id}>
-                //       <Image
-                //         key={msg.id}
-                //         alt="image"
-                //         src={msg.content}
-                //         width={100}
-                //         height={100}
-                //       ></Image>
-                //     </div>
-                //   );
-                // }
 
                 return (
                   <div
                     key={msg.id || index}
                     className={cn(idx === 0 ? "xl:w-[450px]" : "xl:w-[700px]")}
                   >
+                    <div>
+                      <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogDescription>
+                              <Image
+                                onClick={() => setOpen(true)}
+                                key={msg.id}
+                                alt="image"
+                                src={url}
+                                className="w-full h-auto rounded-md"
+                              ></Image>
+                            </DialogDescription>
+                          </DialogHeader>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                     <ContextWrapper
                       append={append}
                       username={name}
@@ -244,6 +242,7 @@ const ChatMessageCombinator = ({
                     {msg.name && id == msg.id ? (
                       <div key={msg.id}>
                         <Image
+                          onClick={() => setOpen(true)}
                           key={msg.id}
                           alt="image"
                           src={url}
