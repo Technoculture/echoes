@@ -259,32 +259,34 @@ const ChatMessageCombinator = ({
                             <PatentData index={index} message={patentMessage} />
                           ) : (
                             <div>
-                             {msg.subRole==="image"?null :<Button
-                                disabled={mutation.isLoading}
-                                onClick={() =>
-                                  mutation.mutate({
-                                    id: msg.id,
-                                    msgs: msgs,
-                                    lastMessageIndex: msgIdx,
-                                  })
-                                }
-                                className={cn(
-                                  "mx-4 my-3",
-                                  isLoading && "hidden",
-                                )}
-                              >
-                                {mutation.isLoading &&
-                                mutation.variables?.id === msg.id ? (
-                                  <div>
-                                    <div className="w-[150px]">
-                                      <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
+                              {msg.subRole === "image" ? null : (
+                                <Button
+                                  disabled={mutation.isLoading}
+                                  onClick={() =>
+                                    mutation.mutate({
+                                      id: msg.id,
+                                      msgs: msgs,
+                                      lastMessageIndex: msgIdx,
+                                    })
+                                  }
+                                  className={cn(
+                                    "mx-4 my-3",
+                                    isLoading && "hidden",
+                                  )}
+                                >
+                                  {mutation.isLoading &&
+                                  mutation.variables?.id === msg.id ? (
+                                    <div>
+                                      <div className="w-[150px]">
+                                        <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
+                                      </div>
+                                      <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
                                     </div>
-                                    <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
-                                  </div>
-                                ) : (
-                                  "Search For Patents"
-                                )}
-                              </Button>}
+                                  ) : (
+                                    "Search For Patents"
+                                  )}
+                                </Button>
+                              )}
                             </div>
                           )
                         ) : null

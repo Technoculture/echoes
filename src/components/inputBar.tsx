@@ -419,10 +419,6 @@ const InputBar = (props: InputBarProps) => {
     // setDisableInputs(true)
   };
 
-  // const handleDropzone = () => {
-  //   props.setDropzone(false);
-  // };
-
   return (
     <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
       <motion.div

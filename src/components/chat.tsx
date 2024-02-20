@@ -41,9 +41,6 @@ export default function Chat(props: ChatProps) {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
-  // const [awsImageUrl, setAwsImageUrl] = useState("");
-
-  // let imageUrl:any='';
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setImage(acceptedFiles);
@@ -111,108 +108,6 @@ export default function Chat(props: ChatProps) {
     },
     sendExtraMessageFields: true,
   });
-
-  // useEffect(() => {
-  //   // setImageInput(input);
-  //   // console.log("imageinput", imageInput);
-  //   // if (imageInput && image.length > 0) {
-  //   //   // handleImage();
-  //   //   updateStatus({
-  //   //     isTyping: true,
-  //   //     username: "Echo",
-  //   //     id: props.uid,
-  //   //   });
-  //   // }
-  //   // console.log("imagestate", image);
-  // }, [dropZone]);
-
-  // const handleImage = async () => {
-  //   if (image && image.length > 0) {
-  //     const timer = setTimeout(() => {
-  //       updateStatus({
-  //         isTyping: false,
-  //         username: "Echo",
-  //         id: props.uid,
-  //       });
-  //     }, 7000);
-  //     console.log("dropzone", dropZone);
-  //     if (props.type === "rag" || "agent" || "univeral" || "chat") {
-  //       setInput("");
-  //       const ID = nanoid();
-  //       // console.log("type", props.type);
-  //       const message: Message = {
-  //         id: ID,
-  //         role: "user",
-  //         content: imageInput,
-  //         name: `${props.username},${props.uid}`,
-  //       };
-  //       // const message02:Message[] = [...messages, message];
-  //       // const message02Json = JSON.stringify(message02);
-  //       const file = image[0];
-  //       const formData = new FormData();
-  //       formData.append("file", file);
-  //       formData.append("imageInput", imageInput);
-  //       formData.append("userId", props.uid);
-  //       formData.append("orgId", props.orgId);
-  //       formData.append("chatId", props.chatId);
-  //       // formData.append("message02",message02Json);
-  //       formData.append("messageId", ID);
-  //       // console.log("Appended file:", formData.get("file"));
-  //       const response = await fetch("/api/imageInput", {
-  //         method: "POST",
-  //         body: formData,
-  //       });
-  //       const id = ID;
-  //       if (response.ok) {
-  //         const result = await response.json();
-  //         const awsUrl = result.imageUrl;
-  //         setAwsImageUrl(awsUrl);
-  //         const awsImageMessage = {
-  //           role: "user",
-  //           subRole: "image",
-  //           content: awsUrl,
-  //           id: ID,
-  //         } as Message;
-  //         const assistantMessage: Message = {
-  //           id,
-  //           role: "assistant",
-  //           content: result.result.kwargs.content,
-  //         };
-  //         // console.log("Backend response:", result);
-  //         console.log("imageUrl", awsUrl);
-  //         const content = result.result.kwargs.content;
-  //         setMessages([
-  //           ...messages,
-  //           awsImageMessage,
-  //           message,
-  //           {
-  //             ...assistantMessage,
-  //             content: content,
-  //           },
-  //         ]);
-  //         console.log("New messages Ok:", messages);
-  //         fetch(`/api/updatedb/${props.chatId}`, {
-  //           method: "POST",
-  //           body: JSON.stringify({
-  //             messages: [
-  //               ...messages,
-  //               awsImageMessage,
-  //               message,
-  //               {
-  //                 ...assistantMessage,
-  //                 content: content,
-  //               },
-  //             ],
-  //             orgId: props.orgId,
-  //             usreId: props.uid,
-  //           }),
-  //         });
-  //       } else {
-  //         console.error(" Response Error :", response);
-  //       }
-  //     }
-  //   }
-  // };
 
   useEffect(() => {
     let mainArray: Message[][] = [];
