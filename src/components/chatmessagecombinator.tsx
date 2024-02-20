@@ -1,4 +1,4 @@
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction } from "react";
 import Image from "next/image";
 import { ContextWrapper } from "@/components/contextwrapper";
 import { ChatRequestOptions, CreateMessage, Message } from "ai";
@@ -56,11 +56,12 @@ const ChatMessageCombinator = ({
   toogleConfidentiality,
   isTooglingConfidentiality,
 }: Props) => {
-  let SubRole = "";
+  let url = "";
+  let id = "";
 
   const preferences = usePreferences();
   const queryClient = useQueryClient();
-  const [imageRender, setImageRender] = useState("");
+  // const [imageRender, setImageRender] = useState("");
   const mutation = useMutation(
     async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
       const res = await axios.post(`/api/patentsearch`, {
@@ -161,11 +162,27 @@ const ChatMessageCombinator = ({
           const patentMessage = msgs.find((msg) => {
             msg.subRole === "patent-search";
           });
-          const imageMessage: any = msgs.filter((msg) => {
-            return msg.role === "user" && msg.name;
+          const imageMessage: any = msgs.find((msg) => {
+            if (msg.subRole === "image") {
+              url = msg.content;
+              id = msg.id;
+            }
+            msg.subRole === "image";
+            return msg.subRole;
           });
-          SubRole = imageMessage;
-          console.log("imageMessage", SubRole);
+          // const userMessage: any = msgs.find((msg) => {
+          //   msg.role === "user";
+          //   return msg.role === "user";
+          // });
+          // const assiatantMessage: any = msgs.find((msg) => {
+          //   msg.role === "assistant";
+          //   return msg.role === "assistant";
+          // });
+          console.log("data", msgs);
+          // console.log("imageMessage", SubRole);
+          // console.log("userMessage", userMessage.name);
+          // console.log("assistantMessage", assiatantMessage?.role);
+
           return (
             <div
               key={index}
@@ -179,23 +196,23 @@ const ChatMessageCombinator = ({
                     setIsChatCompleted(true);
                   }
                 }
+
                 messageIndex++;
                 const msgIdx = messageIndex;
-                // let Role = "";
                 if (msg.subRole === "patent-search") return null;
-                if (msg.subRole === "image") {
-                  return (
-                    <div key={msg.id}>
-                      <Image
-                        key={msg.id}
-                        alt="image"
-                        src={msg.content}
-                        width={100}
-                        height={100}
-                      ></Image>
-                    </div>
-                  );
-                }
+                // if (msg.subRole === "image") {
+                //   return (
+                //     <div key={msg.id}>
+                //       <Image
+                //         key={msg.id}
+                //         alt="image"
+                //         src={msg.content}
+                //         width={100}
+                //         height={100}
+                //       ></Image>
+                //     </div>
+                //   );
+                // }
 
                 return (
                   <div
@@ -224,46 +241,51 @@ const ChatMessageCombinator = ({
                         isLoading={isLoading}
                       />
                     </ContextWrapper>
-                    {/* {imageMessage[0]?.subRole==="image" ? (
-                      <div className="bg-green-400" key={msg.id}>
+                    {msg.name && id == msg.id ? (
+                      <div key={msg.id}>
                         <Image
                           key={msg.id}
                           alt="image"
-                          src={""}
-                          width={100}
-                          height={100}
+                          src={url}
+                          width={150}
+                          height={150}
                         ></Image>
                       </div>
-                    ) : msg.name || msg.role === "assistant" ? null : null} */}
+                    ) : null}
                     <div>
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
                           patentMessage ? (
                             <PatentData index={index} message={patentMessage} />
                           ) : (
-                            <Button
-                              disabled={mutation.isLoading}
-                              onClick={() =>
-                                mutation.mutate({
-                                  id: msg.id,
-                                  msgs: msgs,
-                                  lastMessageIndex: msgIdx,
-                                })
-                              }
-                              className={cn("mx-4 my-3", isLoading && "hidden")}
-                            >
-                              {mutation.isLoading &&
-                              mutation.variables?.id === msg.id ? (
-                                <div>
-                                  <div className="w-[150px]">
-                                    <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
+                            <div>
+                              <Button
+                                disabled={mutation.isLoading}
+                                onClick={() =>
+                                  mutation.mutate({
+                                    id: msg.id,
+                                    msgs: msgs,
+                                    lastMessageIndex: msgIdx,
+                                  })
+                                }
+                                className={cn(
+                                  "mx-4 my-3",
+                                  isLoading && "hidden",
+                                )}
+                              >
+                                {mutation.isLoading &&
+                                mutation.variables?.id === msg.id ? (
+                                  <div>
+                                    <div className="w-[150px]">
+                                      <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
+                                    </div>
+                                    <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
                                   </div>
-                                  <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
-                                </div>
-                              ) : (
-                                "Search For Patents"
-                              )}
-                            </Button>
+                                ) : (
+                                  "Search For Patents"
+                                )}
+                              </Button>
+                            </div>
                           )
                         ) : null
                       ) : null}

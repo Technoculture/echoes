@@ -196,7 +196,12 @@ const ChatMessage = (props: ChatMessageProps) => {
             isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
           }
         >
-          <RenderMarkdown content={props.chat.content} role={props.chat.role} />
+          {props.chat.subRole === "image" ? null : (
+            <RenderMarkdown
+              content={props.chat.content}
+              role={props.chat.role}
+            />
+          )}
         </div>
       ) : (
         <div

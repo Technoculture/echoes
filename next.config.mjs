@@ -27,14 +27,6 @@ const nextConfig = {
       "d7ftvotrexusa.cloudfront.net",
       "api.projectpq.ai",
     ],
-    // remotePatterns: [
-    //   {
-    //     protocol: "https",
-    //     hostname: "echoes-backet.s3.ap-southeast-2.amazonaws.com",
-    //     port: "", // Default HTTPS port (443)
-    //     pathname: "/imagefolder/45/**",
-    //   },
-    // ],
   },
   redirects: async () => {
     return [
