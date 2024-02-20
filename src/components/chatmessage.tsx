@@ -106,9 +106,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   ) => {
     setIsRegenerating(true);
     const id = props.messageIndex; // id of the response to be regenerated
-
     const tempMessages = structuredClone(props.messages);
-
     const chatToBeSent = tempMessages.slice(0, id); // response is not included
     const remainingMessages = tempMessages.slice(id + 1);
 

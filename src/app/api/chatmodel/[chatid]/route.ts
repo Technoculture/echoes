@@ -26,7 +26,6 @@ export async function POST(
   console.log("orgSlug", orgSlug);
 
   const _chat = body.messages as Message[];
-  console.log("chattttttt", _chat);
   let orgId = "";
   orgId = body.orgId;
   const userId = body.userId;

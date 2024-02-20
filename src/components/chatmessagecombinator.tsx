@@ -20,6 +20,8 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { useMediaQuery } from "@react-hook/media-query";
+import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -69,6 +71,7 @@ const ChatMessageCombinator = ({
   const preferences = usePreferences();
   const queryClient = useQueryClient();
   const isTablet = useMediaQuery("(max-width: 1275px)");
+  const [fetchImageUrl, setFetchImageUrl] = React.useState("");
 
   const [open, setOpen] = React.useState(false);
   const mutation = useMutation(
@@ -197,7 +200,21 @@ const ChatMessageCombinator = ({
                 messageIndex++;
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;
-
+                const handleDialog = (event: any) => {
+                  setOpen(true);
+                  if (
+                    event.target &&
+                    event.target.tagName === "IMG" &&
+                    event.target.src
+                  ) {
+                    const imageUrl = event.target.src;
+                    setFetchImageUrl(imageUrl);
+                    console.log("fetchImageUrl:", fetchImageUrl);
+                  } else {
+                    setOpen(true);
+                  }
+                  return;
+                };
                 return (
                   <div
                     key={msg.id || index}
@@ -205,17 +222,20 @@ const ChatMessageCombinator = ({
                   >
                     <div>
                       <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogTrigger asChild></DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                           <DialogHeader>
                             <DialogDescription>
-                              <Image
-                                onClick={() => setOpen(true)}
-                                key={msg.id}
-                                alt="image"
-                                src={url}
-                                width={300}
-                                height={300}
-                              ></Image>
+                              {fetchImageUrl}
+                              <AspectRatio ratio={0.2 / 0}>
+                                <Image
+                                  key={msg.id}
+                                  alt="image"
+                                  src={fetchImageUrl}
+                                  width={300}
+                                  height={300}
+                                ></Image>
+                              </AspectRatio>
                             </DialogDescription>
                           </DialogHeader>
                         </DialogContent>
@@ -248,15 +268,17 @@ const ChatMessageCombinator = ({
                         className={isTablet ? "justify-center flex" : ""}
                         key={msg.id}
                       >
-                        <Image
-                          className="cursor-pointer"
-                          onClick={() => setOpen(true)}
-                          key={msg.id}
-                          alt="image"
-                          src={url}
-                          width={150}
-                          height={150}
-                        ></Image>
+                        <AspectRatio ratio={0.5 / 0.1}>
+                          <Image
+                            className="cursor-pointer"
+                            onClick={handleDialog}
+                            key={msg.id}
+                            alt="image"
+                            src={url}
+                            width={150}
+                            height={150}
+                          ></Image>
+                        </AspectRatio>
                       </div>
                     ) : null}
                     <div>
