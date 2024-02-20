@@ -259,7 +259,7 @@ const ChatMessageCombinator = ({
                             <PatentData index={index} message={patentMessage} />
                           ) : (
                             <div>
-                              <Button
+                             {msg.subRole==="image"?null :<Button
                                 disabled={mutation.isLoading}
                                 onClick={() =>
                                   mutation.mutate({
@@ -284,7 +284,7 @@ const ChatMessageCombinator = ({
                                 ) : (
                                   "Search For Patents"
                                 )}
-                              </Button>
+                              </Button>}
                             </div>
                           )
                         ) : null
