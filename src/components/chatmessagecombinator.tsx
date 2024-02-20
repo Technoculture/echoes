@@ -202,7 +202,7 @@ const ChatMessageCombinator = ({
                   >
                     <div>
                       <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-[525px]">
                           <DialogHeader>
                             <DialogDescription>
                               <Image
@@ -210,7 +210,7 @@ const ChatMessageCombinator = ({
                                 key={msg.id}
                                 alt="image"
                                 src={url}
-                                className="w-full h-auto rounded-md"
+                                className="w-full h-auto rounded-md cursor-pointer bg-slate-100"
                               ></Image>
                             </DialogDescription>
                           </DialogHeader>
@@ -240,7 +240,10 @@ const ChatMessageCombinator = ({
                       />
                     </ContextWrapper>
                     {msg.name && id == msg.id ? (
-                      <div key={msg.id}>
+                      <div
+                        className=" sm:justify-center lg:flex xsm:justify-cente"
+                        key={msg.id}
+                      >
                         <Image
                           onClick={() => setOpen(true)}
                           key={msg.id}
