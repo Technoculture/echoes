@@ -19,6 +19,7 @@ import {
   DialogDescription,
   DialogHeader,
 } from "@/components/ui/dialog";
+import { useMediaQuery } from "@react-hook/media-query";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -67,6 +68,8 @@ const ChatMessageCombinator = ({
 
   const preferences = usePreferences();
   const queryClient = useQueryClient();
+  const isTablet = useMediaQuery("(max-width: 1275px)");
+
   const [open, setOpen] = React.useState(false);
   const mutation = useMutation(
     async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
@@ -202,7 +205,7 @@ const ChatMessageCombinator = ({
                   >
                     <div>
                       <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogContent className="sm:max-w-[525px]">
+                        <DialogContent className="sm:max-w-[425px]">
                           <DialogHeader>
                             <DialogDescription>
                               <Image
@@ -210,7 +213,8 @@ const ChatMessageCombinator = ({
                                 key={msg.id}
                                 alt="image"
                                 src={url}
-                                className="w-full h-auto rounded-md cursor-pointer bg-slate-100"
+                                width={300}
+                                height={300}
                               ></Image>
                             </DialogDescription>
                           </DialogHeader>
@@ -241,10 +245,11 @@ const ChatMessageCombinator = ({
                     </ContextWrapper>
                     {msg.name && id == msg.id ? (
                       <div
-                        className=" sm:justify-center lg:flex xsm:justify-cente"
+                        className={isTablet ? "justify-center flex" : ""}
                         key={msg.id}
                       >
                         <Image
+                          className="cursor-pointer"
                           onClick={() => setOpen(true)}
                           key={msg.id}
                           alt="image"
