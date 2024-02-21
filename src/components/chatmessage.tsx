@@ -40,7 +40,7 @@ const ChatMessage = (props: ChatMessageProps) => {
     const [name, id] = props.chat.name.split(",");
     userName = name;
   } else {
-    if (props.chat.role === "user" && props.chat.subRole == "image") {
+    if (props.chat.role === "user" && props.chat.subRole == "input-image") {
       userName = "";
     } else if (props.chat.role === "assistant") {
       userName = "Echo";
@@ -194,7 +194,7 @@ const ChatMessage = (props: ChatMessageProps) => {
             isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
           }
         >
-          {props.chat.subRole === "image" ? null : (
+          {props.chat.subRole === "input-image" ? null : (
             <RenderMarkdown
               content={props.chat.content}
               role={props.chat.role}

@@ -72,7 +72,7 @@ export function DropzoneDrawer(props: DropZoneProps) {
           <ImageSquare className="h-4 w-4 fill-current" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] min-w-[90vw] min-h-[90vh] bg-transparent">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>DropZone</DialogTitle>
           <DialogDescription>
@@ -80,17 +80,7 @@ export function DropzoneDrawer(props: DropZoneProps) {
               <Dropzone onDrop={(acceptedFiles) => handleSubmit(acceptedFiles)}>
                 {({ getRootProps, getInputProps }) => (
                   <section>
-                    <div
-                      style={{
-                        // background: "red",
-                        height: "90vh",
-                        width: "86vw",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      {...getRootProps()}
-                    >
+                    <div {...getRootProps()}>
                       <input {...getInputProps()} />
                       <p>
                         Drag 'n' drop some files here, or click to select files

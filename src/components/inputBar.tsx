@@ -22,6 +22,7 @@ import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import z from "zod";
+import { toast } from "./ui/use-toast";
 
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
@@ -166,7 +167,7 @@ const InputBar = (props: InputBarProps) => {
             setAwsImageUrl(awsUrl);
             const awsImageMessage = {
               role: "user",
-              subRole: "image",
+              subRole: "input-image",
               content: awsUrl,
               id: ID,
             } as Message;
@@ -208,7 +209,15 @@ const InputBar = (props: InputBarProps) => {
             console.error(" Response Error :", response);
           }
         } else {
-          alert(zodMessage.error.issues[0].message);
+          toast({
+            description: (
+              <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                <code className="text-white">
+                  {zodMessage.error.issues[0].message}
+                </code>
+              </pre>
+            ),
+          });
         }
       }
       return;

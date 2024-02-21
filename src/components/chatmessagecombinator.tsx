@@ -168,11 +168,11 @@ const ChatMessageCombinator = ({
             msg.subRole === "patent-search";
           });
           const imageMessage: any = msgs.find((msg) => {
-            if (msg.subRole === "image") {
+            if (msg.subRole === "input-image") {
               url = msg.content;
               id = msg.id;
             }
-            msg.subRole === "image";
+            msg.subRole === "input-image";
             return msg.subRole;
           });
 
@@ -192,7 +192,7 @@ const ChatMessageCombinator = ({
                 messageIndex++;
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;
-                if (msg.subRole === "image") return null;
+                if (msg.subRole === "input-image") return null;
                 // const handleDialog = (event: any) => {
                 //   console.log("event", URL.createObjectURL(event.target.src));
                 //   setOpen(true);
@@ -257,14 +257,18 @@ const ChatMessageCombinator = ({
                     </ContextWrapper>
                     {msg.name && id == msg.id ? (
                       <div
-                        className={isTablet ? "justify-center flex" : ""}
+                        className={
+                          isTablet
+                            ? "justify-center flex  dark:hover:bg-zinc-900 hover:bg-zinc-100 bg-background"
+                            : " dark:hover:bg-zinc-900 hover:bg-zinc-100 bg-background"
+                        }
                         key={msg.id}
                       >
                         <Image
-                          className="cursor-pointer"
+                          className="cursor-pointer ml-[15.9px] rounded"
                           alt="image"
                           src={url}
-                          width={150}
+                          width={148}
                           height={150}
                         ></Image>
                       </div>
