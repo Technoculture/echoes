@@ -167,7 +167,7 @@ const InputBar = (props: InputBarProps) => {
             setAwsImageUrl(awsUrl);
             const awsImageMessage = {
               role: "user",
-              subRole: "input-image",
+              subRole: "image",
               content: awsUrl,
               id: ID,
             } as Message;
