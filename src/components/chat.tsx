@@ -11,7 +11,6 @@ import PersistenceExample from "@/components/tldraw";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "./ui/use-toast";
 import { getUserIdList } from "./chatusersavatars";
-import { usePresence } from "ably/react";
 import { Button } from "./button";
 import { useDropzone } from "react-dropzone";
 
@@ -34,29 +33,40 @@ export default function Chat(props: ChatProps) {
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
-  const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
-  const [imageInput, setImageInput] = useState<string>("");
-  const [dropZone, setDropzone] = useState<boolean>(false);
+  // const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
+  const [dropZoneActive, setDropzoneActive] = useState<boolean>(false);
   const [image, setImage] = useState<File[]>([]); // Initialize state
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
 
+  // type zodMessage=z.infer<typeof  dropZoneFileSchema>;
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    setImage(acceptedFiles);
-    try {
-      setDropzone(true);
+    const fileType = acceptedFiles[0]?.type;
+    const imageType = fileType?.split("/")[0]; // Extract the first part before '/'
+    if (acceptedFiles && imageType === "image") {
+      setImage(acceptedFiles);
       setImageUrl(URL.createObjectURL(acceptedFiles[0]));
       setImageName(JSON.stringify(acceptedFiles[0].name));
-
-      setDropzone(true);
-    } catch (error) {
-      console.error("Error uploading file:", error);
+      setDropzoneActive(true);
+    } else {
+      toast({
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">Please select a image file.</code>
+          </pre>
+        ),
+      });
     }
   }, []);
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: {
+      "image/jpeg": [],
+      "image/png": [],
+    },
+    maxFiles: 1,
     noClick: true,
     noKeyboard: true,
   });
@@ -216,10 +226,10 @@ export default function Chat(props: ChatProps) {
           </section>
           {/* </div> */}
 
-          {dropZone ? (
+          {dropZoneActive ? (
             <>
               {" "}
-              <div className=" w-[200px] rounded-md bg-slate-950 p-4">
+              <div className=" w-[200px] flex flex-col rounded-md bg-slate-950 p-4">
                 <img
                   src={imageUrl}
                   alt="Preview"
@@ -228,11 +238,10 @@ export default function Chat(props: ChatProps) {
                 <pre>
                   <code className="text-white">{imageName}</code>
                 </pre>
-                <br></br>
                 <Button
                   onClick={() => {
                     setInput("");
-                    setDropzone(false);
+                    setDropzoneActive(false);
                   }}
                   className="w-40"
                 >
@@ -240,9 +249,7 @@ export default function Chat(props: ChatProps) {
                 </Button>
               </div>
             </>
-          ) : (
-            <>{""}</>
-          )}
+          ) : null}
 
           {isChatCompleted && (
             <div>
@@ -254,10 +261,8 @@ export default function Chat(props: ChatProps) {
           )}
           <InputBar
             dropZoneImage={image}
-            imageInput={imageInput}
-            setImageInput={setImageInput}
-            dropZone={dropZone}
-            setDropzone={setDropzone}
+            dropZoneActive={dropZoneActive}
+            setDropzoneActive={setDropzoneActive}
             chatId={props.chatId}
             orgId={props.orgId}
             messages={messages}

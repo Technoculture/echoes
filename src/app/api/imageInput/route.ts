@@ -1,11 +1,21 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
-import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { saveDroppedImage } from "@/utils/apiHelper";
-import { Message } from "ai/react/dist";
+import { z } from "zod";
 
+const dropZoneInputSchema = z.object({
+  imageName: z.string(),
+  imageType: z.string(),
+  imageSize: z.number(),
+  value: z.string(),
+  userId: z.string(),
+  orgId: z.string(),
+  chatId: z.string(),
+  id: z.string(),
+  imageFile: z.any(),
+});
 const chat = new ChatOpenAI({
   modelName: "gpt-4-vision-preview",
   maxTokens: 1024,
@@ -13,17 +23,50 @@ const chat = new ChatOpenAI({
 });
 
 export async function POST(request: Request) {
-  let formData = await request.formData();
-  const { orgSlug } = await auth();
-  const url: any = request.url;
-  const urlArray = url.split("/") as string[];
-  const chatId: any = formData.get("chatId");
-  const messageId = formData.get("messageId");
-  const orgId = formData.get("orgId") as string;
-  const userId = formData.get("userId") as string;
-  const message02 = formData.get("message02") as unknown as Message[];
+  const formData = await request.formData();
+  const zodMessageString: any = formData.get("zodMessage");
+  const file: any = formData.get("file");
+  const zodMessageObject = JSON.parse(zodMessageString);
+
+  const zodMessage = dropZoneInputSchema.parse({
+    imageName: zodMessageObject.data.imageName,
+    imageType: zodMessageObject.data.imageType,
+    imageSize: zodMessageObject.data.imageSize,
+    value: zodMessageObject.data.value,
+    userId: zodMessageObject.data.userId,
+    orgId: zodMessageObject.data.orgId,
+    chatId: zodMessageObject.data.chatId,
+    id: zodMessageObject.data.id,
+    imageFile: file,
+  });
+
+  console.log("zodMessage", zodMessage);
+
+  // console.log("body", data)
+  const {
+    imageName,
+    imageType,
+    imageSize,
+    value,
+    userId,
+    orgId,
+    chatId,
+    id,
+    imageFile,
+  } = zodMessage;
+
+  // Parse the string body as JSON
+
+  // const { orgSlug } = await auth();
+
+  // const urlArray =zodMessage.data.url.split("/") as string[];
+  // const chatId: any = formData.get("chatId");
+  // const messageId = formData.get("messageId");
+  // const orgId = formData.get("orgId") as string;
+  // const userId = formData.get("userId") as string;
+  // const message02 = formData.get("message02") as unknown as Message[];
   // const message02Array = JSON.parse(message02)
-  // console.log("messageId",message02Array)
+  // console.log("messageId", message02Array)
 
   if (!formData || !formData.has("file")) {
     return NextResponse.json(
@@ -31,15 +74,12 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-
-  const file: any = formData.get("file");
-  const parts = file.name.split(".");
+  const parts = imageFile.name.split(".");
   const extension = parts[parts.length - 1];
-  // console.log("fileNameeeeee", file.name);
-  // console.log("fileNameeeeee", extension);
+  console.log("fileNameeeeee", file.name);
+  console.log("fileNameeeeee", extension);
 
-  const imageInput: any = formData.get("imageInput");
-  if (file) {
+  if (file && zodMessage) {
     const blob = file as Blob;
     const buffer = Buffer.from(await blob.arrayBuffer());
     const imageBase64 = buffer.toString("base64");
@@ -48,7 +88,7 @@ export async function POST(request: Request) {
       content: [
         {
           type: "text",
-          text: imageInput ? imageInput : "what is in this image",
+          text: zodMessageObject.data.value,
         },
         {
           type: "image_url",
@@ -93,9 +133,9 @@ export async function POST(request: Request) {
       // });
       // console.log("postToAlgoli", postToAlgoli);
       const saveDroppedImag = await saveDroppedImage({
-        imageId: messageId,
+        imageId: zodMessageObject.data.id,
         buffer: buffer,
-        chatId: chatId,
+        chatId: zodMessageObject.data.chatId,
         imageExtension: extension,
         imageName: file.name,
       });

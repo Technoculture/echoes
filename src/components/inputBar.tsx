@@ -21,6 +21,26 @@ import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import z from "zod";
+
+const isValidImageType = (value: string) =>
+  /^image\/(jpeg|png|jpg|webp)$/.test(value);
+
+const dropZoneFileSchema = z.object({
+  imageName: z.any(),
+  imageType: z.string().refine(isValidImageType, {
+    message: "File type must be JPEG, PNG, or WEBP image",
+    path: ["type"],
+  }),
+  imageSize: z.number(),
+  value: z.string(),
+  userId: z.string(),
+  orgId: z.string(),
+  chatId: z.string(),
+  file: z.instanceof(Blob),
+  message: z.array(z.any()),
+  id: z.string(),
+});
 function isJSON(str: any) {
   let obj: any;
   try {
@@ -56,10 +76,8 @@ interface InputBarProps {
   setMessages: (messages: Message[]) => void;
   isLoading: boolean;
   chattype: ChatType;
-  setDropzone: Dispatch<SetStateAction<boolean>>;
-  dropZone: boolean;
-  imageInput: string;
-  setImageInput: Dispatch<SetStateAction<string>>;
+  setDropzoneActive: Dispatch<SetStateAction<boolean>>;
+  dropZoneActive: boolean;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -95,12 +113,27 @@ const InputBar = (props: InputBarProps) => {
       name: `${props.username},${props.userId}`,
       audio: "",
     };
-    if (props.dropZone) {
+    if (props.dropZoneActive) {
       console.log("image dropped");
       props.setInput("");
-      props.setDropzone(false);
+      props.setDropzoneActive(false);
 
       if (props.dropZoneImage && props.dropZoneImage.length > 0) {
+        const ID = nanoid();
+        const zodMessage: any = dropZoneFileSchema.safeParse({
+          imageName: props.dropZoneImage[0].name,
+          imageType: props.dropZoneImage[0].type,
+          imageSize: props.dropZoneImage[0].size,
+          file: props.dropZoneImage[0],
+          value: props.value,
+          userId: props.userId,
+          orgId: props.orgId,
+          chatId: props.chatId,
+          message: [...props.messages, message],
+          id: ID,
+        });
+        console.log("zodmessage", zodMessage);
+
         const timer = setTimeout(() => {
           updateStatus({
             isTyping: false,
@@ -108,28 +141,20 @@ const InputBar = (props: InputBarProps) => {
             id: props.userId,
           });
         }, 7000);
-        console.log("dropzone", props.dropZone);
-        if (props.dropZoneImage) {
-          const ID = nanoid();
-          // console.log("type", props.type);
+        console.log("dropzone", props.dropZoneActive);
+        if (zodMessage.success) {
           const message: Message = {
             id: ID,
             role: "user",
             content: props.value,
             name: `${props.username},${props.userId}`,
           };
-          // const message02:Message[] = [...messages, message];
-          // const message02Json = JSON.stringify(message02);
           const file = props.dropZoneImage[0];
+
+          const zodMSG = JSON.stringify(zodMessage);
           const formData = new FormData();
+          formData.append("zodMessage", zodMSG);
           formData.append("file", file);
-          formData.append("imageInput", props.value);
-          formData.append("userId", props.userId);
-          formData.append("orgId", props.orgId);
-          formData.append("chatId", props.chatId);
-          // formData.append("message02",message02Json);
-          formData.append("messageId", ID);
-          // console.log("Appended file:", formData.get("file"));
           const response = await fetch("/api/imageInput", {
             method: "POST",
             body: formData,
@@ -182,6 +207,8 @@ const InputBar = (props: InputBarProps) => {
           } else {
             console.error(" Response Error :", response);
           }
+        } else {
+          alert(zodMessage.error.issues[0].message);
         }
       }
       return;
@@ -406,7 +433,7 @@ const InputBar = (props: InputBarProps) => {
     }
   }, [props.isLoading, isRagLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    if (props.dropZone) {
+    if (props.dropZoneActive) {
       props.setInput(e.target.value);
     } else {
       props.onChange(e);
@@ -480,7 +507,7 @@ const InputBar = (props: InputBarProps) => {
                 placeholder={
                   isTranscribing
                     ? ""
-                    : props.dropZone
+                    : props.dropZoneActive
                     ? "Ask question about image"
                     : "Type your message here..."
                 }
@@ -527,25 +554,6 @@ const InputBar = (props: InputBarProps) => {
               animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
               exit={{ x: 50, opacity: 0, transition: { duration: 0.5 } }}
             >
-              {/* {props.dropZone ? (
-                <>
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    disabled={
-                      props.isChatCompleted ||
-                      isRecording ||
-                      isTranscribing ||
-                      disableInputs
-                    }
-                    onClick={handleDropzone}
-                    className="disabled:text-muted"
-                  >
-                    <PaperPlaneTilt className="h-4 w-4 fill-current" />
-                  </Button>
-                </>
-              ) : (
-                <> */}
               <Button
                 size="icon"
                 variant="secondary"
@@ -560,8 +568,6 @@ const InputBar = (props: InputBarProps) => {
               >
                 <PaperPlaneTilt className="h-4 w-4 fill-current" />
               </Button>
-              {/* </>
-              )} */}
             </motion.div>
           </motion.div>
         )}

@@ -13,15 +13,8 @@ import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
 import { Loader2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-} from "@/components/ui/dialog";
+
 import { useMediaQuery } from "@react-hook/media-query";
-import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -196,42 +189,41 @@ const ChatMessageCombinator = ({
                     setIsChatCompleted(true);
                   }
                 }
-
                 messageIndex++;
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;
-                const handleDialog = (event: any) => {
-                  setOpen(true);
-                  if (
-                    event.target &&
-                    event.target.tagName === "IMG" &&
-                    event.target.src
-                  ) {
-                    const imageUrl = event.target.src;
-                    setFetchImageUrl(imageUrl);
-                    console.log("fetchImageUrl:", fetchImageUrl);
-                  } else {
-                    setOpen(true);
-                  }
-                  return;
-                };
+                if (msg.subRole === "image") return null;
+                // const handleDialog = (event: any) => {
+                //   console.log("event", URL.createObjectURL(event.target.src));
+                //   setOpen(true);
+                //   if (
+                //     event.target &&
+                //     event.target.tagName === "IMG" &&
+                //     event.target.src
+                //   ) {
+                //     const imageUrl = event.target.src;
+                //     setFetchImageUrl(imageUrl);
+                //     console.log("fetchImageUrl:", fetchImageUrl);
+                //   } else {
+                //     setOpen(true);
+                //   }
+                //   return;
+                // };
                 return (
                   <div
                     key={msg.id || index}
                     className={cn(idx === 0 ? "xl:w-[450px]" : "xl:w-[700px]")}
                   >
-                    <div>
+                    {/* <div>
                       <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild></DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                           <DialogHeader>
                             <DialogDescription>
-                              {fetchImageUrl}
                               <AspectRatio ratio={0.2 / 0}>
                                 <Image
-                                  key={msg.id}
                                   alt="image"
-                                  src={fetchImageUrl}
+                                  src={""}
                                   width={300}
                                   height={300}
                                 ></Image>
@@ -240,7 +232,7 @@ const ChatMessageCombinator = ({
                           </DialogHeader>
                         </DialogContent>
                       </Dialog>
-                    </div>
+                    </div> */}
                     <ContextWrapper
                       append={append}
                       username={name}
@@ -268,17 +260,13 @@ const ChatMessageCombinator = ({
                         className={isTablet ? "justify-center flex" : ""}
                         key={msg.id}
                       >
-                        <AspectRatio ratio={0.5 / 0.1}>
-                          <Image
-                            className="cursor-pointer"
-                            onClick={handleDialog}
-                            key={msg.id}
-                            alt="image"
-                            src={url}
-                            width={150}
-                            height={150}
-                          ></Image>
-                        </AspectRatio>
+                        <Image
+                          className="cursor-pointer"
+                          alt="image"
+                          src={url}
+                          width={150}
+                          height={150}
+                        ></Image>
                       </div>
                     ) : null}
                     <div>
@@ -287,36 +275,29 @@ const ChatMessageCombinator = ({
                           patentMessage ? (
                             <PatentData index={index} message={patentMessage} />
                           ) : (
-                            <div>
-                              {msg.subRole === "image" ? null : (
-                                <Button
-                                  disabled={mutation.isLoading}
-                                  onClick={() =>
-                                    mutation.mutate({
-                                      id: msg.id,
-                                      msgs: msgs,
-                                      lastMessageIndex: msgIdx,
-                                    })
-                                  }
-                                  className={cn(
-                                    "mx-4 my-3",
-                                    isLoading && "hidden",
-                                  )}
-                                >
-                                  {mutation.isLoading &&
-                                  mutation.variables?.id === msg.id ? (
-                                    <div>
-                                      <div className="w-[150px]">
-                                        <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
-                                      </div>
-                                      <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
-                                    </div>
-                                  ) : (
-                                    "Search For Patents"
-                                  )}
-                                </Button>
+                            <Button
+                              disabled={mutation.isLoading}
+                              onClick={() =>
+                                mutation.mutate({
+                                  id: msg.id,
+                                  msgs: msgs,
+                                  lastMessageIndex: msgIdx,
+                                })
+                              }
+                              className={cn("mx-4 my-3", isLoading && "hidden")}
+                            >
+                              {mutation.isLoading &&
+                              mutation.variables?.id === msg.id ? (
+                                <div>
+                                  <div className="w-[150px]">
+                                    <Skeleton className=" w-[150px] h-[225px] rounded object-cover" />
+                                  </div>
+                                  <Skeleton className="scroll-m-20 tracking-tight text-xs line-clamp-2 w-[150px]"></Skeleton>
+                                </div>
+                              ) : (
+                                "Search For Patents"
                               )}
-                            </div>
+                            </Button>
                           )
                         ) : null
                       ) : null}
