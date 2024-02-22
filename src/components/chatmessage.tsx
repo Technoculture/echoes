@@ -10,6 +10,7 @@ import { CircleNotch } from "@phosphor-icons/react";
 import { IntermediateStep } from "./intermediatesteps";
 import useStore from "@/store";
 import AudioButton from "@/components/audioButton";
+import Image from "next/image";
 // import "./audio.css";
 
 interface ChatMessageProps {
@@ -24,6 +25,8 @@ interface ChatMessageProps {
   chatTitle: string;
   imageUrl: string;
   isLoading: boolean;
+  imgUrl: string;
+  imgId: string;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -34,6 +37,15 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
   const [audioSrc, setAudioSrc] = useState<string>(props.chat.audio || "");
   const store = useStore();
+
+  const handleImage = () => {
+    return (
+      <div>
+        {" "}
+        <Image alt="image" src={props.imgUrl} height={150} width={150}></Image>
+      </div>
+    );
+  };
 
   let userName = "";
   if (props?.chat.name) {
@@ -194,12 +206,10 @@ const ChatMessage = (props: ChatMessageProps) => {
             isRegenerating ? "animate-pulse opacity-10 backdrop-blur-md" : ""
           }
         >
-          {props.chat.subRole === "image" ? null : (
-            <RenderMarkdown
-              content={props.chat.content}
-              role={props.chat.role}
-            />
-          )}
+          <RenderMarkdown content={props.chat.content} role={props.chat.role} />
+          {props.chat.name && props.chat.id == props.imgId ? (
+            <>{handleImage()}</>
+          ) : null}
         </div>
       ) : (
         <div

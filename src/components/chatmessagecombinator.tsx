@@ -253,9 +253,11 @@ const ChatMessageCombinator = ({
                         chatTitle={chatTitle}
                         imageUrl={imageUrl}
                         isLoading={isLoading}
+                        imgUrl={url}
+                        imgId={id}
                       />
                     </ContextWrapper>
-                    {msg.name && id == msg.id ? (
+                    {/* {msg.name && id == msg.id ? (
                       <div
                         className={
                           isTablet
@@ -272,7 +274,7 @@ const ChatMessageCombinator = ({
                           height={150}
                         ></Image>
                       </div>
-                    ) : null}
+                    ) : null} */}
                     <div>
                       {idx === 0 ? (
                         preferences.showSubRoll ? (

@@ -40,24 +40,30 @@ export default function Chat(props: ChatProps) {
   const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
 
-  // type zodMessage=z.infer<typeof  dropZoneFileSchema>;
-
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const fileType = acceptedFiles[0]?.type;
-    const imageType = fileType?.split("/")[0]; // Extract the first part before '/'
-    if (acceptedFiles && imageType === "image") {
+    // const fileType = acceptedFiles[0]?.type;
+    // const imageType = fileType?.split("/")[0];
+    // console.log("imageType",imageType)
+    //  // Extract the first part before '/'
+    if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
       setImage(acceptedFiles);
       setImageUrl(URL.createObjectURL(acceptedFiles[0]));
       setImageName(JSON.stringify(acceptedFiles[0].name));
       setDropzoneActive(true);
     } else {
-      toast({
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">Please select a image file.</code>
-          </pre>
-        ),
-      });
+      {
+        image
+          ? null
+          : toast({
+              description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                  <code className="text-white">
+                    Please select a image file.
+                  </code>
+                </pre>
+              ),
+            });
+      }
     }
   }, []);
   const { getRootProps, getInputProps } = useDropzone({
