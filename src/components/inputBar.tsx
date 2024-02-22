@@ -135,7 +135,7 @@ const InputBar = (props: InputBarProps) => {
         });
         console.log("zodmessage", zodMessage);
 
-        const timer = setTimeout(() => {
+        setTimeout(() => {
           updateStatus({
             isTyping: false,
             username: "Echo",
@@ -151,7 +151,6 @@ const InputBar = (props: InputBarProps) => {
             name: `${props.username},${props.userId}`,
           };
           const file = props.dropZoneImage[0];
-
           const zodMSG = JSON.stringify(zodMessage);
           const formData = new FormData();
           formData.append("zodMessage", zodMSG);
@@ -188,7 +187,7 @@ const InputBar = (props: InputBarProps) => {
                 content: content,
               },
             ]);
-            console.log("New messages Ok:", props.messages);
+            // console.log("New messages Ok:", props.messages);
             fetch(`/api/updatedb/${props.chatId}`, {
               method: "POST",
               body: JSON.stringify({

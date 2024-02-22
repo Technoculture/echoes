@@ -41,10 +41,6 @@ export default function Chat(props: ChatProps) {
   const queryClient = useQueryClient();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    // const fileType = acceptedFiles[0]?.type;
-    // const imageType = fileType?.split("/")[0];
-    // console.log("imageType",imageType)
-    //  // Extract the first part before '/'
     if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
       setImage(acceptedFiles);
       setImageUrl(URL.createObjectURL(acceptedFiles[0]));

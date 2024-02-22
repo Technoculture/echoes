@@ -14,7 +14,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
 import { Loader2 } from "lucide-react";
 
-import { useMediaQuery } from "@react-hook/media-query";
 
 type Props = {
   calculatedMessages: Message[][];
@@ -63,8 +62,6 @@ const ChatMessageCombinator = ({
 
   const preferences = usePreferences();
   const queryClient = useQueryClient();
-  const isTablet = useMediaQuery("(max-width: 1275px)");
-  const [fetchImageUrl, setFetchImageUrl] = React.useState("");
 
   const [open, setOpen] = React.useState(false);
   const mutation = useMutation(
@@ -167,6 +164,7 @@ const ChatMessageCombinator = ({
           const patentMessage = msgs.find((msg) => {
             msg.subRole === "patent-search";
           });
+          console.log(`calculatedMessage${index}`, msgs);
           const imageMessage: any = msgs.find((msg) => {
             if (msg.subRole === "image") {
               url = msg.content;
@@ -214,25 +212,6 @@ const ChatMessageCombinator = ({
                     key={msg.id || index}
                     className={cn(idx === 0 ? "xl:w-[450px]" : "xl:w-[700px]")}
                   >
-                    {/* <div>
-                      <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogTrigger asChild></DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                          <DialogHeader>
-                            <DialogDescription>
-                              <AspectRatio ratio={0.2 / 0}>
-                                <Image
-                                  alt="image"
-                                  src={""}
-                                  width={300}
-                                  height={300}
-                                ></Image>
-                              </AspectRatio>
-                            </DialogDescription>
-                          </DialogHeader>
-                        </DialogContent>
-                      </Dialog>
-                    </div> */}
                     <ContextWrapper
                       append={append}
                       username={name}

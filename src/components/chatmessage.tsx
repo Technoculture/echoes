@@ -11,6 +11,15 @@ import { IntermediateStep } from "./intermediatesteps";
 import useStore from "@/store";
 import AudioButton from "@/components/audioButton";
 import Image from "next/image";
+import { useMediaQuery } from "@react-hook/media-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 // import "./audio.css";
 
 interface ChatMessageProps {
@@ -36,15 +45,31 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
   const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
   const [audioSrc, setAudioSrc] = useState<string>(props.chat.audio || "");
+  const [open, setOpen] = useState<boolean>(false);
+  const [image, setImage] = useState<string>("");
   const store = useStore();
+  const isTablet = useMediaQuery("(max-width: 1275px)");
 
   const handleImage = () => {
+    const imgUrl = props.imgUrl;
     return (
-      <div>
-        {" "}
-        <Image alt="image" src={props.imgUrl} height={150} width={150}></Image>
+      <div className={isTablet ? "justify-center flex" : ""}>
+        <Image
+          className="cursor-pointer"
+          id={props.imageUrl}
+          alt="image"
+          src={props.imgUrl}
+          onClick={() => handleOpenDialog(imgUrl)}
+          height={150}
+          width={150}
+        ></Image>
       </div>
     );
+  };
+
+  const handleOpenDialog = (image: any) => {
+    setImage(image);
+    setOpen(true);
   };
 
   let userName = "";
@@ -185,16 +210,20 @@ const ChatMessage = (props: ChatMessageProps) => {
           ) : null}
         </div>
         {props.chat.role !== "function" ? (
-          <ChatMessageActions
-            isEditing={isEditing}
-            setEditing={setIsEditing}
-            role={props.chat.role}
-            content={props.chat.content}
-            handleRegenerate={handleRegenerate}
-            isRegenerating={isRegenerating}
-            open={isActionsOpen}
-            setOpen={setIsActionsOpen}
-          />
+          (props.chat.name && props.chat.id == props.imgId) ||
+          (props.chat.role === "assistant" &&
+            props.imgId == props.chat.id) ? null : (
+            <ChatMessageActions
+              isEditing={isEditing}
+              setEditing={setIsEditing}
+              role={props.chat.role}
+              content={props.chat.content}
+              handleRegenerate={handleRegenerate}
+              isRegenerating={isRegenerating}
+              open={isActionsOpen}
+              setOpen={setIsActionsOpen}
+            />
+          )
         ) : null}
       </div>
       {props.chat.role === "function" ? (
@@ -210,6 +239,25 @@ const ChatMessage = (props: ChatMessageProps) => {
           {props.chat.name && props.chat.id == props.imgId ? (
             <>{handleImage()}</>
           ) : null}
+          <div>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild></DialogTrigger>
+              <DialogContent className="sm:max-w-[auto]">
+                <DialogHeader>
+                  <DialogDescription>
+                    <AspectRatio ratio={2 / 2}>
+                      <Image
+                        alt="image"
+                        src={image}
+                        fill
+                        className="rounded"
+                      ></Image>
+                    </AspectRatio>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       ) : (
         <div
