@@ -14,7 +14,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
 import { Loader2 } from "lucide-react";
 
-
 type Props = {
   calculatedMessages: Message[][];
   messages: Message[];
