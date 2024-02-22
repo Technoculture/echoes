@@ -27,7 +27,7 @@ import { toast } from "./ui/use-toast";
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
 
-const dropZoneFileSchema = z.object({
+const Schema = z.object({
   imageName: z.any(),
   imageType: z.string().refine(isValidImageType, {
     message: "File type must be JPEG, PNG, or WEBP image",
@@ -121,7 +121,7 @@ const InputBar = (props: InputBarProps) => {
 
       if (props.dropZoneImage && props.dropZoneImage.length > 0) {
         const ID = nanoid();
-        const zodMessage: any = dropZoneFileSchema.safeParse({
+        const zodMessage: any = Schema.safeParse({
           imageName: props.dropZoneImage[0].name,
           imageType: props.dropZoneImage[0].type,
           imageSize: props.dropZoneImage[0].size,
@@ -134,7 +134,6 @@ const InputBar = (props: InputBarProps) => {
           id: ID,
         });
         console.log("zodmessage", zodMessage);
-
         setTimeout(() => {
           updateStatus({
             isTyping: false,

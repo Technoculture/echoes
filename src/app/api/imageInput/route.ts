@@ -3,6 +3,8 @@ import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
 import { saveDroppedImage } from "@/utils/apiHelper";
+import { jsonToLangchain } from "@/utils/apiHelper";
+import { systemPrompt } from "@/utils/prompts";
 import { z } from "zod";
 
 const dropZoneInputSchema = z.object({
@@ -15,6 +17,7 @@ const dropZoneInputSchema = z.object({
   chatId: z.string(),
   id: z.string(),
   imageFile: z.any(),
+  messages: z.any(),
 });
 const chat = new ChatOpenAI({
   modelName: "gpt-4-vision-preview",
@@ -38,11 +41,11 @@ export async function POST(request: Request) {
     chatId: zodMessageObject.data.chatId,
     id: zodMessageObject.data.id,
     imageFile: file,
+    messages: zodMessageObject.data.message,
   });
 
-  console.log("zodMessage", zodMessage);
+  // console.log("zodMessage:", zodMessage);
 
-  // console.log("body", data)
   const {
     imageName,
     imageType,
@@ -52,6 +55,7 @@ export async function POST(request: Request) {
     orgId,
     chatId,
     id,
+    messages,
     imageFile,
   } = zodMessage;
 
@@ -76,8 +80,12 @@ export async function POST(request: Request) {
   }
   const parts = imageFile.name.split(".");
   const extension = parts[parts.length - 1];
-  console.log("fileNameeeeee", file.name);
-  console.log("fileNameeeeee", extension);
+  // console.log("fileName", file.name);
+  // console.log("fileExtension", extension);
+
+  const msgs: any = jsonToLangchain(messages, systemPrompt);
+
+  // console.log("msgs",msgs)
 
   if (file && zodMessage) {
     const blob = file as Blob;
@@ -88,7 +96,7 @@ export async function POST(request: Request) {
       content: [
         {
           type: "text",
-          text: zodMessageObject.data.value,
+          text: value,
         },
         {
           type: "image_url",

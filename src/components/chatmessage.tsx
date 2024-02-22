@@ -53,16 +53,18 @@ const ChatMessage = (props: ChatMessageProps) => {
   const handleImage = () => {
     const imgUrl = props.imgUrl;
     return (
-      <div className={isTablet ? "justify-center flex" : ""}>
-        <Image
-          className="cursor-pointer"
-          id={props.imageUrl}
-          alt="image"
-          src={props.imgUrl}
-          onClick={() => handleOpenDialog(imgUrl)}
-          height={150}
-          width={150}
-        ></Image>
+      <div className={isTablet ? " justify-center flex" : ""}>
+        <div className="inline-block p-3 dark:hover:bg-black hover:bg-zinc-100 rounded">
+          <Image
+            className="cursor-pointer rounded"
+            id={props.imageUrl}
+            alt="image"
+            src={props.imgUrl}
+            onClick={() => handleOpenDialog(imgUrl)}
+            height={150}
+            width={150}
+          ></Image>
+        </div>
       </div>
     );
   };
@@ -245,13 +247,16 @@ const ChatMessage = (props: ChatMessageProps) => {
               <DialogContent className="sm:max-w-[auto]">
                 <DialogHeader>
                   <DialogDescription>
-                    <AspectRatio ratio={2 / 2}>
-                      <Image
-                        alt="image"
-                        src={image}
-                        fill
-                        className="rounded"
-                      ></Image>
+                    <AspectRatio ratio={1.3 / 1.2}>
+                      <div className="h-full w-full overflow-hidden rounded">
+                        <Image
+                          alt="image"
+                          src={image}
+                          layout="fill"
+                          objectFit="contain"
+                          className="rounded"
+                        />
+                      </div>
                     </AspectRatio>
                   </DialogDescription>
                 </DialogHeader>

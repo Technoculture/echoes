@@ -190,22 +190,7 @@ const ChatMessageCombinator = ({
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;
                 if (msg.subRole === "image") return null;
-                // const handleDialog = (event: any) => {
-                //   console.log("event", URL.createObjectURL(event.target.src));
-                //   setOpen(true);
-                //   if (
-                //     event.target &&
-                //     event.target.tagName === "IMG" &&
-                //     event.target.src
-                //   ) {
-                //     const imageUrl = event.target.src;
-                //     setFetchImageUrl(imageUrl);
-                //     console.log("fetchImageUrl:", fetchImageUrl);
-                //   } else {
-                //     setOpen(true);
-                //   }
-                //   return;
-                // };
+
                 return (
                   <div
                     key={msg.id || index}
@@ -235,24 +220,7 @@ const ChatMessageCombinator = ({
                         imgId={id}
                       />
                     </ContextWrapper>
-                    {/* {msg.name && id == msg.id ? (
-                      <div
-                        className={
-                          isTablet
-                            ? "justify-center flex  dark:hover:bg-zinc-900 hover:bg-zinc-100 bg-background"
-                            : " dark:hover:bg-zinc-900 hover:bg-zinc-100 bg-background"
-                        }
-                        key={msg.id}
-                      >
-                        <Image
-                          className="cursor-pointer ml-[15.9px] rounded"
-                          alt="image"
-                          src={url}
-                          width={148}
-                          height={150}
-                        ></Image>
-                      </div>
-                    ) : null} */}
+
                     <div>
                       {idx === 0 ? (
                         preferences.showSubRoll ? (
