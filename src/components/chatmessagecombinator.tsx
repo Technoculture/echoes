@@ -163,7 +163,7 @@ const ChatMessageCombinator = ({
           const patentMessage = msgs.find((msg) => {
             msg.subRole === "patent-search";
           });
-          console.log(`calculatedMessage${index}`, msgs);
+          console.log("patentmsg", patentMessage);
           const imageMessage: any = msgs.find((msg) => {
             if (msg.subRole === "image") {
               url = msg.content;
@@ -220,7 +220,6 @@ const ChatMessageCombinator = ({
                         imgId={id}
                       />
                     </ContextWrapper>
-
                     <div>
                       {idx === 0 ? (
                         preferences.showSubRoll ? (

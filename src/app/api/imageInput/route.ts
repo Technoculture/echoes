@@ -3,9 +3,11 @@ import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
 import { saveDroppedImage } from "@/utils/apiHelper";
-import { jsonToLangchain } from "@/utils/apiHelper";
+import { jsonToLangchain, saveToDB } from "@/utils/apiHelper";
 import { systemPrompt } from "@/utils/prompts";
 import { z } from "zod";
+import { Message } from "ai/react/dist";
+import { auth } from "@clerk/nextjs";
 
 const dropZoneInputSchema = z.object({
   imageName: z.string(),
@@ -14,7 +16,7 @@ const dropZoneInputSchema = z.object({
   value: z.string(),
   userId: z.string(),
   orgId: z.string(),
-  chatId: z.string(),
+  chatId: z.any(),
   id: z.string(),
   imageFile: z.any(),
   messages: z.any(),
@@ -41,7 +43,7 @@ export async function POST(request: Request) {
     chatId: zodMessageObject.data.chatId,
     id: zodMessageObject.data.id,
     imageFile: file,
-    messages: zodMessageObject.data.message,
+    messages: zodMessageObject.data.message as Message[],
   });
 
   // console.log("zodMessage:", zodMessage);
@@ -58,19 +60,12 @@ export async function POST(request: Request) {
     messages,
     imageFile,
   } = zodMessage;
+  const { orgSlug } = await auth();
 
-  // Parse the string body as JSON
-
-  // const { orgSlug } = await auth();
-
-  // const urlArray =zodMessage.data.url.split("/") as string[];
-  // const chatId: any = formData.get("chatId");
-  // const messageId = formData.get("messageId");
-  // const orgId = formData.get("orgId") as string;
-  // const userId = formData.get("userId") as string;
-  // const message02 = formData.get("message02") as unknown as Message[];
-  // const message02Array = JSON.parse(message02)
-  // console.log("messageId", message02Array)
+  const _message = messages as unknown as Message[];
+  console.log("_message", _message);
+  const url = request.url;
+  const urlArray = url.split("/");
 
   if (!formData || !formData.has("file")) {
     return NextResponse.json(
@@ -80,18 +75,16 @@ export async function POST(request: Request) {
   }
   const parts = imageFile.name.split(".");
   const extension = parts[parts.length - 1];
-  // console.log("fileName", file.name);
-  // console.log("fileExtension", extension);
 
+  // console.log("messages",messages)
   const msgs: any = jsonToLangchain(messages, systemPrompt);
 
-  // console.log("msgs",msgs)
+  console.log("msgs", msgs);
 
   if (file && zodMessage) {
     const blob = file as Blob;
     const buffer = Buffer.from(await blob.arrayBuffer());
     const imageBase64 = buffer.toString("base64");
-    // Assuming the API can accept Base64 directly
     const message = new HumanMessage({
       content: [
         {
@@ -107,7 +100,7 @@ export async function POST(request: Request) {
     const res = await Promise.race([
       chat.invoke([message]),
       new Promise((resolve, reject) => {
-        setTimeout(() => reject(new Error("Timeout occurred")), 30000); // Adjust the timeout value (in milliseconds) as needed
+        setTimeout(() => reject(new Error("Timeout occurred")), 50000);
       }),
     ]).catch((error) => {
       console.error("Error:", error);
@@ -115,31 +108,24 @@ export async function POST(request: Request) {
     });
     console.log("Image response", res);
     if (res) {
-      // const latestReponse = {
-      //   id: nanoid(),
-      //   role: "assistant" as const,
-      //   content: typeof res === "string" ? res : JSON.stringify(res),
-      //   createdAt: new Date(),
-      //   audio: "",
+      const latestReponse = {
+        id: id,
+        role: "assistant" as const,
+        content: typeof res === "string" ? res : JSON.stringify(res),
+        createdAt: new Date(),
+        audio: "",
+      };
+      const db = await saveToDB({
+        _chat: _message,
+        chatId: chatId,
+        orgSlug: orgSlug as string,
+        latestResponse: latestReponse,
+        userId: userId,
+        orgId: orgId,
+        urlArray: urlArray,
+      });
+      console.log("dbResponce", db);
 
-      // };
-      // const db = await saveToDB({
-      //   _chat: message02,
-      //   chatId: chatId,
-      //   orgSlug: orgSlug as string,
-      //   latestResponse: latestReponse,
-      //   userId: userId,
-      //   orgId: orgId,
-      //   urlArray: urlArray,
-      // });
-      // console.log("dbbbbbbb", db);
-      // const postToAlgoli = await postToAlgolia({
-      //   chats: message02,
-      //   chatId: chatId,
-      //   orgSlug: orgSlug as string,
-      //   urlArray: urlArray,
-      // });
-      // console.log("postToAlgoli", postToAlgoli);
       const saveDroppedImag = await saveDroppedImage({
         imageId: zodMessageObject.data.id,
         buffer: buffer,
