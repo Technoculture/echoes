@@ -62,7 +62,6 @@ const ChatMessageCombinator = ({
   const preferences = usePreferences();
   const queryClient = useQueryClient();
 
-  const [open, setOpen] = React.useState(false);
   const mutation = useMutation(
     async (data: { id: string; msgs: Message[]; lastMessageIndex: number }) => {
       const res = await axios.post(`/api/patentsearch`, {
