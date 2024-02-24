@@ -72,6 +72,7 @@ const ChatMessageCombinator = ({
         lastMessageIndex: data.lastMessageIndex,
       });
       const result = res.data;
+      console.log("patentresult", result);
     },
     {
       onSuccess: () => {

@@ -3,8 +3,7 @@ import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
 import { saveDroppedImage } from "@/utils/apiHelper";
-import { jsonToLangchain, saveToDB } from "@/utils/apiHelper";
-import { systemPrompt } from "@/utils/prompts";
+import { saveToDB } from "@/utils/apiHelper";
 import { z } from "zod";
 import { Message } from "ai/react/dist";
 import { auth } from "@clerk/nextjs";
@@ -63,7 +62,7 @@ export async function POST(request: Request) {
   const { orgSlug } = await auth();
 
   const _message = messages as unknown as Message[];
-  console.log("_message", _message);
+  // console.log("_message", _message);
   const url = request.url;
   const urlArray = url.split("/");
 
@@ -75,13 +74,24 @@ export async function POST(request: Request) {
   }
   const parts = imageFile.name.split(".");
   const extension = parts[parts.length - 1];
-
   // console.log("messages",messages)
-  const msgs: any = jsonToLangchain(messages, systemPrompt);
+  const formattedMessages = messages.map((msg: any) => {
+    return {
+      role: msg.role,
+      content: msg.content,
+    };
+  });
+  // console.log("formatemsgs", formattedMessages);
+  const combinedContent = formattedMessages
+    .map((msg: any) => msg.content)
+    .join("\n");
+  const combinedMessage = {
+    role: "user",
+    content: combinedContent,
+  };
+  console.log("Combined message:", combinedMessage.content);
 
-  console.log("msgs", msgs);
-
-  if (file && zodMessage) {
+  if (file && zodMessage && combinedMessage) {
     const blob = file as Blob;
     const buffer = Buffer.from(await blob.arrayBuffer());
     const imageBase64 = buffer.toString("base64");
@@ -89,7 +99,7 @@ export async function POST(request: Request) {
       content: [
         {
           type: "text",
-          text: value,
+          text: combinedMessage.content,
         },
         {
           type: "image_url",
