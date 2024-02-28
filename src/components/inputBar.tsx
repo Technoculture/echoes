@@ -211,7 +211,6 @@ const InputBar = (props: InputBarProps) => {
               .then((e) => {
                 console.error("j", e);
               });
-            // const awsUrl = "";
 
             const awsImageMessage = {
               role: "user",
