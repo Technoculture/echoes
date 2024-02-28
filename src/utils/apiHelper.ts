@@ -72,6 +72,31 @@ export const chooseModel = (
   return { error: false, model };
 };
 
+export const jsonToLangchain02 = (
+  chatData: ChatEntry[],
+  system?: string,
+): BaseMessage[] => {
+  let ret: BaseMessage[] = [];
+  if (system) {
+    ret.push(new SystemMessage(system));
+  }
+  chatData.forEach((item: ChatEntry) => {
+    if (item.hasOwnProperty("role")) {
+      if (item.role === "user") {
+        ret.push(new HumanMessage(item.content));
+      } else if (item.role === "assistant") {
+        ret.push(new AIMessage(item.content));
+      }
+    } else if (item.hasOwnProperty("subRole")) {
+      if (item.subRole === "image") {
+        ret.push(new HumanMessage(item.content));
+      }
+    }
+  });
+  console.log("retttttttttttt", ret);
+  return ret;
+};
+
 export const jsonToLangchain = (
   chatData: ChatEntry[],
   system?: string,
@@ -80,7 +105,6 @@ export const jsonToLangchain = (
   if (system) {
     ret.push(new SystemMessage(system));
   }
-
   chatData.forEach((item: ChatEntry) => {
     if (item.hasOwnProperty("role") && !item.hasOwnProperty("subRole")) {
       if (item.role === "user") {

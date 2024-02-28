@@ -161,9 +161,11 @@ const ChatMessageCombinator = ({
 
         {calculatedMessages.map((msgs, index) => {
           const patentMessage = msgs.find((msg) => {
-            msg.subRole === "patent-search";
+            if (msg.subRole === "patent-search") {
+              console.log("patentmsg", patentMessage);
+              return msg.subRole;
+            }
           });
-          console.log("patentmsg", patentMessage);
           const imageMessage: any = msgs.find((msg) => {
             if (msg.subRole === "image") {
               url = msg.content;

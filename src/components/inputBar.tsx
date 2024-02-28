@@ -115,6 +115,9 @@ const InputBar = (props: InputBarProps) => {
       audio: "",
     };
     if (props.dropZoneActive) {
+      setDisableInputs(true);
+      setIsRagLoading(true);
+
       console.log("image dropped");
       props.setInput("");
       props.setDropzoneActive(false);
@@ -133,15 +136,12 @@ const InputBar = (props: InputBarProps) => {
           message: [...props.messages, message],
           id: ID,
         });
-        console.log("zodmessage", zodMessage);
-        setTimeout(() => {
-          updateStatus({
-            isTyping: false,
-            username: "Echo",
-            id: props.userId,
-          });
-        }, 7000);
-        console.log("dropzone", props.dropZoneActive);
+        const imageExtension = props.dropZoneImage[0].name.substring(
+          props.dropZoneImage[0].name.lastIndexOf(".") + 1,
+        );
+
+        // console.log("zodmessage", zodMessage);
+        // console.log("dropzone", props.dropZoneActive);
         if (zodMessage.success) {
           const message: Message = {
             id: ID,
@@ -159,50 +159,79 @@ const InputBar = (props: InputBarProps) => {
             body: formData,
           });
           const id = ID;
-          if (response.ok) {
-            const result = await response.json();
-            const awsUrl = result.imageUrl;
-            setAwsImageUrl(awsUrl);
-            const awsImageMessage = {
-              role: "user",
-              subRole: "image",
-              content: awsUrl,
-              id: ID,
-            } as Message;
-            const assistantMessage: Message = {
-              id,
-              role: "assistant",
-              content: result.result.kwargs.content,
-            };
-            // console.log("Backend response:", result);
-            console.log("imageUrl", awsUrl);
-            const content = result.result.kwargs.content;
-            props.setMessages([
-              ...props.messages,
-              awsImageMessage,
-              message,
-              {
-                ...assistantMessage,
-                content: content,
-              },
-            ]);
-            // console.log("New messages Ok:", props.messages);
-            fetch(`/api/updatedb/${props.chatId}`, {
-              method: "POST",
-              body: JSON.stringify({
-                messages: [
+          if (response) {
+            console.log("responce", response);
+            let assistantMsg = "";
+            const reader = response.body?.getReader();
+            console.log("reader", reader);
+            const decoder = new TextDecoder();
+            let charsReceived = 0;
+            let content = "";
+            reader
+              ?.read()
+              .then(function processText({ done, value }) {
+                if (done) {
+                  setDisableInputs(false);
+                  setIsRagLoading(false);
+                  console.log("Stream complete");
+                  fetch(`/api/updatedb/${props.chatId}`, {
+                    method: "POST",
+                    body: JSON.stringify({
+                      messages: [
+                        ...props.messages,
+                        awsImageMessage,
+                        message,
+                        {
+                          ...assistantMessage,
+                          content: content,
+                        },
+                      ],
+                      orgId: props.orgId,
+                      usreId: props.userId,
+                    }),
+                  });
+                  return;
+                }
+                charsReceived += value.length;
+                const chunk = decoder.decode(value, { stream: true });
+                assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
+                content += chunk === "" ? `${chunk} \n` : chunk;
+                console.log("assistMsg", assistantMsg);
+                props.setMessages([
                   ...props.messages,
                   awsImageMessage,
                   message,
                   {
                     ...assistantMessage,
-                    content: content,
+                    content: assistantMsg,
                   },
-                ],
-                orgId: props.orgId,
-                usreId: props.userId,
-              }),
-            });
+                ]);
+                reader.read().then(processText);
+              })
+              .then((e) => {
+                console.error("j", e);
+              });
+            const awsUrl = "";
+            console.log(
+              "process.env.IMAGE_PREFIX_URL",
+              process.env.IMAGE_PREFIX_URL,
+            );
+            setAwsImageUrl(awsUrl);
+            const awsImageMessage = {
+              role: "user",
+              subRole: "image",
+              // content:
+              //   "https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/68/GpIU0r1.png",
+              content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              id: ID,
+            } as Message;
+
+            const assistantMessage: Message = {
+              id,
+              role: "assistant",
+              content: content,
+            };
+            console.log("imageUrl", awsUrl);
           } else {
             console.error(" Response Error :", response);
           }
@@ -220,6 +249,7 @@ const InputBar = (props: InputBarProps) => {
       }
       return;
     }
+
     if (props.chattype === "rag") {
       console.log("rag");
       setIsRagLoading(true);
@@ -237,7 +267,6 @@ const InputBar = (props: InputBarProps) => {
       try {
         await fetchEventSource(`/api/chatmodel/${props.chatId}}`, {
           method: "POST",
-
           credentials: "include",
           body: JSON.stringify({
             input: props.value,

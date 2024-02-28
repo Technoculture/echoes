@@ -2,11 +2,16 @@ import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
-import { saveDroppedImage } from "@/utils/apiHelper";
-import { saveToDB } from "@/utils/apiHelper";
+import {
+  jsonToLangchain02,
+  saveDroppedImage,
+} from "@/utils/apiHelper";
 import { z } from "zod";
 import { Message } from "ai/react/dist";
 import { auth } from "@clerk/nextjs";
+import { NextApiResponse } from "next";
+import { StreamingTextResponse, LangChainStream } from "ai";
+import { systemPrompt } from "@/utils/prompts";
 
 const dropZoneInputSchema = z.object({
   imageName: z.string(),
@@ -20,13 +25,8 @@ const dropZoneInputSchema = z.object({
   imageFile: z.any(),
   messages: z.any(),
 });
-const chat = new ChatOpenAI({
-  modelName: "gpt-4-vision-preview",
-  maxTokens: 1024,
-  openAIApiKey: env.OPEN_AI_API_KEY,
-});
 
-export async function POST(request: Request) {
+export async function POST(request: Request, response: NextApiResponse) {
   const formData = await request.formData();
   const zodMessageString: any = formData.get("zodMessage");
   const file: any = formData.get("file");
@@ -61,10 +61,10 @@ export async function POST(request: Request) {
   } = zodMessage;
   const { orgSlug } = await auth();
 
-  const _message = messages as unknown as Message[];
+  // const _message = messages as unknown as Message[];
   // console.log("_message", _message);
-  const url = request.url;
-  const urlArray = url.split("/");
+  // const url = request.url;
+  // const urlArray = url.split("/");
 
   if (!formData || !formData.has("file")) {
     return NextResponse.json(
@@ -74,24 +74,63 @@ export async function POST(request: Request) {
   }
   const parts = imageFile.name.split(".");
   const extension = parts[parts.length - 1];
-  // console.log("messages",messages)
-  const formattedMessages = messages.map((msg: any) => {
-    return {
-      role: msg.role,
-      content: msg.content,
-    };
-  });
-  // console.log("formatemsgs", formattedMessages);
-  const combinedContent = formattedMessages
-    .map((msg: any) => msg.content)
-    .join("\n");
-  const combinedMessage = {
-    role: "user",
-    content: combinedContent,
-  };
-  console.log("Combined message:", combinedMessage.content);
+  // console.log("messages", messages)
 
-  if (file && zodMessage && combinedMessage) {
+  const msg: any = jsonToLangchain02(messages, systemPrompt);
+
+  // const str = jsonToLlama(messages);
+  // console.log("str", str);
+
+  // const formattedMessages = messages.map((msg: any) => {
+  //   return {
+  //     role: msg.role,
+  //     content: msg.content,
+  //   };
+  // });
+  // // const combinedContent = formattedMessages
+  //   .map((msg: any) => msg.content)
+  //   .join("\n");
+  // const combinedMessage = {
+  //   role: "user",
+  //   content: combinedContent,
+  // };
+
+  const { stream, handlers } = LangChainStream({
+    onStart: async () => {
+      console.log("On start");
+    },
+    onToken: async (fullResponse: string) => {
+      console.log("onToken", fullResponse);
+    },
+    onCompletion: async (fullResponse: string) => {
+      console.log("onCompletion", fullResponse);
+      // const latestReponse = {
+      //   id: id,
+      //   role: "assistant" as const,
+      //   content: fullResponse,
+      //   createdAt: new Date(),
+      //   audio: "",
+      // };
+      // const db = await saveToDB({
+      //   _chat: _message,
+      //   chatId: chatId,
+      //   orgSlug: orgSlug as string,
+      //   latestResponse: latestReponse,
+      //   userId: userId,
+      //   orgId: orgId,
+      //   urlArray: urlArray,
+      // });
+      // console.log("dbResponce", db);
+    },
+  });
+
+  const chat = new ChatOpenAI({
+    modelName: "gpt-4-vision-preview",
+    maxTokens: 1024,
+    streaming: true,
+    openAIApiKey: env.OPEN_AI_API_KEY,
+  });
+  if (file && zodMessage && msg) {
     const blob = file as Blob;
     const buffer = Buffer.from(await blob.arrayBuffer());
     const imageBase64 = buffer.toString("base64");
@@ -99,7 +138,7 @@ export async function POST(request: Request) {
       content: [
         {
           type: "text",
-          text: combinedMessage.content,
+          text: value,
         },
         {
           type: "image_url",
@@ -107,35 +146,13 @@ export async function POST(request: Request) {
         },
       ],
     });
-    const res = await Promise.race([
-      chat.invoke([message]),
-      new Promise((resolve, reject) => {
-        setTimeout(() => reject(new Error("Timeout occurred")), 50000);
-      }),
-    ]).catch((error) => {
-      console.error("Error:", error);
-      return null; // Handle the timeout error appropriately
-    });
-    console.log("Image response", res);
-    if (res) {
-      const latestReponse = {
-        id: id,
-        role: "assistant" as const,
-        content: typeof res === "string" ? res : JSON.stringify(res),
-        createdAt: new Date(),
-        audio: "",
-      };
-      const db = await saveToDB({
-        _chat: _message,
-        chatId: chatId,
-        orgSlug: orgSlug as string,
-        latestResponse: latestReponse,
-        userId: userId,
-        orgId: orgId,
-        urlArray: urlArray,
-      });
-      console.log("dbResponce", db);
+    const str = chat
+      .call([...msg, message], {}, [handlers])
+      .catch(console.error);
+    // console.log("Image response", res.content);
+    const STR = new StreamingTextResponse(stream);
 
+    if (STR) {
       const saveDroppedImag = await saveDroppedImage({
         imageId: zodMessageObject.data.id,
         buffer: buffer,
@@ -143,11 +160,8 @@ export async function POST(request: Request) {
         imageExtension: extension,
         imageName: file.name,
       });
-
-      return NextResponse.json(
-        { result: res, imageUrl: saveDroppedImag, success: true },
-        { status: 200 },
-      );
+      // imageUrl = saveDroppedImag
+      return new StreamingTextResponse(stream);
     }
   } else {
     return NextResponse.json(
@@ -155,4 +169,5 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+  return new StreamingTextResponse(stream);
 }

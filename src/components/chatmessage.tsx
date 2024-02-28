@@ -54,7 +54,7 @@ const ChatMessage = (props: ChatMessageProps) => {
     const imgUrl = props.imgUrl;
     return (
       <div className={isTablet ? " justify-center flex" : ""}>
-        <div className="inline-block p-3 dark:hover:bg-black hover:bg-zinc-100 rounded">
+        <div className="inline-block p-3 pt-2 dark:hover:bg-black hover:bg-zinc-100 rounded">
           <Image
             className="cursor-pointer rounded"
             id={props.imageUrl}
