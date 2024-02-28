@@ -160,12 +160,9 @@ const ChatMessageCombinator = ({
         </div>
 
         {calculatedMessages.map((msgs, index) => {
-          const patentMessage = msgs.find((msg) => {
-            if (msg.subRole === "patent-search") {
-              console.log("patentmsg", patentMessage);
-              return msg.subRole;
-            }
-          });
+          const patentMessage = msgs.find(
+            (msg) => msg.subRole === "patent-search",
+          );
           const imageMessage: any = msgs.find((msg) => {
             if (msg.subRole === "image") {
               url = msg.content;

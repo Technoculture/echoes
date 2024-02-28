@@ -196,7 +196,7 @@ const InputBar = (props: InputBarProps) => {
                 const chunk = decoder.decode(value, { stream: true });
                 assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
                 content += chunk === "" ? `${chunk} \n` : chunk;
-                console.log("assistMsg", assistantMsg);
+                // console.log("assistMsg", assistantMsg);
                 props.setMessages([
                   ...props.messages,
                   awsImageMessage,
@@ -211,27 +211,21 @@ const InputBar = (props: InputBarProps) => {
               .then((e) => {
                 console.error("j", e);
               });
-            const awsUrl = "";
-            console.log(
-              "process.env.IMAGE_PREFIX_URL",
-              process.env.IMAGE_PREFIX_URL,
-            );
-            setAwsImageUrl(awsUrl);
+            // const awsUrl = "";
+
             const awsImageMessage = {
               role: "user",
               subRole: "image",
-              // content:
-              //   "https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/68/GpIU0r1.png",
-              content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              // content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `https://echoes-images.s3.ap-south-1.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
-
             const assistantMessage: Message = {
               id,
               role: "assistant",
               content: content,
             };
-            console.log("imageUrl", awsUrl);
+            console.log("imageUrl", awsImageUrl);
           } else {
             console.error(" Response Error :", response);
           }

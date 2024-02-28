@@ -19,8 +19,8 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 // import "./audio.css";
+import { AspectRatio } from "./aspectratio";
 
 interface ChatMessageProps {
   name: string;
@@ -50,24 +50,24 @@ const ChatMessage = (props: ChatMessageProps) => {
   const store = useStore();
   const isTablet = useMediaQuery("(max-width: 1275px)");
 
-  const handleImage = () => {
-    const imgUrl = props.imgUrl;
-    return (
-      <div className={isTablet ? " justify-center flex" : ""}>
-        <div className="inline-block p-3 pt-2 dark:hover:bg-black hover:bg-zinc-100 rounded">
-          <Image
-            className="cursor-pointer rounded"
-            id={props.imageUrl}
-            alt="image"
-            src={props.imgUrl}
-            onClick={() => handleOpenDialog(imgUrl)}
-            height={150}
-            width={150}
-          ></Image>
-        </div>
-      </div>
-    );
-  };
+  // const handleImage = () => {
+  //   const imgUrl = props.imgUrl;
+  //   return (
+  //     <div className={isTablet ? " justify-center flex" : ""}>
+  //       <div className="inline-block p-3 pt-2 dark:hover:bg-black hover:bg-zinc-100 rounded">
+  //         <Image
+  //           className="cursor-pointer rounded"
+  //           id={props.imageUrl}
+  //           alt="image"
+  //           src={props.imgUrl}
+  //           onClick={() => handleOpenDialog(imgUrl)}
+  //           height={150}
+  //           width={150}
+  //         ></Image>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   const handleOpenDialog = (image: any) => {
     setImage(image);
@@ -239,7 +239,19 @@ const ChatMessage = (props: ChatMessageProps) => {
         >
           <RenderMarkdown content={props.chat.content} role={props.chat.role} />
           {props.chat.name && props.chat.id == props.imgId ? (
-            <>{handleImage()}</>
+            <div className={isTablet ? " justify-center flex" : ""}>
+              <div className="inline-block p-3 pt-2 dark:hover:bg-black hover:bg-zinc-100 rounded">
+                <Image
+                  className="cursor-pointer rounded"
+                  id={props.imageUrl}
+                  alt="image"
+                  src={props.imgUrl}
+                  onClick={() => handleOpenDialog(props.imgUrl)}
+                  height={150}
+                  width={150}
+                ></Image>
+              </div>
+            </div>
           ) : null}
           <div>
             <Dialog open={open} onOpenChange={setOpen}>
