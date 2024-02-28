@@ -240,7 +240,6 @@ const InputBar = (props: InputBarProps) => {
           });
         }
       }
-      return;
     }
 
     if (props.chattype === "rag") {
