@@ -2,10 +2,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
-import {
-  jsonToLangchain02,
-  saveDroppedImage,
-} from "@/utils/apiHelper";
+import { jsonToLangchain02, saveDroppedImage } from "@/utils/apiHelper";
 import { z } from "zod";
 import { Message } from "ai/react/dist";
 import { auth } from "@clerk/nextjs";
