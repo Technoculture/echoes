@@ -216,8 +216,8 @@ const InputBar = (props: InputBarProps) => {
             const awsImageMessage = {
               role: "user",
               subRole: "image",
-              content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
-              // content: `https://echoes-images.s3.ap-south-1.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              // content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `https://echoes-images.s3.ap-south-1.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
             const assistantMessage: Message = {
@@ -225,7 +225,7 @@ const InputBar = (props: InputBarProps) => {
               role: "assistant",
               content: content,
             };
-            console.log("imageUrl", awsImageUrl);
+            // console.log("imageUrl", awsImageUrl);
           } else {
             console.error(" Response Error :", response);
           }
