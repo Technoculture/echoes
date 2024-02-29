@@ -169,7 +169,7 @@ const InputBar = (props: InputBarProps) => {
             let content = "";
             reader
               ?.read()
-              .then(function processText({ done, value }) {
+              .then(async function processText({ done, value }) {
                 if (done) {
                   setDisableInputs(false);
                   setIsRagLoading(false);
@@ -193,10 +193,10 @@ const InputBar = (props: InputBarProps) => {
                   return;
                 }
                 charsReceived += value.length;
-                const chunk = decoder.decode(value, { stream: true });
+                const chunk = await decoder.decode(value, { stream: true });
                 assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
                 content += chunk === "" ? `${chunk} \n` : chunk;
-                // console.log("assistMsg", assistantMsg);
+                console.log("assistMsg", assistantMsg);
                 props.setMessages([
                   ...props.messages,
                   awsImageMessage,
@@ -209,14 +209,14 @@ const InputBar = (props: InputBarProps) => {
                 reader.read().then(processText);
               })
               .then((e) => {
-                console.error("j", e);
+                console.error("error", e);
               });
 
             const awsImageMessage = {
               role: "user",
               subRole: "image",
-              // content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
-              content: `https://echoes-images.s3.ap-south-1.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              // content: `https://echoes-images.s3.ap-south-1.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
             const assistantMessage: Message = {
