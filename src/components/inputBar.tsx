@@ -193,6 +193,7 @@ const InputBar = (props: InputBarProps) => {
                   return;
                 }
                 charsReceived += value.length;
+                console.log("charsrecieved", charsReceived);
                 const chunk = await decoder.decode(value, { stream: true });
                 assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
                 content += chunk === "" ? `${chunk} \n` : chunk;

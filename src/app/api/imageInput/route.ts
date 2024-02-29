@@ -2,13 +2,16 @@ import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
-import { jsonToLangchain, saveDroppedImage } from "@/utils/apiHelper";
+import { jsonToLangchain, saveDroppedImage, saveToDB } from "@/utils/apiHelper";
 import { z } from "zod";
 import { Message } from "ai/react/dist";
 import { auth } from "@clerk/nextjs";
 import { NextApiResponse } from "next";
 import { StreamingTextResponse, LangChainStream } from "ai";
 import { systemPrompt } from "@/utils/prompts";
+
+export const maxDuration = 60; // This function can run for a maximum of 5 seconds
+export const dynamic = "force-dynamic";
 
 const dropZoneInputSchema = z.object({
   imageName: z.string(),
@@ -41,6 +44,7 @@ export async function POST(request: Request, response: NextApiResponse) {
     imageFile: file,
     messages: zodMessageObject.data.message as Message[],
   });
+
   // console.log("zodMessage:", zodMessage);
   const {
     imageName,
@@ -56,10 +60,10 @@ export async function POST(request: Request, response: NextApiResponse) {
   } = zodMessage;
   const { orgSlug } = await auth();
 
-  // const _message = messages as unknown as Message[];
+  const _message = messages as unknown as Message[];
   // console.log("_message", _message);
-  // const url = request.url;
-  // const urlArray = url.split("/");
+  const url = request.url;
+  const urlArray = url.split("/");
 
   if (!formData || !formData.has("file")) {
     return NextResponse.json(
@@ -70,27 +74,9 @@ export async function POST(request: Request, response: NextApiResponse) {
   const parts = imageFile.name.split(".");
   const extension = parts[parts.length - 1];
   let awsImageUrl = "";
-  // console.log("messages", messages)
-
   const initialMessages = messages.slice(0, -1);
+  // console.log("intialmessages", initialMessages)
   const msg: any = jsonToLangchain(initialMessages, systemPrompt);
-
-  // const str = jsonToLlama(messages);
-  // console.log("str", str);
-
-  // const formattedMessages = messages.map((msg: any) => {
-  //   return {
-  //     role: msg.role,
-  //     content: msg.content,
-  //   };
-  // });
-  // // const combinedContent = formattedMessages
-  //   .map((msg: any) => msg.content)
-  //   .join("\n");
-  // const combinedMessage = {
-  //   role: "user",
-  //   content: combinedContent,
-  // };
   const chat = new ChatOpenAI({
     modelName: "gpt-4-vision-preview",
     maxTokens: 2024,
@@ -118,23 +104,23 @@ export async function POST(request: Request, response: NextApiResponse) {
       },
       onCompletion: async (fullResponse: string) => {
         console.log("onCompletion", fullResponse);
-        // const latestReponse = {
-        //   id: id,
-        //   role: "assistant" as const,
-        //   content: fullResponse,
-        //   createdAt: new Date(),
-        //   audio: "",
-        // };
-        // const db = await saveToDB({
-        //   _chat: _message,
-        //   chatId: chatId,
-        //   orgSlug: orgSlug as string,
-        //   latestResponse: latestReponse,
-        //   userId: userId,
-        //   orgId: orgId,
-        //   urlArray: urlArray,
-        // });
-        // console.log("dbResponce", db);
+        const latestReponse = {
+          id: id,
+          role: "assistant" as const,
+          content: fullResponse,
+          createdAt: new Date(),
+          audio: "",
+        };
+        const db = await saveToDB({
+          _chat: _message,
+          chatId: chatId,
+          orgSlug: orgSlug as string,
+          latestResponse: latestReponse,
+          userId: userId,
+          orgId: orgId,
+          urlArray: urlArray,
+        });
+        console.log("dbResponce", db);
       },
     });
     const message = new HumanMessage({
