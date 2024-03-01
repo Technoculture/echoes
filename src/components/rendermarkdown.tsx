@@ -89,11 +89,6 @@ const components: Components = {
   ol: ({ children, node, ...props }) => {
     return <ol className="my-6 ml-6 list-decimal [&>li]:mt-2">{children}</ol>;
   },
-  // img: ({ children, node, ...props }) => {
-  //   return (
-  //     <Image alt="image" src={""}>{children}</Image>
-  //   );
-  // },
   code({ node, inline, className, style, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
     return (

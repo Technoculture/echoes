@@ -194,7 +194,7 @@ const InputBar = (props: InputBarProps) => {
                 }
                 charsReceived += value.length;
                 console.log("charsrecieved", charsReceived);
-                const chunk = await decoder.decode(value, { stream: true });
+                const chunk = decoder.decode(value, { stream: true });
                 assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
                 content += chunk === "" ? `${chunk} \n` : chunk;
                 console.log("assistMsg", assistantMsg);
@@ -215,7 +215,7 @@ const InputBar = (props: InputBarProps) => {
 
             const awsImageMessage = {
               role: "user",
-              subRole: "image",
+              subRole: "input-image",
               // content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               content: `https://echoes-images.s3.ap-south-1.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
@@ -245,7 +245,6 @@ const InputBar = (props: InputBarProps) => {
     }
 
     if (props.chattype === "rag") {
-      console.log("rag");
       setIsRagLoading(true);
       setDisableInputs(true);
       props.setMessages([...props.messages, message]);
@@ -344,7 +343,6 @@ const InputBar = (props: InputBarProps) => {
         content: "",
       };
       let functionMessages: Message[] = [];
-      console.log("responce", res.body);
       if (res.body) {
         const reader = res?.body.getReader();
         while (true) {

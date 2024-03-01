@@ -72,30 +72,6 @@ export const chooseModel = (
   return { error: false, model };
 };
 
-// export const jsonToLangchain02 = (
-//   chatData: ChatEntry[],
-//   system?: string,
-// ): BaseMessage[] => {
-//   let ret: BaseMessage[] = [];
-//   if (system) {
-//     ret.push(new SystemMessage(system));
-//   }
-//   chatData.forEach((item: ChatEntry) => {
-//     if (item.hasOwnProperty("role")) {
-//       if (item.role === "user") {
-//         ret.push(new HumanMessage(item.content));
-//       } else if (item.role === "assistant") {
-//         ret.push(new AIMessage(item.content));
-//       }
-//     } else if (item.hasOwnProperty("subRole")) {
-//       if (item.subRole === "image") {
-//         ret.push(new HumanMessage(item.content));
-//       }
-//     }
-//   });
-//   return ret;
-// };
-
 export const jsonToLangchain = (
   chatData: ChatEntry[],
   system?: string,
@@ -111,7 +87,7 @@ export const jsonToLangchain = (
       } else if (item.role === "assistant") {
         ret.push(new AIMessage(item.content));
       } else if (item.hasOwnProperty("subRole")) {
-        if (item.subRole === "image") {
+        if (item.subRole === "input-image") {
           ret.push(new HumanMessage(item.content));
         }
       }
@@ -421,8 +397,6 @@ export const saveDroppedImage = async ({
     }),
   );
   const imageUrl = `${env.IMAGE_PREFIX_URL}imagefolder/${chatId}/${imageId}.${imageExtension}`;
-  console.log("aws_image_data", data);
-  console.log("Image URL", imageUrl);
   return imageUrl;
 };
 

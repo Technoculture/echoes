@@ -164,11 +164,11 @@ const ChatMessageCombinator = ({
             (msg) => msg.subRole === "patent-search",
           );
           const imageMessage: any = msgs.find((msg) => {
-            if (msg.subRole === "image") {
+            if (msg.subRole === "input-image") {
               url = msg.content;
               id = msg.id;
             }
-            msg.subRole === "image";
+            msg.subRole === "input-image";
             return msg.subRole;
           });
 
@@ -188,7 +188,7 @@ const ChatMessageCombinator = ({
                 messageIndex++;
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;
-                if (msg.subRole === "image") return null;
+                if (msg.subRole === "input-image") return null;
 
                 return (
                   <div

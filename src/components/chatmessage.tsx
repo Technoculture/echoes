@@ -50,25 +50,6 @@ const ChatMessage = (props: ChatMessageProps) => {
   const store = useStore();
   const isTablet = useMediaQuery("(max-width: 1275px)");
 
-  // const handleImage = () => {
-  //   const imgUrl = props.imgUrl;
-  //   return (
-  //     <div className={isTablet ? " justify-center flex" : ""}>
-  //       <div className="inline-block p-3 pt-2 dark:hover:bg-black hover:bg-zinc-100 rounded">
-  //         <Image
-  //           className="cursor-pointer rounded"
-  //           id={props.imageUrl}
-  //           alt="image"
-  //           src={props.imgUrl}
-  //           onClick={() => handleOpenDialog(imgUrl)}
-  //           height={150}
-  //           width={150}
-  //         ></Image>
-  //       </div>
-  //     </div>
-  //   );
-  // };
-
   const handleOpenDialog = (image: any) => {
     setImage(image);
     setOpen(true);
@@ -79,7 +60,7 @@ const ChatMessage = (props: ChatMessageProps) => {
     const [name, id] = props.chat.name.split(",");
     userName = name;
   } else {
-    if (props.chat.role === "user" && props.chat.subRole == "image") {
+    if (props.chat.role === "user" && props.chat.subRole == "input-image") {
       userName = "";
     } else if (props.chat.role === "assistant") {
       userName = "Echo";
