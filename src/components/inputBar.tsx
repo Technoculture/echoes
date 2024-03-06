@@ -59,7 +59,7 @@ interface InputBarProps {
   dropZoneImage: File[];
   value: string;
   onChange: (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
   ) => void;
   choosenAI: AIType;
   setChoosenAI: Dispatch<SetStateAction<AIType>>;
@@ -67,7 +67,7 @@ interface InputBarProps {
   userId: string;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions | undefined
+    chatRequestOptions?: ChatRequestOptions | undefined,
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
   isChatCompleted: boolean;
@@ -137,7 +137,7 @@ const InputBar = (props: InputBarProps) => {
           id: ID,
         });
         const imageExtension = props.dropZoneImage[0].name.substring(
-          props.dropZoneImage[0].name.lastIndexOf(".") + 1
+          props.dropZoneImage[0].name.lastIndexOf(".") + 1,
         );
         // console.log("zodmessage", zodMessage);
         // console.log("dropzone", props.dropZoneActive);
@@ -546,7 +546,7 @@ const InputBar = (props: InputBarProps) => {
               <Loader2
                 className={cn(
                   "h-4 w-4 animate-spin absolute left-2 top-3",
-                  isTranscribing ? "visible" : "hidden"
+                  isTranscribing ? "visible" : "hidden",
                 )}
               />
             </motion.div>
