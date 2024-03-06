@@ -217,7 +217,7 @@ const InputBar = (props: InputBarProps) => {
               role: "user",
               subRole: "input-image",
               // content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
-              content: `https://echoes-images.s3.ap-south-1.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
             const assistantMessage: Message = {
