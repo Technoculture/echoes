@@ -2,7 +2,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
-import { jsonToLangchain, saveDroppedImage } from "@/utils/apiHelper";
+import { jsonToLangchain, saveDroppedImage, saveToDB } from "@/utils/apiHelper";
 import { z } from "zod";
 import { Message } from "ai/react/dist";
 import { auth } from "@clerk/nextjs";
@@ -104,23 +104,24 @@ export async function POST(request: Request, response: NextApiResponse) {
       },
       onCompletion: async (fullResponse: string) => {
         console.log("onCompletion", fullResponse);
-        // const latestReponse = {
-        //   id: id,
-        //   role: "assistant" as const,
-        //   content: fullResponse,
-        //   createdAt: new Date(),
-        //   audio: "",
-        // };
-        // const db = await saveToDB({
-        //   _chat: _message,
-        //   chatId: chatId,
-        //   orgSlug: orgSlug as string,
-        //   latestResponse: latestReponse,
-        //   userId: userId,
-        //   orgId: orgId,
-        //   urlArray: urlArray,
-        // });
-        // console.log("dbResponce", db);
+
+        const latestReponse = {
+          id: id,
+          role: "assistant" as const,
+          content: fullResponse,
+          createdAt: new Date(),
+          audio: "",
+        };
+        const db = await saveToDB({
+          _chat: _message,
+          chatId: chatId,
+          orgSlug: orgSlug as string,
+          latestResponse: latestReponse,
+          userId: userId,
+          orgId: orgId,
+          urlArray: urlArray,
+        });
+        console.log("dbResponce", db);
       },
     });
     const message = new HumanMessage({
