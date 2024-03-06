@@ -2,12 +2,16 @@ import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
 import { env } from "@/app/env.mjs";
 import { NextResponse } from "next/server";
-import { jsonToLangchain, saveDroppedImage } from "@/utils/apiHelper";
+import { jsonToLangchain, saveDroppedImage, saveToDB } from "@/utils/apiHelper";
 import { z } from "zod";
 import { Message } from "ai/react/dist";
 import { auth } from "@clerk/nextjs";
 import { NextApiResponse } from "next";
-import { StreamingTextResponse, LangChainStream } from "ai";
+import {
+  StreamingTextResponse,
+  LangChainStream,
+  experimental_StreamData,
+} from "ai";
 import { systemPrompt } from "@/utils/prompts";
 
 export const maxDuration = 60; // This function can run for a maximum of 5 seconds
@@ -59,6 +63,7 @@ export async function POST(request: Request, response: NextApiResponse) {
     imageFile,
   } = zodMessage;
   const { orgSlug } = await auth();
+  const data: any = new experimental_StreamData();
 
   const _message = messages as unknown as Message[];
   console.log("_message", _message);
@@ -98,29 +103,33 @@ export async function POST(request: Request, response: NextApiResponse) {
           imageName: file.name,
         });
         awsImageUrl = saveDroppedImag;
+        data.append({
+          imageData: awsImageUrl.toString(),
+        });
+        data.close();
       },
       onToken: async (fullResponse: string) => {
         console.log("onToken", fullResponse);
       },
       onCompletion: async (fullResponse: string) => {
         console.log("onCompletion", fullResponse);
-        // const latestReponse = {
-        //   id: id,
-        //   role: "assistant" as const,
-        //   content: fullResponse,
-        //   createdAt: new Date(),
-        //   audio: "",
-        // };
-        // const db = await saveToDB({
-        //   _chat: _message,
-        //   chatId: chatId,
-        //   orgSlug: orgSlug as string,
-        //   latestResponse: latestReponse,
-        //   userId: userId,
-        //   orgId: orgId,
-        //   urlArray: urlArray,
-        // });
-        // console.log("dbResponce", db);
+        const latestReponse = {
+          id: id,
+          role: "assistant" as const,
+          content: fullResponse,
+          createdAt: new Date(),
+          audio: "",
+        };
+        const db = await saveToDB({
+          _chat: _message,
+          chatId: chatId,
+          orgSlug: orgSlug as string,
+          latestResponse: latestReponse,
+          userId: userId,
+          orgId: orgId,
+          urlArray: urlArray,
+        });
+        console.log("dbResponce", db);
       },
     });
     const message = new HumanMessage({
@@ -140,7 +149,7 @@ export async function POST(request: Request, response: NextApiResponse) {
       .catch(console.error);
     const STR = new StreamingTextResponse(stream);
     if (STR) {
-      return new StreamingTextResponse(stream);
+      return new StreamingTextResponse(stream, data);
     }
   } else {
     return NextResponse.json(
