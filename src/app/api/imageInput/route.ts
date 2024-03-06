@@ -62,6 +62,8 @@ export async function POST(request: Request, response: NextApiResponse) {
 
   const _message = messages as unknown as Message[];
   console.log("_message", _message);
+  const updatedMessageArray = [..._message]; // Create a copy of the original array
+
   const url = request.url;
   const urlArray = url.split("/");
 
@@ -98,6 +100,15 @@ export async function POST(request: Request, response: NextApiResponse) {
           imageName: file.name,
         });
         awsImageUrl = saveDroppedImag;
+        const imageMessage = {
+          id: id,
+          role: "user",
+          subRole: "input-image",
+          content: awsImageUrl,
+        } as Message;
+        const lastIndex = updatedMessageArray.length - 1;
+        updatedMessageArray.splice(lastIndex, 0, imageMessage);
+        // console.log("Updated Message Array:", updatedMessageArray);
       },
       onToken: async (fullResponse: string) => {
         console.log("onToken", fullResponse);
@@ -112,7 +123,7 @@ export async function POST(request: Request, response: NextApiResponse) {
           audio: "",
         };
         const db = await saveToDB({
-          _chat: _message,
+          _chat: updatedMessageArray,
           chatId: chatId,
           orgSlug: orgSlug as string,
           latestResponse: latestReponse,

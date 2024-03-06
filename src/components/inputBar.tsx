@@ -107,8 +107,9 @@ const InputBar = (props: InputBarProps) => {
     if (props.value.trim() === "") {
       return;
     }
+    const ID = nanoid();
     const message: Message = {
-      id: nanoid(),
+      id: ID,
       role: "user",
       content: props.value,
       name: `${props.username},${props.userId}`,
@@ -123,7 +124,6 @@ const InputBar = (props: InputBarProps) => {
       props.setDropzoneActive(false);
 
       if (props.dropZoneImage && props.dropZoneImage.length > 0) {
-        const ID = nanoid();
         const zodMessage: any = Schema.safeParse({
           imageName: props.dropZoneImage[0].name,
           imageType: props.dropZoneImage[0].type,
@@ -139,15 +139,10 @@ const InputBar = (props: InputBarProps) => {
         const imageExtension = props.dropZoneImage[0].name.substring(
           props.dropZoneImage[0].name.lastIndexOf(".") + 1,
         );
+        console.log("env", process.env.IMAGE_PREFIX_URL);
         // console.log("zodmessage", zodMessage);
         // console.log("dropzone", props.dropZoneActive);
         if (zodMessage.success) {
-          const message: Message = {
-            id: ID,
-            role: "user",
-            content: props.value,
-            name: `${props.username},${props.userId}`,
-          };
           const file = props.dropZoneImage[0];
           const zodMSG = JSON.stringify(zodMessage);
           const formData = new FormData();
@@ -157,7 +152,6 @@ const InputBar = (props: InputBarProps) => {
             method: "POST",
             body: formData,
           });
-          const id = ID;
           if (response) {
             console.log("responce", response);
             let assistantMsg = "";
@@ -173,30 +167,13 @@ const InputBar = (props: InputBarProps) => {
                   setDisableInputs(false);
                   setIsRagLoading(false);
                   console.log("Stream complete");
-                  // fetch(`/api/updatedb/${props.chatId}`, {
-                  //   method: "POST",
-                  //   body: JSON.stringify({
-                  //     messages: [
-                  //       ...props.messages,
-                  //       awsImageMessage,
-                  //       message,
-                  //       {
-                  //         ...assistantMessage,
-                  //         content: content,
-                  //       },
-                  //     ],
-                  //     orgId: props.orgId,
-                  //     usreId: props.userId,
-                  //   }),
-                  // });
                   return;
                 }
                 charsReceived += value.length;
-                console.log("charsrecieved", charsReceived);
                 const chunk = decoder.decode(value, { stream: true });
                 assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
                 content += chunk === "" ? `${chunk} \n` : chunk;
-                console.log("assistMsg", assistantMsg);
+                // console.log("assistMsg", assistantMsg);
                 props.setMessages([
                   ...props.messages,
                   awsImageMessage,
@@ -215,16 +192,15 @@ const InputBar = (props: InputBarProps) => {
             const awsImageMessage = {
               role: "user",
               subRole: "input-image",
-              // content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
-              content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              // content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
             const assistantMessage: Message = {
-              id,
+              id: ID,
               role: "assistant",
               content: content,
             };
-            // console.log("imageUrl", awsImageUrl);
           } else {
             console.error(" Response Error :", response);
           }
