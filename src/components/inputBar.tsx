@@ -174,26 +174,25 @@ const InputBar = (props: InputBarProps) => {
                   setDisableInputs(false);
                   setIsRagLoading(false);
                   console.log("Stream complete");
-                  // fetch(`/api/updatedb/${props.chatId}`, {
-                  //   method: "POST",
-                  //   body: JSON.stringify({
-                  //     messages: [
-                  //       ...props.messages,
-                  //       awsImageMessage,
-                  //       message,
-                  //       {
-                  //         ...assistantMessage,
-                  //         content: content,
-                  //       },
-                  //     ],
-                  //     orgId: props.orgId,
-                  //     usreId: props.userId,
-                  //   }),
-                  // });
+                  fetch(`/api/updatedb/${props.chatId}`, {
+                    method: "POST",
+                    body: JSON.stringify({
+                      messages: [
+                        ...props.messages,
+                        awsImageMessage,
+                        message,
+                        {
+                          ...assistantMessage,
+                          content: content,
+                        },
+                      ],
+                      orgId: props.orgId,
+                      usreId: props.userId,
+                    }),
+                  });
                   return;
                 }
-                //d7ftvotrexusa.cloudfront.net/chataudio/2207/5LqntU4.mp3
-                https: charsReceived += value.length;
+                charsReceived += value.length;
                 console.log("charsrecieved", charsReceived);
                 const chunk = decoder.decode(value, { stream: true });
                 assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
@@ -218,7 +217,7 @@ const InputBar = (props: InputBarProps) => {
               role: "user",
               subRole: "input-image",
               // content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
-              content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `https://echoes-images.s3.ap-south-1.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
             const assistantMessage: Message = {
