@@ -59,7 +59,7 @@ interface InputBarProps {
   dropZoneImage: File[];
   value: string;
   onChange: (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
   ) => void;
   choosenAI: AIType;
   setChoosenAI: Dispatch<SetStateAction<AIType>>;
@@ -67,7 +67,7 @@ interface InputBarProps {
   userId: string;
   append: (
     message: Message | CreateMessage,
-    chatRequestOptions?: ChatRequestOptions | undefined,
+    chatRequestOptions?: ChatRequestOptions | undefined
   ) => Promise<string | null | undefined>;
   setInput: Dispatch<SetStateAction<string>>;
   isChatCompleted: boolean;
@@ -137,9 +137,8 @@ const InputBar = (props: InputBarProps) => {
           id: ID,
         });
         const imageExtension = props.dropZoneImage[0].name.substring(
-          props.dropZoneImage[0].name.lastIndexOf(".") + 1,
+          props.dropZoneImage[0].name.lastIndexOf(".") + 1
         );
-
         // console.log("zodmessage", zodMessage);
         // console.log("dropzone", props.dropZoneActive);
         if (zodMessage.success) {
@@ -174,22 +173,22 @@ const InputBar = (props: InputBarProps) => {
                   setDisableInputs(false);
                   setIsRagLoading(false);
                   console.log("Stream complete");
-                  fetch(`/api/updatedb/${props.chatId}`, {
-                    method: "POST",
-                    body: JSON.stringify({
-                      messages: [
-                        ...props.messages,
-                        awsImageMessage,
-                        message,
-                        {
-                          ...assistantMessage,
-                          content: content,
-                        },
-                      ],
-                      orgId: props.orgId,
-                      usreId: props.userId,
-                    }),
-                  });
+                  // fetch(`/api/updatedb/${props.chatId}`, {
+                  //   method: "POST",
+                  //   body: JSON.stringify({
+                  //     messages: [
+                  //       ...props.messages,
+                  //       awsImageMessage,
+                  //       message,
+                  //       {
+                  //         ...assistantMessage,
+                  //         content: content,
+                  //       },
+                  //     ],
+                  //     orgId: props.orgId,
+                  //     usreId: props.userId,
+                  //   }),
+                  // });
                   return;
                 }
                 charsReceived += value.length;
@@ -216,8 +215,8 @@ const InputBar = (props: InputBarProps) => {
             const awsImageMessage = {
               role: "user",
               subRole: "input-image",
-              // content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
-              content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              // content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
             const assistantMessage: Message = {
@@ -547,7 +546,7 @@ const InputBar = (props: InputBarProps) => {
               <Loader2
                 className={cn(
                   "h-4 w-4 animate-spin absolute left-2 top-3",
-                  isTranscribing ? "visible" : "hidden",
+                  isTranscribing ? "visible" : "hidden"
                 )}
               />
             </motion.div>

@@ -22,7 +22,7 @@ const nextConfig = {
   images: {
     domains: [
       "oaidalleapiprodscus.blob.core.windows.net",
-      // "echoes-backet.s3.ap-southeast-2.amazonaws.com",
+      "echoes-backet.s3.ap-southeast-2.amazonaws.com",
       "echoes-images.s3.ap-south-1.amazonaws.com",
       "d7ftvotrexusa.cloudfront.net",
       "api.projectpq.ai",

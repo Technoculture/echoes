@@ -104,7 +104,6 @@ export async function POST(request: Request, response: NextApiResponse) {
       },
       onCompletion: async (fullResponse: string) => {
         console.log("onCompletion", fullResponse);
-
         const latestReponse = {
           id: id,
           role: "assistant" as const,
