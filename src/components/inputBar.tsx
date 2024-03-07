@@ -192,8 +192,7 @@ const InputBar = (props: InputBarProps) => {
             const awsImageMessage = {
               role: "user",
               subRole: "input-image",
-              content: `https://echoes-backet.s3.ap-southeast-2.amazonaws.com/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
-              // content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
             const assistantMessage: Message = {
