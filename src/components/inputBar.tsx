@@ -152,7 +152,6 @@ const InputBar = (props: InputBarProps) => {
             method: "POST",
             body: formData,
           });
-          console.log("hello")
           if (response) {
             console.log("responce", response);
             let assistantMsg = "";
