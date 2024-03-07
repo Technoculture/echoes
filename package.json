@@ -23,7 +23,7 @@
     "@clerk/nextjs": "4.29.3",
     "@clerk/themes": "1.7.4",
     "@dqbd/tiktoken": "1.0.3",
-    "@ducanh2912/next-pwa": "10.0.0",
+    "@ducanh2912/next-pwa": "^10.2.5",
     "@faker-js/faker": "^8.3.1",
     "@hookform/resolvers": "^3.3.2",
     "@langchain/core": "^0.1.25",
@@ -134,5 +134,11 @@
     "tailwindcss-safe-area": "^0.4.1",
     "ts-node": "10.9.1",
     "webpack": "^5.89.0"
+  },
+  "overrides": {
+    "next-intl": {
+      "next": "^14.0.0"
+    }
   }
+  
 }
