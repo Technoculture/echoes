@@ -171,7 +171,12 @@ const Startnewchatbutton = (props: Props) => {
               onClick={() => {
                 handleNavigate("ella", setIsEllaChatLoading, "");
               }}
-              disabled={showLoading || isBoardCreating || showTitleInput || isEllaChatLoading}
+              disabled={
+                showLoading ||
+                isBoardCreating ||
+                showTitleInput ||
+                isEllaChatLoading
+              }
             >
               {isEllaChatLoading ? (
                 <>
