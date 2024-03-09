@@ -62,7 +62,7 @@ export default function Chat(props: ChatProps) {
       }
     }
   }, []);
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
     accept: {
       "image/jpeg": [],
@@ -262,6 +262,7 @@ export default function Chat(props: ChatProps) {
             </div>
           )}
           <InputBar
+            onClickOpen={open}
             dropZoneImage={image}
             dropZoneActive={dropZoneActive}
             setDropzoneActive={setDropzoneActive}

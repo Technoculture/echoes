@@ -10,9 +10,12 @@ import {
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
+import {
+  Microphone,
+  PaperPlaneTilt,
+  UploadSimple,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/button";
-import ModelSwitcher from "@/components/modelswitcher";
 import AudioWaveForm from "@/components/audiowaveform";
 import { AIType, ChatType } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -37,7 +40,7 @@ const Schema = z.object({
   value: z.string(),
   userId: z.string(),
   orgId: z.string(),
-  chatId: z.string(),
+  chatId: z.any(),
   file: z.instanceof(Blob),
   message: z.array(z.any()),
   id: z.string(),
@@ -79,6 +82,7 @@ interface InputBarProps {
   chattype: ChatType;
   setDropzoneActive: Dispatch<SetStateAction<boolean>>;
   dropZoneActive: boolean;
+  onClickOpen: any;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -88,7 +92,6 @@ const InputBar = (props: InputBarProps) => {
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
   const [isRagLoading, setIsRagLoading] = useState<boolean>(false);
   const queryClient = useQueryClient();
-  const [awsImageUrl, setAwsImageUrl] = useState("");
 
   // const ably = useAbly();
 
@@ -139,7 +142,6 @@ const InputBar = (props: InputBarProps) => {
         const imageExtension = props.dropZoneImage[0].name.substring(
           props.dropZoneImage[0].name.lastIndexOf(".") + 1,
         );
-        console.log("env", process.env.IMAGE_PREFIX_URL);
         // console.log("zodmessage", zodMessage);
         // console.log("dropzone", props.dropZoneActive);
         if (zodMessage.success) {
@@ -188,11 +190,10 @@ const InputBar = (props: InputBarProps) => {
               .then((e) => {
                 console.error("error", e);
               });
-
             const awsImageMessage = {
               role: "user",
               subRole: "input-image",
-              content: `https://d7ftvotrexusa.cloudfront.net/imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              content: `${process.env.NEXT_PUBLIC_IMAGE_PREFIX_URL}imagefolder/${props.chatId}/${ID}.${imageExtension}`,
               id: ID,
             } as Message;
             const assistantMessage: Message = {
@@ -468,7 +469,7 @@ const InputBar = (props: InputBarProps) => {
               animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
               exit={{ x: -50, opacity: 0, transition: { duration: 0.5 } }}
             >
-              <ModelSwitcher
+              {/* <ModelSwitcher
                 disabled={
                   props.isChatCompleted ||
                   isRecording ||
@@ -477,7 +478,21 @@ const InputBar = (props: InputBarProps) => {
                 }
                 aiType={props.choosenAI}
                 setAIType={props.setChoosenAI}
-              />
+              /> */}
+              <Button
+                disabled={isRecording || isTranscribing || disableInputs}
+                onClick={props.onClickOpen}
+                size="icon"
+                variant="secondary"
+                type="button"
+                className="disabled:text-muted"
+              >
+                <UploadSimple
+                  className="h-4 w-4 fill-current"
+                  color="#618a9e"
+                  weight="bold"
+                />
+              </Button>
             </motion.div>
             <motion.div
               initial={{ y: 20, opacity: 0 }}
