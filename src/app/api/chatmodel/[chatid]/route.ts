@@ -1,6 +1,6 @@
 import { StreamingTextResponse, LangChainStream, nanoid, Message } from "ai";
 import { chattype } from "@/lib/types";
-import { systemPrompt } from "@/utils/prompts";
+import { systemPrompt, ellaPrompt } from "@/utils/prompts";
 import {
   jsonToLangchain,
   openAIChatModel,
@@ -80,7 +80,10 @@ export async function POST(
     );
     return;
   }
-  const msgs = jsonToLangchain(_chat, systemPrompt);
+  const msgs = jsonToLangchain(
+    _chat,
+    chatType === "ella" ? ellaPrompt : systemPrompt,
+  );
 
   const model = OPEN_AI_MODELS.gpt4Turbo;
 

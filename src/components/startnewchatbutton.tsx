@@ -38,6 +38,7 @@ const formSchema = z.object({
 const Startnewchatbutton = (props: Props) => {
   const [showLoading, setShowLoading] = useState(false); // normal chat
   const [isKnowledgeChatLoading, setIsKnowledgeChatLoading] = useState(false); // knowledge chat
+  const [isEllaChatLoading, setIsEllaChatLoading] = useState(false); // knowledge chat
   const [isBoardCreating, setIsBoardCreating] = useState(false);
   const [showTitleInput, setShowTitleInput] = useState(false);
   const [title, setTitle] = useState("");
@@ -162,6 +163,30 @@ const Startnewchatbutton = (props: Props) => {
                 <>
                   <Database className="w-4 h-4 mr-2" />
                   New Knowledge chat
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                handleNavigate("ella", setIsEllaChatLoading, "");
+              }}
+              disabled={
+                showLoading ||
+                isBoardCreating ||
+                showTitleInput ||
+                isEllaChatLoading
+              }
+            >
+              {isEllaChatLoading ? (
+                <>
+                  <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
+                  Starting New Ella Chat
+                </>
+              ) : (
+                <>
+                  <MessageSquarePlus className="w-4 h-4 mr-2" />
+                  New Ella Chat
                 </>
               )}
             </Button>
