@@ -17,7 +17,7 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@/components/button";
 import AudioWaveForm from "@/components/audiowaveform";
-import { AIType, ChatType } from "@/lib/types";
+import { AIType, ChatType, chattype } from "@/lib/types";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,6 +44,7 @@ const Schema = z.object({
   file: z.instanceof(Blob),
   message: z.array(z.any()),
   id: z.string(),
+  chattype: chattype,
 });
 function isJSON(str: any) {
   let obj: any;
@@ -138,6 +139,7 @@ const InputBar = (props: InputBarProps) => {
           chatId: props.chatId,
           message: [...props.messages, message],
           id: ID,
+          chattype: props.chattype,
         });
         const imageExtension = props.dropZoneImage[0].name.substring(
           props.dropZoneImage[0].name.lastIndexOf(".") + 1,
