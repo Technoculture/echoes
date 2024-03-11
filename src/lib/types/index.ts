@@ -9,6 +9,7 @@ export type ChatEntry = {
   content: string;
   name?: string | undefined;
   audio?: string;
+  subRole?: string;
 };
 
 export type ChatLog = {

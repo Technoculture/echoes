@@ -80,13 +80,16 @@ export const jsonToLangchain = (
   if (system) {
     ret.push(new SystemMessage(system));
   }
-
   chatData.forEach((item: ChatEntry) => {
     if (item.hasOwnProperty("role") && !item.hasOwnProperty("subRole")) {
       if (item.role === "user") {
         ret.push(new HumanMessage(item.content));
       } else if (item.role === "assistant") {
         ret.push(new AIMessage(item.content));
+      } else if (item.hasOwnProperty("subRole")) {
+        if (item.subRole === "input-image") {
+          ret.push(new HumanMessage(item.content));
+        }
       }
     }
   });
@@ -358,6 +361,43 @@ export const saveAudioMessage = async ({
 
   const audioUrl = `${env.IMAGE_PREFIX_URL}chataudio/${chatId}/${messageId}.mp3`;
   return audioUrl;
+};
+
+export const saveDroppedImage = async ({
+  imageId: imageId,
+  buffer,
+  chatId,
+  imageExtension,
+  imageName,
+}: {
+  imageId: any;
+  buffer: Buffer;
+  chatId: string;
+  imageExtension: string;
+  imageName: string;
+}): Promise<string> => {
+  const s3 = new S3Client({
+    region: env.AWS_REGION,
+    credentials: {
+      accessKeyId: env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
+  const data = await s3.send(
+    new PutObjectCommand({
+      Bucket: env.BUCKET_NAME,
+      Body: buffer,
+      Key: `imagefolder/${chatId}/${imageId}.${imageExtension}`,
+      Metadata: {
+        "Content-Type": "image/*",
+        "image-id": imageId,
+        "chat-id": chatId,
+        "image-Name": imageName,
+      },
+    }),
+  );
+  const imageUrl = `${env.IMAGE_PREFIX_URL}imagefolder/${chatId}/${imageId}.${imageExtension}`;
+  return imageUrl;
 };
 
 export const summarizeChat = async (chat: ChatEntry[]): Promise<string> => {

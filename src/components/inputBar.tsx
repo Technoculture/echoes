@@ -10,10 +10,12 @@ import {
   useState,
 } from "react";
 import { ChatRequestOptions, CreateMessage, Message, nanoid } from "ai";
-import { Microphone, PaperPlaneTilt } from "@phosphor-icons/react";
+import {
+  Microphone,
+  PaperPlaneTilt,
+  UploadSimple,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/button";
-
-import ModelSwitcher from "@/components/modelswitcher";
 import AudioWaveForm from "@/components/audiowaveform";
 import { AIType, ChatType } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -22,6 +24,27 @@ import { cn } from "@/lib/utils";
 import { usePresence } from "ably/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import z from "zod";
+import { toast } from "./ui/use-toast";
+
+const isValidImageType = (value: string) =>
+  /^image\/(jpeg|png|jpg|webp)$/.test(value);
+
+const Schema = z.object({
+  imageName: z.any(),
+  imageType: z.string().refine(isValidImageType, {
+    message: "File type must be JPEG, PNG, or WEBP image",
+    path: ["type"],
+  }),
+  imageSize: z.number(),
+  value: z.string(),
+  userId: z.string(),
+  orgId: z.string(),
+  chatId: z.any(),
+  file: z.instanceof(Blob),
+  message: z.array(z.any()),
+  id: z.string(),
+});
 function isJSON(str: any) {
   let obj: any;
   try {
@@ -36,6 +59,7 @@ function isJSON(str: any) {
 }
 
 interface InputBarProps {
+  dropZoneImage: File[];
   value: string;
   onChange: (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
@@ -56,6 +80,9 @@ interface InputBarProps {
   setMessages: (messages: Message[]) => void;
   isLoading: boolean;
   chattype: ChatType;
+  setDropzoneActive: Dispatch<SetStateAction<boolean>>;
+  dropZoneActive: boolean;
+  onClickOpen: any;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -65,6 +92,7 @@ const InputBar = (props: InputBarProps) => {
   const [disableInputs, setDisableInputs] = useState<boolean>(false);
   const [isRagLoading, setIsRagLoading] = useState<boolean>(false);
   const queryClient = useQueryClient();
+
   // const ably = useAbly();
 
   // console.log(
@@ -82,13 +110,115 @@ const InputBar = (props: InputBarProps) => {
     if (props.value.trim() === "") {
       return;
     }
+    const ID = nanoid();
     const message: Message = {
-      id: nanoid(),
+      id: ID,
       role: "user",
       content: props.value,
       name: `${props.username},${props.userId}`,
       audio: "",
     };
+    if (props.dropZoneActive) {
+      setDisableInputs(true);
+      setIsRagLoading(true);
+
+      console.log("image dropped");
+      props.setInput("");
+      props.setDropzoneActive(false);
+
+      if (props.dropZoneImage && props.dropZoneImage.length > 0) {
+        const zodMessage: any = Schema.safeParse({
+          imageName: props.dropZoneImage[0].name,
+          imageType: props.dropZoneImage[0].type,
+          imageSize: props.dropZoneImage[0].size,
+          file: props.dropZoneImage[0],
+          value: props.value,
+          userId: props.userId,
+          orgId: props.orgId,
+          chatId: props.chatId,
+          message: [...props.messages, message],
+          id: ID,
+        });
+        const imageExtension = props.dropZoneImage[0].name.substring(
+          props.dropZoneImage[0].name.lastIndexOf(".") + 1,
+        );
+        // console.log("zodmessage", zodMessage);
+        // console.log("dropzone", props.dropZoneActive);
+        if (zodMessage.success) {
+          const file = props.dropZoneImage[0];
+          const zodMSG = JSON.stringify(zodMessage);
+          const formData = new FormData();
+          formData.append("zodMessage", zodMSG);
+          formData.append("file", file);
+          const response = await fetch("/api/imageInput", {
+            method: "POST",
+            body: formData,
+          });
+          if (response) {
+            console.log("responce", response);
+            let assistantMsg = "";
+            const reader = response.body?.getReader();
+            console.log("reader", reader);
+            const decoder = new TextDecoder();
+            let charsReceived = 0;
+            let content = "";
+            reader
+              ?.read()
+              .then(async function processText({ done, value }) {
+                if (done) {
+                  setDisableInputs(false);
+                  setIsRagLoading(false);
+                  console.log("Stream complete");
+                  return;
+                }
+                charsReceived += value.length;
+                const chunk = decoder.decode(value, { stream: true });
+                assistantMsg += chunk === "" ? `${chunk} \n` : chunk;
+                content += chunk === "" ? `${chunk} \n` : chunk;
+                // console.log("assistMsg", assistantMsg);
+                props.setMessages([
+                  ...props.messages,
+                  awsImageMessage,
+                  message,
+                  {
+                    ...assistantMessage,
+                    content: assistantMsg,
+                  },
+                ]);
+                reader.read().then(processText);
+              })
+              .then((e) => {
+                console.error("error", e);
+              });
+            const awsImageMessage = {
+              role: "user",
+              subRole: "input-image",
+              content: `${process.env.NEXT_PUBLIC_IMAGE_PREFIX_URL}imagefolder/${props.chatId}/${ID}.${imageExtension}`,
+              id: ID,
+            } as Message;
+            const assistantMessage: Message = {
+              id: ID,
+              role: "assistant",
+              content: content,
+            };
+          } else {
+            console.error(" Response Error :", response);
+          }
+        } else {
+          toast({
+            description: (
+              <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                <code className="text-white">
+                  {zodMessage.error.issues[0].message}
+                </code>
+              </pre>
+            ),
+          });
+        }
+      }
+      return;
+    }
+
     if (props.chattype === "rag") {
       setIsRagLoading(true);
       setDisableInputs(true);
@@ -105,7 +235,6 @@ const InputBar = (props: InputBarProps) => {
       try {
         await fetchEventSource(`/api/chatmodel/${props.chatId}}`, {
           method: "POST",
-
           credentials: "include",
           body: JSON.stringify({
             input: props.value,
@@ -189,7 +318,6 @@ const InputBar = (props: InputBarProps) => {
         content: "",
       };
       let functionMessages: Message[] = [];
-
       if (res.body) {
         const reader = res?.body.getReader();
         while (true) {
@@ -308,7 +436,11 @@ const InputBar = (props: InputBarProps) => {
     }
   }, [props.isLoading, isRagLoading]);
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    props.onChange(e);
+    if (props.dropZoneActive) {
+      props.setInput(e.target.value);
+    } else {
+      props.onChange(e);
+    }
     updateStatus({
       isTyping: true,
       username: props.username,
@@ -316,6 +448,7 @@ const InputBar = (props: InputBarProps) => {
     });
     // setDisableInputs(true)
   };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
       <motion.div
@@ -336,7 +469,7 @@ const InputBar = (props: InputBarProps) => {
               animate={{ x: 0, opacity: 1, transition: { duration: 0.5 } }}
               exit={{ x: -50, opacity: 0, transition: { duration: 0.5 } }}
             >
-              <ModelSwitcher
+              {/* <ModelSwitcher
                 disabled={
                   props.isChatCompleted ||
                   isRecording ||
@@ -345,7 +478,21 @@ const InputBar = (props: InputBarProps) => {
                 }
                 aiType={props.choosenAI}
                 setAIType={props.setChoosenAI}
-              />
+              /> */}
+              <Button
+                disabled={isRecording || isTranscribing || disableInputs}
+                onClick={props.onClickOpen}
+                size="icon"
+                variant="secondary"
+                type="button"
+                className="disabled:text-muted"
+              >
+                <UploadSimple
+                  className="h-4 w-4 fill-current"
+                  color="#618a9e"
+                  weight="bold"
+                />
+              </Button>
             </motion.div>
             <motion.div
               initial={{ y: 20, opacity: 0 }}
@@ -374,7 +521,13 @@ const InputBar = (props: InputBarProps) => {
                   disableInputs
                 }
                 maxRows={10}
-                placeholder={isTranscribing ? "" : "Type your message here..."}
+                placeholder={
+                  isTranscribing
+                    ? ""
+                    : props.dropZoneActive
+                    ? "Ask question about image"
+                    : "Type your message here..."
+                }
                 autoFocus
                 value={props.value}
                 onChange={handleInputChange}

@@ -17,7 +17,7 @@ const withPWA = withPWAInit({
 const nextConfig = {
   experimental: {
     // appDir: true,
-    serverActions: true,
+    // serverActions: true,
   },
   images: {
     domains: [

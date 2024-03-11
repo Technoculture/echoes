@@ -10,7 +10,17 @@ import { CircleNotch } from "@phosphor-icons/react";
 import { IntermediateStep } from "./intermediatesteps";
 import useStore from "@/store";
 import AudioButton from "@/components/audioButton";
+import Image from "next/image";
+import { useMediaQuery } from "@react-hook/media-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 // import "./audio.css";
+import { AspectRatio } from "./aspectratio";
 
 interface ChatMessageProps {
   name: string;
@@ -24,6 +34,8 @@ interface ChatMessageProps {
   chatTitle: string;
   imageUrl: string;
   isLoading: boolean;
+  imgUrl: string;
+  imgId: string;
 }
 
 const ChatMessage = (props: ChatMessageProps) => {
@@ -33,15 +45,23 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
   const [isActionsOpen, setIsActionsOpen] = useState<boolean>(false);
   const [audioSrc, setAudioSrc] = useState<string>(props.chat.audio || "");
+  const [open, setOpen] = useState<boolean>(false);
+  const [image, setImage] = useState<string>("");
   const store = useStore();
+  const isTablet = useMediaQuery("(max-width: 1275px)");
+
+  const handleOpenDialog = (image: any) => {
+    setImage(image);
+    setOpen(true);
+  };
 
   let userName = "";
   if (props?.chat.name) {
     const [name, id] = props.chat.name.split(",");
     userName = name;
   } else {
-    if (props.chat.role === "user") {
-      userName = props.name;
+    if (props.chat.role === "user" && props.chat.subRole == "input-image") {
+      userName = "";
     } else if (props.chat.role === "assistant") {
       userName = "Echo";
     } else {
@@ -106,9 +126,7 @@ const ChatMessage = (props: ChatMessageProps) => {
   ) => {
     setIsRegenerating(true);
     const id = props.messageIndex; // id of the response to be regenerated
-
     const tempMessages = structuredClone(props.messages);
-
     const chatToBeSent = tempMessages.slice(0, id); // response is not included
     const remainingMessages = tempMessages.slice(id + 1);
 
@@ -148,6 +166,7 @@ const ChatMessage = (props: ChatMessageProps) => {
           >
             {userName}
           </p>
+
           {props.chat.role === "assistant" ? (
             <div className="flex items-center flex-grow">
               {!(
@@ -174,16 +193,20 @@ const ChatMessage = (props: ChatMessageProps) => {
           ) : null}
         </div>
         {props.chat.role !== "function" ? (
-          <ChatMessageActions
-            isEditing={isEditing}
-            setEditing={setIsEditing}
-            role={props.chat.role}
-            content={props.chat.content}
-            handleRegenerate={handleRegenerate}
-            isRegenerating={isRegenerating}
-            open={isActionsOpen}
-            setOpen={setIsActionsOpen}
-          />
+          (props.chat.name && props.chat.id == props.imgId) ||
+          (props.chat.role === "assistant" &&
+            props.imgId == props.chat.id) ? null : (
+            <ChatMessageActions
+              isEditing={isEditing}
+              setEditing={setIsEditing}
+              role={props.chat.role}
+              content={props.chat.content}
+              handleRegenerate={handleRegenerate}
+              isRegenerating={isRegenerating}
+              open={isActionsOpen}
+              setOpen={setIsActionsOpen}
+            />
+          )
         ) : null}
       </div>
       {props.chat.role === "function" ? (
@@ -196,6 +219,43 @@ const ChatMessage = (props: ChatMessageProps) => {
           }
         >
           <RenderMarkdown content={props.chat.content} role={props.chat.role} />
+          {props.chat.name && props.chat.id == props.imgId ? (
+            <div className={isTablet ? " justify-center flex" : ""}>
+              <div className="inline-block p-3 pt-2 dark:hover:bg-black hover:bg-zinc-100 rounded">
+                <Image
+                  className="cursor-pointer rounded"
+                  id={props.imageUrl}
+                  alt="image"
+                  src={props.imgUrl}
+                  onClick={() => handleOpenDialog(props.imgUrl)}
+                  height={150}
+                  width={150}
+                ></Image>
+              </div>
+            </div>
+          ) : null}
+          <div>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild></DialogTrigger>
+              <DialogContent className="sm:max-w-[auto]">
+                <DialogHeader>
+                  <DialogDescription>
+                    <AspectRatio ratio={1.3 / 1.2}>
+                      <div className="h-full w-full overflow-hidden rounded">
+                        <Image
+                          alt="image"
+                          src={image}
+                          layout="fill"
+                          objectFit="contain"
+                          className="rounded"
+                        />
+                      </div>
+                    </AspectRatio>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       ) : (
         <div

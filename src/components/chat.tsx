@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AIType, ChatType } from "@/lib/types";
 import InputBar from "@/components/inputBar";
 import { Message, useChat } from "ai/react";
@@ -11,6 +11,8 @@ import PersistenceExample from "@/components/tldraw";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "./ui/use-toast";
 import { getUserIdList } from "./chatusersavatars";
+import { Button } from "./button";
+import { useDropzone } from "react-dropzone";
 
 interface ChatProps {
   orgId: string;
@@ -26,10 +28,50 @@ interface ChatProps {
 }
 
 export default function Chat(props: ChatProps) {
+  // const { toast} = useToast()
+
   const [choosenAI, setChoosenAI] = useState<AIType>("universal");
   const [isChatCompleted, setIsChatCompleted] = useState<boolean>(false);
   const [calculatedMessages, setCalculatedMessages] = useState<Message[][]>([]);
+  // const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
+  const [dropZoneActive, setDropzoneActive] = useState<boolean>(false);
+  const [image, setImage] = useState<File[]>([]); // Initialize state
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [imageName, setImageName] = useState<string>("");
   const queryClient = useQueryClient();
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (acceptedFiles && acceptedFiles[0]?.type.startsWith("image/")) {
+      setImage(acceptedFiles);
+      setImageUrl(URL.createObjectURL(acceptedFiles[0]));
+      setImageName(JSON.stringify(acceptedFiles[0].name));
+      setDropzoneActive(true);
+    } else {
+      {
+        image
+          ? null
+          : toast({
+              description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                  <code className="text-white">
+                    Please select a image file.
+                  </code>
+                </pre>
+              ),
+            });
+      }
+    }
+  }, []);
+  const { getRootProps, getInputProps, open } = useDropzone({
+    onDrop,
+    accept: {
+      "image/jpeg": [],
+      "image/png": [],
+    },
+    maxFiles: 1,
+    noClick: true,
+    noKeyboard: true,
+  });
 
   const chatFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}`);
@@ -104,7 +146,6 @@ export default function Chat(props: ChatProps) {
       setCalculatedMessages(mainArray);
     }
   }, [messages]);
-
   const confidentialFetcher = async () => {
     const res = await axios.get(`/api/chats/${props.chatId}/confidential`);
     const confidential = res.data.confidential;
@@ -161,26 +202,57 @@ export default function Chat(props: ChatProps) {
       ) : (
         // {preferences.showSubRoll && <PersistenceExample />}
         <>
-          <ChatMessageCombinator
-            calculatedMessages={calculatedMessages}
-            messages={messages}
-            chatId={props.chatId}
-            orgId={props.orgId}
-            name={props.username}
-            uid={props.uid}
-            setMessages={setMessages}
-            chatTitle={props.chatTitle}
-            imageUrl={props.imageUrl}
-            isChatCompleted={isChatCompleted}
-            setIsChatCompleted={setIsChatCompleted}
-            append={append}
-            isLoading={isLoading}
-            shouldShowConfidentialToggler={userIds.includes(props.uid)}
-            confidential={confidentiality}
-            toogleConfidentiality={toogleConfidentiality}
-            isTooglingConfidentiality={isTooglingConfidentiality}
-          />
+          <section onDrop={(acceptedFiles: any) => onDrop(acceptedFiles)}>
+            <div className="min-h-[400px] max-h-[auto]" {...getRootProps()}>
+              <input {...getInputProps()} />
+              <ChatMessageCombinator
+                calculatedMessages={calculatedMessages}
+                messages={messages}
+                chatId={props.chatId}
+                orgId={props.orgId}
+                name={props.username}
+                uid={props.uid}
+                setMessages={setMessages}
+                chatTitle={props.chatTitle}
+                imageUrl={props.imageUrl}
+                isChatCompleted={isChatCompleted}
+                setIsChatCompleted={setIsChatCompleted}
+                append={append}
+                isLoading={isLoading}
+                shouldShowConfidentialToggler={userIds.includes(props.uid)}
+                confidential={confidentiality}
+                toogleConfidentiality={toogleConfidentiality}
+                isTooglingConfidentiality={isTooglingConfidentiality}
+              />
+            </div>
+          </section>
           {/* </div> */}
+
+          {dropZoneActive ? (
+            <>
+              {" "}
+              <div className=" w-[200px] flex flex-col rounded-md bg-slate-950 p-4">
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full h-auto rounded-md"
+                />
+                <pre>
+                  <code className="text-white">{imageName}</code>
+                </pre>
+                <Button
+                  onClick={() => {
+                    setInput("");
+                    setDropzoneActive(false);
+                  }}
+                  className="w-40"
+                >
+                  Undo
+                </Button>
+              </div>
+            </>
+          ) : null}
+
           {isChatCompleted && (
             <div>
               <Startnewchatbutton
@@ -190,6 +262,10 @@ export default function Chat(props: ChatProps) {
             </div>
           )}
           <InputBar
+            onClickOpen={open}
+            dropZoneImage={image}
+            dropZoneActive={dropZoneActive}
+            setDropzoneActive={setDropzoneActive}
             chatId={props.chatId}
             orgId={props.orgId}
             messages={messages}

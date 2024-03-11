@@ -56,6 +56,9 @@ const ChatMessageCombinator = ({
   toogleConfidentiality,
   isTooglingConfidentiality,
 }: Props) => {
+  let url = "";
+  let id = "";
+
   const preferences = usePreferences();
   const queryClient = useQueryClient();
 
@@ -68,6 +71,7 @@ const ChatMessageCombinator = ({
         lastMessageIndex: data.lastMessageIndex,
       });
       const result = res.data;
+      console.log("patentresult", result);
     },
     {
       onSuccess: () => {
@@ -154,10 +158,20 @@ const ChatMessageCombinator = ({
             )}
           </div>
         </div>
+
         {calculatedMessages.map((msgs, index) => {
           const patentMessage = msgs.find(
             (msg) => msg.subRole === "patent-search",
           );
+          const imageMessage: any = msgs.find((msg) => {
+            if (msg.subRole === "input-image") {
+              url = msg.content;
+              id = msg.id;
+            }
+            msg.subRole === "input-image";
+            return msg.subRole;
+          });
+
           return (
             <div
               key={index}
@@ -174,6 +188,8 @@ const ChatMessageCombinator = ({
                 messageIndex++;
                 const msgIdx = messageIndex;
                 if (msg.subRole === "patent-search") return null;
+                if (msg.subRole === "input-image") return null;
+
                 return (
                   <div
                     key={msg.id || index}
@@ -199,6 +215,8 @@ const ChatMessageCombinator = ({
                         chatTitle={chatTitle}
                         imageUrl={imageUrl}
                         isLoading={isLoading}
+                        imgUrl={url}
+                        imgId={id}
                       />
                     </ContextWrapper>
                     <div>
