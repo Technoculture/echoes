@@ -11,8 +11,8 @@ import PersistenceExample from "@/components/tldraw";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "./ui/use-toast";
 import { getUserIdList } from "./chatusersavatars";
-import { Button } from "./button";
 import { useDropzone } from "react-dropzone";
+import { X } from "lucide-react";
 
 interface ChatProps {
   orgId: string;
@@ -231,24 +231,20 @@ export default function Chat(props: ChatProps) {
           {dropZoneActive ? (
             <>
               {" "}
-              <div className=" w-[200px] flex flex-col rounded-md bg-slate-950 p-4">
+              <div
+                className=" w-[200px] flex flex-col rounded-md p-4 relative text-primary"
+                onClick={() => {
+                  setInput("");
+                  setDropzoneActive(false);
+                }}
+              >
                 <img
                   src={imageUrl}
                   alt="Preview"
-                  className="w-full h-auto rounded-md"
+                  className="w-full h-auto rounded-md relative inset-0 hover:opacity-40 cursor-pointer"
                 />
-                <pre>
-                  <code className="text-white">{imageName}</code>
-                </pre>
-                <Button
-                  onClick={() => {
-                    setInput("");
-                    setDropzoneActive(false);
-                  }}
-                  className="w-40"
-                >
-                  Undo
-                </Button>
+
+                <X className="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] pointer-events-none" />
               </div>
             </>
           ) : null}

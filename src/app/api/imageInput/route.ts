@@ -8,7 +8,8 @@ import { Message } from "ai/react/dist";
 import { auth } from "@clerk/nextjs";
 import { NextApiResponse } from "next";
 import { StreamingTextResponse, LangChainStream } from "ai";
-import { systemPrompt } from "@/utils/prompts";
+import { systemPrompt, ellaPrompt } from "@/utils/prompts";
+import { chattype } from "@/lib/types";
 
 export const maxDuration = 60; // This function can run for a maximum of 5 seconds
 export const dynamic = "force-dynamic";
@@ -24,6 +25,7 @@ const dropZoneInputSchema = z.object({
   id: z.string(),
   imageFile: z.any(),
   messages: z.any(),
+  chattype: chattype,
 });
 
 export async function POST(request: Request, response: NextApiResponse) {
@@ -57,6 +59,7 @@ export async function POST(request: Request, response: NextApiResponse) {
     id,
     messages,
     imageFile,
+    chattype,
   } = zodMessage;
   const { orgSlug } = await auth();
 
@@ -78,7 +81,10 @@ export async function POST(request: Request, response: NextApiResponse) {
   let awsImageUrl = "";
   const initialMessages = messages.slice(0, -1);
   // console.log("intialmessages", initialMessages)
-  const msg: any = jsonToLangchain(initialMessages, systemPrompt);
+  const msg: any = jsonToLangchain(
+    initialMessages,
+    chattype === "ella" ? ellaPrompt : systemPrompt,
+  );
   const chat = new ChatOpenAI({
     modelName: "gpt-4-vision-preview",
     maxTokens: 2024,
