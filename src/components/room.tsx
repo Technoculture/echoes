@@ -40,7 +40,7 @@ const RoomWrapper = (props: Props) => {
       id: props.uid,
       username: props.username,
       isTyping: false,
-    }
+    },
   );
 
   const dbIds = getUserIdList(props.chat);
@@ -49,7 +49,7 @@ const RoomWrapper = (props: Props) => {
   const liveUserIds = presenceData.map((p) => p.data?.id);
 
   const uniqueIds = [...dbIds, ...liveUserIds].filter(
-    (v, i, a) => a.indexOf(v) === i
+    (v, i, a) => a.indexOf(v) === i,
   );
 
   return (

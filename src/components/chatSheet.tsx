@@ -9,13 +9,11 @@ import {
 import { Button } from "./button";
 import { MessageCircle } from "lucide-react";
 import { ChatEntry, ChatType } from "@/lib/types";
-import { Chat as ChatSchema } from "@/lib/db/schema";
 import Chat from "./chat";
 import { useState } from "react";
 import usePreferences from "@/store/userPreferences";
 import { useChannel, usePresence } from "ably/react";
 import Chatusers, { getUserIdList } from "@/components/chatusersavatars";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 interface Props {
   orgId: string;
@@ -46,7 +44,7 @@ export default function ChatSheet(props: Props) {
       id: props.uid,
       username: props.username,
       isTyping: false,
-    }
+    },
   );
 
   const dbIds = getUserIdList(props.chat);
@@ -55,7 +53,7 @@ export default function ChatSheet(props: Props) {
   const liveUserIds = presenceData.map((p) => p.data.id);
 
   const uniqueIds = [...dbIds, ...liveUserIds].filter(
-    (v, i, a) => a.indexOf(v) === i
+    (v, i, a) => a.indexOf(v) === i,
   );
 
   return (
