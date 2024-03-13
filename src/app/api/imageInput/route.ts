@@ -45,6 +45,7 @@ export async function POST(request: Request, response: NextApiResponse) {
     id: zodMessageObject.data.id,
     imageFile: file,
     messages: zodMessageObject.data.message as Message[],
+    chattype: zodMessageObject.data.chattype,
   });
 
   // console.log("zodMessage:", zodMessage);

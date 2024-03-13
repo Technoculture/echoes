@@ -11,6 +11,7 @@ import { CircleNotch, ArrowLeft } from "@phosphor-icons/react";
 import { Eye, EyeOff } from "lucide-react";
 import usePreferences from "@/store/userPreferences";
 import { useChannel, usePresence } from "ably/react";
+import ChatSheet from "./chatSheet";
 
 interface Props {
   orgId: string;
@@ -39,16 +40,16 @@ const RoomWrapper = (props: Props) => {
       id: props.uid,
       username: props.username,
       isTyping: false,
-    },
+    }
   );
 
   const dbIds = getUserIdList(props.chat);
   const chatCreatorId = dbIds[0];
 
-  const liveUserIds = presenceData.map((p) => p.data.id);
+  const liveUserIds = presenceData.map((p) => p.data?.id);
 
   const uniqueIds = [...dbIds, ...liveUserIds].filter(
-    (v, i, a) => a.indexOf(v) === i,
+    (v, i, a) => a.indexOf(v) === i
   );
 
   return (
@@ -88,6 +89,22 @@ const RoomWrapper = (props: Props) => {
               <EyeOff className="h-4 w-4" />
             )}
           </Button>
+          {props.type == "tldraw" ? (
+            <div>
+              <ChatSheet
+                type={props.type}
+                orgId={props.orgId}
+                chat={props.chat}
+                chatId={props.chatId}
+                uid={props.uid}
+                username={props.username}
+                org_slug={props.org_slug}
+                chatTitle={props.chatTitle}
+                imageUrl={props.imageUrl}
+                confidential={props.confidential}
+              />
+            </div>
+          ) : null}
         </div>
         <Chat
           type={props.type}

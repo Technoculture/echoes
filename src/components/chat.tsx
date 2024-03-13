@@ -25,6 +25,7 @@ interface ChatProps {
   imageUrl: string;
   type: ChatType;
   confidential: number | null;
+  onClickOpenChatSheet?: boolean;
 }
 
 export default function Chat(props: ChatProps) {
@@ -188,7 +189,7 @@ export default function Chat(props: ChatProps) {
 
   return (
     <div className="flex flex-col gap-1 mx-auto">
-      {props.type === "tldraw" ? (
+      {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
         <div className=" w-[calc(100dvw-40px)] h-[calc(100dvh-128px)]">
           <PersistenceExample
             org_slug={props.org_slug}
