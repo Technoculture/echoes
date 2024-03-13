@@ -67,7 +67,7 @@ export default function ChatSheet(props: Props) {
             <MessageCircle className="h-4 w-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent className="w-1/2 bg-orange-500">
+        <SheetContent>
           <SheetHeader>
             <SheetTitle>
               {" "}
