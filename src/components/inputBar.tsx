@@ -26,6 +26,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import z from "zod";
 import { toast } from "./ui/use-toast";
+import usePreferences from "@/store/userPreferences";
 
 const isValidImageType = (value: string) =>
   /^image\/(jpeg|png|jpg|webp)$/.test(value);
@@ -84,6 +85,7 @@ interface InputBarProps {
   setDropzoneActive: Dispatch<SetStateAction<boolean>>;
   dropZoneActive: boolean;
   onClickOpen: any;
+  onClickOpenChatSheet: boolean | any;
 }
 
 const InputBar = (props: InputBarProps) => {
@@ -103,7 +105,16 @@ const InputBar = (props: InputBarProps) => {
   //     .presence.get({ clientId: `room_${props.chatId}` }),
   // );
 
-  const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
+  // const { presenceData, updateStatus } = usePresence(`channel_${props.chatId}`);
+  const preferences = usePreferences();
+  const { presenceData, updateStatus } = usePresence(
+    `channel_${props.chatId}`,
+    {
+      id: props.userId,
+      username: props.username,
+      isTyping: false,
+    },
+  );
   // using local state for development purposes
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -452,7 +463,12 @@ const InputBar = (props: InputBarProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-grow sm:min-w-[700px]">
+    <form
+      onSubmit={handleSubmit}
+      className={`flex flex-grow sm:min-w-[${
+        props.onClickOpenChatSheet ? "395px" : "700px"
+      }]`}
+    >
       <motion.div
         layout
         className="flex flex-grow bg-linear-900 p-2 pt-2 rounded-sm gap-2 "

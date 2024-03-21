@@ -11,6 +11,8 @@ import { CircleNotch, ArrowLeft } from "@phosphor-icons/react";
 import { Eye, EyeOff } from "lucide-react";
 import usePreferences from "@/store/userPreferences";
 import { useChannel, usePresence } from "ably/react";
+import ChatSheet from "./chatSheet";
+let chatToMap: any = "";
 
 interface Props {
   orgId: string;
@@ -31,6 +33,16 @@ const RoomWrapper = (props: Props) => {
   const { channel } = useChannel("room_5", (message) => {
     console.log(message);
   });
+  console.log("props.Chat", props.chat);
+  if (props.chat && props.chat[0] && props.chat[0].content) {
+    if (props.chat[0].content.startsWith('{"store":')) {
+      console.log("hai", chatToMap);
+      chatToMap = props.chat.slice(1);
+    } else {
+      console.log("nhi hai ", chatToMap);
+      chatToMap = props.chat;
+    }
+  }
 
   const preferences = usePreferences();
   const { presenceData, updateStatus } = usePresence(
@@ -46,6 +58,7 @@ const RoomWrapper = (props: Props) => {
   const chatCreatorId = dbIds[0];
 
   const liveUserIds = presenceData.map((p) => p.data.id);
+  console.log("liveUserIds", liveUserIds);
 
   const uniqueIds = [...dbIds, ...liveUserIds].filter(
     (v, i, a) => a.indexOf(v) === i,
@@ -54,6 +67,7 @@ const RoomWrapper = (props: Props) => {
   return (
     <>
       <div className="flex flex-col flex-grow min-h-[calc(100dvh-100px)] justify-between h-full mt-[80px]">
+        {" "}
         <div className="flex space-between mb-2">
           <div className="flex items-center">
             <Button variant="outline" className="mr-2" asChild>
@@ -68,7 +82,6 @@ const RoomWrapper = (props: Props) => {
                 )}
               </Link>
             </Button>
-
             <Chatusers
               allPresenceIds={uniqueIds}
               liveUserIds={liveUserIds}
@@ -88,6 +101,22 @@ const RoomWrapper = (props: Props) => {
               <EyeOff className="h-4 w-4" />
             )}
           </Button>
+          {props.type == "tldraw" ? (
+            <div>
+              <ChatSheet
+                type={props.type}
+                orgId={props.orgId}
+                dbChat={props.chat}
+                chatId={props.chatId}
+                uid={props.uid}
+                username={props.username}
+                org_slug={props.org_slug}
+                chatTitle={props.chatTitle}
+                imageUrl={props.imageUrl}
+                confidential={props.confidential}
+              />
+            </div>
+          ) : null}
         </div>
         <Chat
           type={props.type}

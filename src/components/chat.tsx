@@ -25,6 +25,7 @@ interface ChatProps {
   imageUrl: string;
   type: ChatType;
   confidential: number | null;
+  onClickOpenChatSheet?: boolean;
 }
 
 export default function Chat(props: ChatProps) {
@@ -160,6 +161,7 @@ export default function Chat(props: ChatProps) {
   });
 
   const userIds = getUserIdList(props.dbChat);
+  // console.log("props.dbChat:", props.dbChat);
 
   const {
     mutate: toogleConfidentiality,
@@ -188,7 +190,7 @@ export default function Chat(props: ChatProps) {
 
   return (
     <div className="flex flex-col gap-1 mx-auto">
-      {props.type === "tldraw" ? (
+      {props.type === "tldraw" && !props.onClickOpenChatSheet ? (
         <div className=" w-[calc(100dvw-40px)] h-[calc(100dvh-128px)]">
           <PersistenceExample
             org_slug={props.org_slug}
@@ -206,6 +208,7 @@ export default function Chat(props: ChatProps) {
             <div className="min-h-[400px] max-h-[auto]" {...getRootProps()}>
               <input {...getInputProps()} />
               <ChatMessageCombinator
+                onClickOpenChatSheet={props.onClickOpenChatSheet}
                 calculatedMessages={calculatedMessages}
                 messages={messages}
                 chatId={props.chatId}
@@ -258,6 +261,7 @@ export default function Chat(props: ChatProps) {
             </div>
           )}
           <InputBar
+            onClickOpenChatSheet={props.onClickOpenChatSheet}
             onClickOpen={open}
             dropZoneImage={image}
             dropZoneActive={dropZoneActive}
