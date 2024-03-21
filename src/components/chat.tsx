@@ -161,6 +161,7 @@ export default function Chat(props: ChatProps) {
   });
 
   const userIds = getUserIdList(props.dbChat);
+  // console.log("props.dbChat:", props.dbChat);
 
   const {
     mutate: toogleConfidentiality,
@@ -207,6 +208,7 @@ export default function Chat(props: ChatProps) {
             <div className="min-h-[400px] max-h-[auto]" {...getRootProps()}>
               <input {...getInputProps()} />
               <ChatMessageCombinator
+                onClickOpenChatSheet={props.onClickOpenChatSheet}
                 calculatedMessages={calculatedMessages}
                 messages={messages}
                 chatId={props.chatId}
@@ -259,6 +261,7 @@ export default function Chat(props: ChatProps) {
             </div>
           )}
           <InputBar
+            onClickOpenChatSheet={props.onClickOpenChatSheet}
             onClickOpen={open}
             dropZoneImage={image}
             dropZoneActive={dropZoneActive}

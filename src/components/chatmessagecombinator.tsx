@@ -35,6 +35,7 @@ type Props = {
   confidential: number | null;
   toogleConfidentiality: (confidential: { confidential: boolean }) => void;
   isTooglingConfidentiality: boolean;
+  onClickOpenChatSheet: any;
 };
 
 const ChatMessageCombinator = ({
@@ -55,6 +56,7 @@ const ChatMessageCombinator = ({
   confidential,
   toogleConfidentiality,
   isTooglingConfidentiality,
+  onClickOpenChatSheet,
 }: Props) => {
   let url = "";
   let id = "";
@@ -89,8 +91,12 @@ const ChatMessageCombinator = ({
   return (
     <div>
       <div className="grid grid-cols-1 gap-2">
-        <div className="max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto my-4">
-          <div className="xl:w-[450px] flex justify-evenly">
+        <div className="max-w-[700px]  grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto my-4">
+          <div
+            className={`xl:w-[${
+              onClickOpenChatSheet ? "310px" : "450px"
+            }] flex justify-evenly`}
+          >
             {imageUrl && imageUrl !== "" ? (
               <Image
                 src={imageUrl}
@@ -101,7 +107,11 @@ const ChatMessageCombinator = ({
               />
             ) : null}
           </div>
-          <div className="xl:w-[700px] flex-col mt-auto">
+          <div
+            className={`xl:w-[${
+              onClickOpenChatSheet ? "310px" : "700px"
+            }] flex-col mt-auto`}
+          >
             {/* {confidential ? <Button><LockClosedIcon /></Button>: <Button variant="destructive"><LockOpen1Icon /></Button>} */}
             {chat_title !== "" ? (
               <>
@@ -176,7 +186,7 @@ const ChatMessageCombinator = ({
             <div
               key={index}
               className={cn(
-                "max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto ",
+                "max-w-[700px] grid grid-cols-1 xl:max-w-none xl:grid-flow-col gap-2 mx-auto  ",
               )}
             >
               {msgs.map((msg, idx) => {
@@ -203,6 +213,7 @@ const ChatMessageCombinator = ({
                     >
                       <ChatMessage
                         // calculate the index to be same as if calculatedMessages were
+                        onClickOpenChatSheet={onClickOpenChatSheet}
                         messageIndex={msgIdx} // needs to be updated
                         chatId={chatId}
                         orgId={orgId}
